@@ -3292,3 +3292,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _moveSpeed: 5
   _rigidbody: {fileID: 2037319452}
+  _animator: {fileID: 2037319449}
