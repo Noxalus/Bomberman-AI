@@ -1,18 +1,19 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    private GameManager _gameManager = null;
+
+    public void Initialize(GameManager gameManager)
     {
-        
+        _gameManager = gameManager;
     }
 
-    // Update is called once per frame
-    void Update()
+    private void Update()
     {
-        
+        if (Input.GetKeyDown(KeyCode.LeftControl))
+        {
+            _gameManager.AddBomb(transform.position);
+        }
     }
 }

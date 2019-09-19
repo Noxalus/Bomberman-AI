@@ -41,6 +41,9 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: Bombs
+    uniqueID: 2235457995
+    locked: 0
   - name: Player
     uniqueID: 2348683305
     locked: 0
