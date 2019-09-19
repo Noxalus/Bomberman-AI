@@ -5,7 +5,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float _moveSpeed = 5f;
     [SerializeField] private Rigidbody2D _rigidbody = null;
     [SerializeField] private Animator _animator = null;
-    [SerializeField] private Grid _gameGrid;
+    [SerializeField] private Grid _gameGrid = null;
 
     private Vector2 _movement = Vector2.zero;
     private Vector3Int _currentCell = Vector3Int.zero;
