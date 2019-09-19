@@ -29,7 +29,17 @@ public class WallGenerator : MonoBehaviour
 
                 if (tile)
                 {
+                    //TileData tileData;
+                    //tile.GetTileData(cellPosition, _collisionMap, tileData);
+                    //tileData.colliderType == Tile.ColliderType.Grid;
+
                     var worldPosition = _gameGrid.CellToWorld(cellPosition) + _gameTilemap.tileAnchor;
+
+                    if (_collisionMap.OverlapPoint(new Vector2(worldPosition.x, worldPosition.y)))
+                    {
+                        continue;
+                    }
+
 
                     if (cellPosition.x < min.x)
                         min.x = cellPosition.x;
