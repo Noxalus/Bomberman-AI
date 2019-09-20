@@ -1,0 +1,59 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &4218044331087485811
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4218044331087485810}
+  - component: {fileID: 5540691424084555274}
+  m_Layer: 0
+  m_Name: Explosion
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4218044331087485810
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4218044331087485811}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5540691424084555274
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4218044331087485811}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c7476a7436051e44eb3d59132d195d62, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _explosionCenter: {fileID: 8527653108077666139, guid: bea9d7bdb8e23fc438738545cb0a9f85,
+    type: 3}
+  _explosionUp: {fileID: 6930446369767353382, guid: 927c8ce1bf8a5214bb39cc24a962802f,
+    type: 3}
+  _explosionDown: {fileID: 2825571810706513309, guid: 85e34470cdc00864183fb4f9ad156ade,
+    type: 3}
+  _explosionLeft: {fileID: 7788109614000174109, guid: 0e536c2c0b8f94b4685ee7f46fbcc22a,
+    type: 3}
+  _explosionRight: {fileID: 124636252754331469, guid: 4c1d898fd8fd7454e8a20971d132a6db,
+    type: 3}
+  _explosionVertical: {fileID: 6476527846554447797, guid: a6f1871493f86e641b8fc1dca946601c,
+    type: 3}
+  _explosionHorizontal: {fileID: 4560414169115164322, guid: 2e4fa6f87ff5a9446809f828e4c3ebb0,
+    type: 3}

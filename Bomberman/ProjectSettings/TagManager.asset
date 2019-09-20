@@ -50,3 +50,6 @@ TagManager:
   - name: DestructibleWalls
     uniqueID: 2020126075
     locked: 0
+  - name: Explosion
+    uniqueID: 1516557609
+    locked: 0

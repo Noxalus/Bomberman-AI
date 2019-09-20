@@ -2,10 +2,16 @@
 
 public class Player : MonoBehaviour
 {
+    private int _id = 0;
     private GameManager _gameManager = null;
+    private int _maxBombCount = 1;
+    private int _currentBombCount = 1;
+    private float _bombTimer = 5f;
+    private int _bombPower = 1;
 
-    public void Initialize(GameManager gameManager)
+    public void Initialize(int id, GameManager gameManager)
     {
+        _id = id;
         _gameManager = gameManager;
     }
 
@@ -13,7 +19,7 @@ public class Player : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.LeftControl))
         {
-            _gameManager.AddBomb(transform.position);
+            _gameManager.AddBomb(this, _bombTimer, _bombPower, transform.position);
         }
     }
 }

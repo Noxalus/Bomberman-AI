@@ -54,15 +54,16 @@ public class GameManager : MonoBehaviour
         for (int i = 0; i < playerCount; i++)
         {
             var player = Instantiate(_playerPrefab, _map.GetSpawnPosition(i), Quaternion.identity);
-            player.Initialize(this);
+            player.Initialize(i, this);
             _players.Add(player);
         }
     }
 
-    public void AddBomb(Vector3 worldPosition)
+    public void AddBomb(Player player, float timer, int power, Vector3 worldPosition)
     {
         var cellPosition = _map.GameGrid.WorldToCell(worldPosition);
         var bomb = Instantiate(_bombPrefab, cellPosition + _map.GameTilemap.tileAnchor, Quaternion.identity);
+        bomb.Initialize(player, timer, power);
 
         _bombs.Add(bomb);
     }
