@@ -2,6 +2,8 @@
 
 public class Player : MonoBehaviour
 {
+    [SerializeField] private Bomb _bombPrefab = null;
+
     private int _id = 0;
     private GameManager _gameManager = null;
     private int _maxBombCount = 1;
@@ -19,7 +21,10 @@ public class Player : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.LeftControl))
         {
-            _gameManager.AddBomb(this, _bombTimer, _bombPower, transform.position);
+            var bomb = Instantiate(_bombPrefab, Vector2.zero, Quaternion.identity);
+            bomb.Initialize(this, _bombTimer, _bombPower);
+
+            _gameManager.AddBomb(bomb, transform.position);
         }
     }
 }

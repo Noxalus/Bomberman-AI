@@ -12,7 +12,6 @@ public class GameManager : MonoBehaviour
     [Header("Assets reference")]
 
     [SerializeField] private Player _playerPrefab = null;
-    [SerializeField] private Bomb _bombPrefab = null;
 
     private Map _map = null;
     private List<Player> _players = new List<Player>();
@@ -59,11 +58,10 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void AddBomb(Player player, float timer, int power, Vector3 worldPosition)
+    public void AddBomb(Bomb bomb, Vector3 worldPosition)
     {
         var cellPosition = _map.GameGrid.WorldToCell(worldPosition);
-        var bomb = Instantiate(_bombPrefab, cellPosition + _map.GameTilemap.tileAnchor, Quaternion.identity);
-        bomb.Initialize(player, timer, power);
+        bomb.transform.position = cellPosition + _map.GameTilemap.tileAnchor;
 
         _bombs.Add(bomb);
     }
