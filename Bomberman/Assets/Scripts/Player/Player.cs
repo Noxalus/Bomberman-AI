@@ -8,7 +8,7 @@ public class Player : MonoBehaviour
     private GameManager _gameManager = null;
     private int _maxBombCount = 1;
     private int _currentBombCount = 1;
-    private float _bombTimer = 5f;
+    private float _bombTimer = 2f;
     private int _bombPower = 1;
 
     public void Initialize(int id, GameManager gameManager)

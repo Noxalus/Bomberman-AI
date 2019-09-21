@@ -2,8 +2,14 @@
 
 public class Bomb : MonoBehaviour
 {
+    [Header("Inner references")]
+
     [SerializeField] private Collider2D _collider = null;
     [SerializeField] private Animator _animator = null;
+
+    [Header("Assets references")]
+
+    [SerializeField] private Explosion _explosionPrefab = null;
 
     private Player _player;
     private float _timer;
@@ -41,8 +47,15 @@ public class Bomb : MonoBehaviour
 
             if (_currentTimer <= 0)
             {
-                _animator.SetTrigger("Explode");
+                Explode();
             }
         }
+    }
+
+    private void Explode()
+    {
+        Explosion explosion = Instantiate(_explosionPrefab, transform.position, Quaternion.identity);
+        explosion.Initialize(this, _power);
+        Destroy(gameObject);
     }
 }

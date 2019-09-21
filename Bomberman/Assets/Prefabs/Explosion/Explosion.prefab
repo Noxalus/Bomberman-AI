@@ -43,6 +43,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7476a7436051e44eb3d59132d195d62, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _holder: {fileID: 4218044331087485810}
   _explosionCenter: {fileID: 8527653108077666139, guid: bea9d7bdb8e23fc438738545cb0a9f85,
     type: 3}
   _explosionUp: {fileID: 6930446369767353382, guid: 927c8ce1bf8a5214bb39cc24a962802f,

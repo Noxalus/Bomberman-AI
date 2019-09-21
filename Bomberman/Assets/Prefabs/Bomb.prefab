@@ -50,6 +50,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _collider: {fileID: 4969763591525798892}
   _animator: {fileID: 6387717691148456488}
+  _explosionPrefab: {fileID: 5540691424084555274, guid: 0b15af19fe38ba84d9cf9896711d2f1d,
+    type: 3}
 --- !u!212 &130711189148796676
 SpriteRenderer:
   m_ObjectHideFlags: 0
