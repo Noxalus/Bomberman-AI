@@ -12,6 +12,7 @@ public class Bomb : MonoBehaviour
     [SerializeField] private Explosion _explosionPrefab = null;
 
     private Player _player;
+    private Map _map;
     private float _timer;
     private int _power;
 
@@ -22,9 +23,10 @@ public class Bomb : MonoBehaviour
         _collider.enabled = false;
     }
 
-    public void Initialize(Player player, float timer, int power)
+    public void Initialize(Player player, Map map, float timer, int power)
     {
         _player = player;
+        _map = map;
         _timer = timer;
         _power = power;
 
@@ -55,7 +57,7 @@ public class Bomb : MonoBehaviour
     private void Explode()
     {
         Explosion explosion = Instantiate(_explosionPrefab, transform.position, Quaternion.identity);
-        explosion.Initialize(this, _power);
+        explosion.Initialize(this, _map, _power);
         Destroy(gameObject);
     }
 }

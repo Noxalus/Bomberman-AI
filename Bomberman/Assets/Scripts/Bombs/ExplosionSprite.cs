@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class ExplosionPart : MonoBehaviour
+public class ExplosionSprite : MonoBehaviour
 {
     public void Destroy()
     {

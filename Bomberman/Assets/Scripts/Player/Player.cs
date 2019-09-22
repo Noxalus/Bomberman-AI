@@ -22,7 +22,7 @@ public class Player : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.LeftControl))
         {
             var bomb = Instantiate(_bombPrefab, Vector2.zero, Quaternion.identity);
-            bomb.Initialize(this, _bombTimer, _bombPower);
+            bomb.Initialize(this, _gameManager.Map, _bombTimer, _bombPower);
 
             _gameManager.AddBomb(bomb, transform.position);
         }

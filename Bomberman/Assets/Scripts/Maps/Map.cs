@@ -30,7 +30,7 @@ public class Map : MonoBehaviour
         return _playerSpawns[index].position;
     }
 
-    public bool IsOverlappingPlayerSpawn(Vector3Int cellPosition)
+    public bool OverlapPlayerSpawn(Vector3Int cellPosition)
     {
         foreach (Vector3Int spawnCellPosition in _playerSpawnCells)
         {
@@ -42,5 +42,10 @@ public class Map : MonoBehaviour
         }
 
         return false;
+    }
+
+    public bool OverlapWall(Vector3 worldPosition)
+    {
+        return CollisionMap.OverlapPoint(new Vector2(worldPosition.x, worldPosition.y));
     }
 }

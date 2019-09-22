@@ -13,6 +13,8 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] private Player _playerPrefab = null;
 
+    public Map Map => _map;
+
     private Map _map = null;
     private List<Player> _players = new List<Player>();
     private List<Bomb> _bombs = new List<Bomb>();

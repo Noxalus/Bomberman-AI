@@ -33,8 +33,7 @@ public class WallGenerator : MonoBehaviour
                 {
                     var worldPosition = _map.GameGrid.CellToWorld(cellPosition) + _map.GameTilemap.tileAnchor;
 
-                    if (_map.IsOverlappingPlayerSpawn(cellPosition) ||
-                        _map.CollisionMap.OverlapPoint(new Vector2(worldPosition.x, worldPosition.y)))
+                    if (_map.OverlapPlayerSpawn(cellPosition) || _map.OverlapWall(worldPosition))
                     {
                         continue;
                     }
