@@ -1,5 +1,4 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class Player : MonoBehaviour
 {
@@ -18,15 +17,14 @@ public class Player : MonoBehaviour
         _gameManager = gameManager;
     }
 
-    private void Update()
+    public void AddBomb()
     {
-        if (Input.GetKeyDown(KeyCode.LeftControl))
-        {
-            var bomb = Instantiate(_bombPrefab, Vector2.zero, Quaternion.identity);
-            bomb.Initialize(this, _gameManager.Map, _bombTimer, _bombPower);
+        var bomb = Instantiate(_bombPrefab, Vector2.zero, Quaternion.identity);
+        bomb.Initialize(this, _gameManager.Map, _bombTimer, _bombPower);
 
-            _gameManager.AddBomb(bomb, transform.position);
-        }
+        _gameManager.AddBomb(bomb, transform.position);
+
+        _currentBombCount--;
     }
 
     public void Kill()
