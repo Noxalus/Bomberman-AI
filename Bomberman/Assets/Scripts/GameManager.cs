@@ -44,7 +44,7 @@ public class GameManager : MonoBehaviour
         if (_map != null)
         {
             _wallGenerator.Initialize(_map);
-            _wallGenerator.GenerateWalls(1f);
+            _wallGenerator.GenerateWalls(0.75f);
 
             StartGame(1);
         }

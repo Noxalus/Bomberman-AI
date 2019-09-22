@@ -48,15 +48,18 @@ public class WallGenerator : MonoBehaviour
                     else if (cellPosition.y > max.y)
                         max.y = cellPosition.y;
 
-                    Debug.Log($"Current tile: {tile}");
-                    Debug.Log($"World position: {worldPosition}");
+                    if (Random.value < wallPercentage)
+                    {
+                        Debug.Log($"Current tile: {tile}");
+                        Debug.Log($"World position: {worldPosition}");
 
-                    Instantiate(
-                        _destructiveWallPrefab,
-                        worldPosition,
-                        Quaternion.identity,
-                        _destructibleWallHolder
-                    );
+                        Instantiate(
+                            _destructiveWallPrefab,
+                            worldPosition,
+                            Quaternion.identity,
+                            _destructibleWallHolder
+                        );
+                    }
                 }
             }
         }

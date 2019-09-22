@@ -74,5 +74,9 @@ public class Explosion : MonoBehaviour
         {
             collision.GetComponent<DestructibleWall>().Explode();
         }
+        else if (collision.tag == "Bomb")
+        {
+            collision.GetComponent<Bomb>().Explode();
+        }
     }
 }

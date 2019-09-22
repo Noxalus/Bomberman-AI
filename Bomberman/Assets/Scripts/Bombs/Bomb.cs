@@ -54,7 +54,7 @@ public class Bomb : MonoBehaviour
         }
     }
 
-    private void Explode()
+    public void Explode()
     {
         Explosion explosion = Instantiate(_explosionPrefab, transform.position, Quaternion.identity);
         explosion.Initialize(this, _map, _power);
