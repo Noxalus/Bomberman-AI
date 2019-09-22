@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 public class Player : MonoBehaviour
 {
@@ -26,5 +27,11 @@ public class Player : MonoBehaviour
 
             _gameManager.AddBomb(bomb, transform.position);
         }
+    }
+
+    public void Kill()
+    {
+        Debug.Log("Player killed");
+        //Destroy(gameObject);
     }
 }
