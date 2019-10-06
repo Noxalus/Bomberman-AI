@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 public class Explosion : MonoBehaviour
 {
@@ -15,6 +16,7 @@ public class Explosion : MonoBehaviour
         Vector2Int cellSize = Vector2Int.one;
         var centerExplosion = Instantiate(_explosionCenter, transform);
         centerExplosion.transform.localPosition = Vector2.zero;
+        centerExplosion.OnExplosionFinished += OnExplosionFinished;
 
         for (int i = 1; i <= power; i++)
         {
@@ -62,6 +64,11 @@ public class Explosion : MonoBehaviour
                 rightExplosion.transform.localPosition = rightPosition;
             }
         }
+    }
+
+    private void OnExplosionFinished()
+    {
+        Destroy(gameObject);
     }
 
     private void OnTriggerEnter2D(Collider2D collision)

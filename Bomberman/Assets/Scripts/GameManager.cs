@@ -46,7 +46,7 @@ public class GameManager : MonoBehaviour
             _wallGenerator.Initialize(_map);
             _wallGenerator.GenerateWalls(0.75f);
 
-            StartGame(2);
+            StartGame(4);
         }
     }
 

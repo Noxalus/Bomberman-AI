@@ -17,6 +17,7 @@ public class Bomb : MonoBehaviour
     private int _power;
 
     private float _currentTimer;
+    private bool _isExploding = false;
 
     private void Awake()
     {
@@ -31,6 +32,7 @@ public class Bomb : MonoBehaviour
         _power = power;
 
         _currentTimer = _timer;
+        _isExploding = false;
     }
 
     private void OnTriggerExit2D(Collider2D collision)
@@ -56,6 +58,10 @@ public class Bomb : MonoBehaviour
 
     public void Explode()
     {
+        if (_isExploding)
+            return;
+
+        _isExploding = true;
         Explosion explosion = Instantiate(_explosionPrefab, transform.position, Quaternion.identity);
         explosion.Initialize(this, _map, _power);
         Destroy(gameObject);
