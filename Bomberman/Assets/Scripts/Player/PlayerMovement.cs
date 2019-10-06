@@ -8,27 +8,25 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float _moveSpeed = 5f;
     [SerializeField] private Rigidbody2D _rigidbody = null;
     [SerializeField] private Animator _animator = null;
+    [SerializeField] private PlayerInput _input = null;
 
     private Vector2 _movement = Vector2.zero;
-    private PlayerControls _controls = null;
 
     private void Awake()
     {
-        _controls = new PlayerControls();
-
-        _controls.Gameplay.Bomb.performed += ctx => _player.AddBomb();
-        _controls.Gameplay.Move.performed += OnInputMove;
-        _controls.Gameplay.Move.canceled += ctx => _movement = Vector2.zero;
+        _input.actions.FindAction("Bomb").performed += ctx => _player.AddBomb();
+        _input.actions.FindAction("Move").performed += OnInputMove;
+        _input.actions.FindAction("Move").canceled += ctx => _movement = Vector2.zero;
     }
 
     private void OnEnable()
     {
-        _controls.Gameplay.Enable();
+        _input.actions.Enable();
     }
 
     private void OnDisable()
     {
-        _controls.Gameplay.Disable();
+        _input.actions.Disable();
     }
 
     private void OnInputMove(CallbackContext context)

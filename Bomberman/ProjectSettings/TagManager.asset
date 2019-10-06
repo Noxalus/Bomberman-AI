@@ -49,9 +49,9 @@ TagManager:
   - name: Explosion
     uniqueID: 1516557609
     locked: 0
-  - name: Player
-    uniqueID: 2348683305
-    locked: 0
   - name: DestructibleWalls
     uniqueID: 2020126075
+    locked: 0
+  - name: Player
+    uniqueID: 2348683305
     locked: 0

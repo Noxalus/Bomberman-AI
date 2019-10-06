@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 1046089035201037414}
   - component: {fileID: 5898646104984227177}
   - component: {fileID: 5898646104984227179}
+  - component: {fileID: 573729156273392390}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -86,6 +87,7 @@ MonoBehaviour:
   _moveSpeed: 5
   _rigidbody: {fileID: 5898646104984227176}
   _animator: {fileID: 5898646105182986100}
+  _input: {fileID: 573729156273392390}
 --- !u!58 &5898646104984227179
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -102,6 +104,34 @@ CircleCollider2D:
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
   m_Radius: 0.5
+--- !u!114 &573729156273392390
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5898646104984227180}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Actions: {fileID: -944628639613478452, guid: 3a0732b222da7c34aa63b09648486ea3,
+    type: 3}
+  m_NotificationBehavior: 0
+  m_UIInputModule: {fileID: 0}
+  m_DeviceLostEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_DeviceRegainedEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_ActionEvents: []
+  m_NeverAutoSwitchControlSchemes: 0
+  m_DefaultControlScheme: Gamepad
+  m_DefaultActionMap: e8d62c07-1ef0-4e3a-bfc6-26d86805abe8
+  m_SplitScreenIndex: -1
+  m_Camera: {fileID: 0}
 --- !u!1 &5898646105182985867
 GameObject:
   m_ObjectHideFlags: 0
@@ -148,6 +178,7 @@ SpriteRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -170,7 +201,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -1946283991
-  m_SortingLayer: 3
+  m_SortingLayer: 4
   m_SortingOrder: 0
   m_Sprite: {fileID: -4398183398628465896, guid: e054b8d092993ea40ae92adfa9de2b93,
     type: 3}
