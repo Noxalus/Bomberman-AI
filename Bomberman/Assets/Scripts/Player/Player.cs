@@ -21,10 +21,16 @@ public class Player : MonoBehaviour
     {
         var bomb = Instantiate(_bombPrefab, Vector2.zero, Quaternion.identity);
         bomb.Initialize(this, _gameManager.Map, _bombTimer, _bombPower);
+        bomb.OnExplosion += OnBombExplosion;
 
         _gameManager.AddBomb(bomb, transform.position);
-
         _currentBombCount--;
+    }
+
+
+    public void OnBombExplosion()
+    {
+        _currentBombCount++;
     }
 
     public void Kill()

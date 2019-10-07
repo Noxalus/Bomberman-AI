@@ -1,7 +1,10 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 public class Bomb : MonoBehaviour
 {
+    public Action OnExplosion;
+
     [Header("Inner references")]
 
     [SerializeField] private Collider2D _collider = null;
@@ -62,8 +65,12 @@ public class Bomb : MonoBehaviour
             return;
 
         _isExploding = true;
+
         Explosion explosion = Instantiate(_explosionPrefab, transform.position, Quaternion.identity);
         explosion.Initialize(this, _map, _power);
+
+        OnExplosion?.Invoke();
+
         Destroy(gameObject);
     }
 }
