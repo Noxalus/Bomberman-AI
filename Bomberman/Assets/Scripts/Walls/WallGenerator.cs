@@ -50,9 +50,6 @@ public class WallGenerator : MonoBehaviour
 
                     if (Random.value < wallPercentage)
                     {
-                        Debug.Log($"Current tile: {tile}");
-                        Debug.Log($"World position: {worldPosition}");
-
                         Instantiate(
                             _destructiveWallPrefab,
                             worldPosition,

@@ -22,6 +22,8 @@ public class Bomb : MonoBehaviour
     private float _currentTimer;
     private bool _isExploding = false;
 
+    public Player Player => _player;
+
     private void Awake()
     {
         _collider.enabled = false;

@@ -8,12 +8,15 @@ public class GameManager : MonoBehaviour
     [Header("Scene reference")]
 
     [SerializeField] private WallGenerator _wallGenerator = null;
+    [SerializeField] private UIManager _uiManager = null;
 
     [Header("Assets reference")]
 
     [SerializeField] private Player _playerPrefab = null;
 
     public Map Map => _map;
+
+    public List<Player> Players => _players;
 
     private Map _map = null;
     private List<Player> _players = new List<Player>();
@@ -56,8 +59,11 @@ public class GameManager : MonoBehaviour
         {
             var player = Instantiate(_playerPrefab, _map.GetSpawnPosition(i), Quaternion.identity);
             player.Initialize(i, this);
+            player.OnBombCountChange.AddListener(OnPlayerBombChange);
             _players.Add(player);
         }
+
+        _uiManager.Initialize(_players);
     }
 
     public void AddBomb(Bomb bomb, Vector3 worldPosition)
@@ -66,5 +72,10 @@ public class GameManager : MonoBehaviour
         bomb.transform.position = cellPosition + _map.GameTilemap.tileAnchor;
 
         _bombs.Add(bomb);
+    }
+
+    private void OnPlayerBombChange(Player player)
+    {
+        _uiManager.UpdatePlayerBombCount(player.Id, player.BombCount);
     }
 }

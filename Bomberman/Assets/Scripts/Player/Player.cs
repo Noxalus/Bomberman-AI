@@ -1,7 +1,17 @@
 ﻿using UnityEngine;
+using UnityEngine.Events;
+
+[System.Serializable]
+public class PlayerDataChangeEvent : UnityEvent<Player>
+{
+}
 
 public class Player : MonoBehaviour
 {
+    public PlayerDataChangeEvent OnPowerChange;
+    public PlayerDataChangeEvent OnBombCountChange;
+    public PlayerDataChangeEvent OnSpeedChange;
+
     [SerializeField] private Bomb _bombPrefab = null;
 
     private int _id = 0;
@@ -11,6 +21,11 @@ public class Player : MonoBehaviour
     private float _bombTimer = 2f;
     private int _bombPower = 1;
 
+    public int Power => _bombPower;
+    public int BombCount => _currentBombCount;
+
+    public int Id => _id;
+
     public void Initialize(int id, GameManager gameManager)
     {
         _id = id;
@@ -19,18 +34,22 @@ public class Player : MonoBehaviour
 
     public void AddBomb()
     {
-        var bomb = Instantiate(_bombPrefab, Vector2.zero, Quaternion.identity);
-        bomb.Initialize(this, _gameManager.Map, _bombTimer, _bombPower);
-        bomb.OnExplosion += OnBombExplosion;
+        if (_currentBombCount > 0)
+        {
+            var bomb = Instantiate(_bombPrefab, Vector2.zero, Quaternion.identity);
+            bomb.Initialize(this, _gameManager.Map, _bombTimer, _bombPower);
+            bomb.OnExplosion += OnBombExplosion;
+            _currentBombCount--;
 
-        _gameManager.AddBomb(bomb, transform.position);
-        _currentBombCount--;
+            _gameManager.AddBomb(bomb, transform.position);
+            OnBombCountChange?.Invoke(this);
+        }
     }
-
 
     public void OnBombExplosion()
     {
         _currentBombCount++;
+        OnBombCountChange?.Invoke(this);
     }
 
     public void Kill()
