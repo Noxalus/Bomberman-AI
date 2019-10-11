@@ -38,7 +38,16 @@ public class PlayerMovement : MonoBehaviour
     {
         _animator.SetFloat("Horizontal", _movement.x);
         _animator.SetFloat("Vertical", _movement.y);
-        _animator.SetFloat("Speed", _movement.sqrMagnitude);
+
+        bool isMoving = _movement.sqrMagnitude > 0;
+
+        if (isMoving)
+        {
+            _animator.SetFloat("PreviousHorizontal", _movement.x);
+            _animator.SetFloat("PreviousVertical", _movement.y);
+        }
+
+        _animator.SetBool("IsMoving", isMoving);
     }
 
     private void FixedUpdate()
