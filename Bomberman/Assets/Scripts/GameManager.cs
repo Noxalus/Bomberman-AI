@@ -13,6 +13,7 @@ public class GameManager : MonoBehaviour
     [Header("Assets reference")]
 
     [SerializeField] private Player _playerPrefab = null;
+    [SerializeField] private GameSettings _gameSettings = null;
 
     public Map Map => _map;
 
@@ -58,7 +59,7 @@ public class GameManager : MonoBehaviour
         for (int i = 0; i < playerCount; i++)
         {
             var player = Instantiate(_playerPrefab, _map.GetSpawnPosition(i), Quaternion.identity);
-            player.Initialize(i, this);
+            player.Initialize(i, _gameSettings.PlayersColor[i], this);
             player.OnPowerChange.AddListener(OnPlayerPowerChange);
             player.OnBombCountChange.AddListener(OnPlayerBombChange);
             player.OnSpeedChange.AddListener(OnPlayerSpeedChange);
@@ -78,7 +79,7 @@ public class GameManager : MonoBehaviour
 
     private void OnPlayerPowerChange(Player player)
     {
-        _uiManager.UpdatePlayerBombCount(player.Id, player.Power);
+        _uiManager.UpdatePlayerPower(player.Id, player.Power);
     }
 
     private void OnPlayerBombChange(Player player)
@@ -88,6 +89,6 @@ public class GameManager : MonoBehaviour
 
     private void OnPlayerSpeedChange(Player player)
     {
-        _uiManager.UpdatePlayerBombCount(player.Id, player.SpeedBonus);
+        _uiManager.UpdatePlayerSpeed(player.Id, player.SpeedBonus);
     }
 }

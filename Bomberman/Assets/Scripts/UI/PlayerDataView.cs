@@ -9,6 +9,7 @@ public class PlayerDataView : MonoBehaviour
 
     [Header("Inner references")]
 
+    [SerializeField] private Image _portraitImage = null;
     [SerializeField] private TextMeshProUGUI _scoreText = null;
     [SerializeField] private RectTransform _powerSpriteHolder = null;
     [SerializeField] private RectTransform _bombSpriteHolder = null;
@@ -38,6 +39,8 @@ public class PlayerDataView : MonoBehaviour
         UpdatePowerCount(player.Power);
         UpdateBombCount(player.BombCount);
         UpdateSpeedCount(player.SpeedBonus);
+
+        _portraitImage.color = player.Color;
     }
 
     public void UpdatePowerCount(int value)

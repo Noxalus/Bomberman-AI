@@ -13,8 +13,10 @@ public class Player : MonoBehaviour
     public PlayerDataChangeEvent OnSpeedChange;
 
     [SerializeField] private Bomb _bombPrefab = null;
+    [SerializeField] private SpriteRenderer _spriteRenderer = null;
 
     private int _id = 0;
+    private Color _color = Color.white;
     private GameManager _gameManager = null;
     private int _maxBombCount = 1;
     private int _currentBombCount = 1;
@@ -22,16 +24,20 @@ public class Player : MonoBehaviour
     private int _bombPower = 1;
     private int _speedBonus = 1;
 
+    public int Id => _id;
+    public Color Color => _color;
     public int Power => _bombPower;
     public int BombCount => _currentBombCount;
     public int SpeedBonus => _speedBonus;
 
-    public int Id => _id;
 
-    public void Initialize(int id, GameManager gameManager)
+    public void Initialize(int id, Color color, GameManager gameManager)
     {
         _id = id;
+        _color = color;
         _gameManager = gameManager;
+
+        _spriteRenderer.color = color;
     }
 
     public void AddBomb()

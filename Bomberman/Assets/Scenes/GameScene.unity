@@ -619,6 +619,7 @@ MonoBehaviour:
   _uiManager: {fileID: 664700361}
   _playerPrefab: {fileID: 1046089035201037414, guid: f5206e82857e02b4c82a2a4dfe5f9768,
     type: 3}
+  _gameSettings: {fileID: 11400000, guid: e6857ad653acb384db35baec132fd935, type: 2}
 --- !u!4 &1170194922
 Transform:
   m_ObjectHideFlags: 0

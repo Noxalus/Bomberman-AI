@@ -80,6 +80,7 @@ MonoBehaviour:
       m_Calls: []
   _bombPrefab: {fileID: 994818420137486450, guid: e569da9b821b8204c91e4b77a3ce8879,
     type: 3}
+  _spriteRenderer: {fileID: 5898646105182986101}
 --- !u!114 &5898646104984227177
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -210,7 +211,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -1946283991
-  m_SortingLayer: 4
+  m_SortingLayer: 5
   m_SortingOrder: 0
   m_Sprite: {fileID: -4398183398628465896, guid: e054b8d092993ea40ae92adfa9de2b93,
     type: 3}
