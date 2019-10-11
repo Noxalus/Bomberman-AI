@@ -36,26 +36,40 @@ public class PlayerDataView : MonoBehaviour
     {
         Clear();
 
-        UpdatePowerCount(player.Power);
-        UpdateBombCount(player.BombCount);
-        UpdateSpeedCount(player.SpeedBonus);
+        _player = player;
+
+        _player.OnPowerChange.AddListener(OnPlayerPowerChange);
+        _player.OnBombCountChange.AddListener(OnPlayerBombCountChange);
+        _player.OnSpeedChange.AddListener(OnPlayerSpeedChange);
+
+        // Initialize the values
+        OnPlayerPowerChange(_player);
+        OnPlayerBombCountChange(_player);
+        OnPlayerSpeedChange(_player);
 
         _portraitImage.color = player.Color;
     }
 
-    public void UpdatePowerCount(int value)
+    private void Destroy()
     {
-        UpdateItemCount(value, _powerSpriteInstances, _powerSprite, _powerSpriteHolder, "PowerSprite");
+        _player.OnPowerChange.RemoveListener(OnPlayerPowerChange);
+        _player.OnBombCountChange.RemoveListener(OnPlayerBombCountChange);
+        _player.OnSpeedChange.RemoveListener(OnPlayerSpeedChange);
     }
 
-    public void UpdateBombCount(int value)
+    private void OnPlayerPowerChange(Player player)
     {
-        UpdateItemCount(value, _bombSpriteInstances, _bombSprite, _bombSpriteHolder, "BombSprite");
+        UpdateItemCount(player.Power, _powerSpriteInstances, _powerSprite, _powerSpriteHolder, "PowerSprite");
     }
 
-    public void UpdateSpeedCount(int value)
+    private void OnPlayerBombCountChange(Player player)
     {
-        UpdateItemCount(value, _speedSpriteInstances, _speedSprite, _speedSpriteHolder, "SpeedSprite");
+        UpdateItemCount(player.BombCount, _bombSpriteInstances, _bombSprite, _bombSpriteHolder, "BombSprite");
+    }
+
+    private void OnPlayerSpeedChange(Player player)
+    {
+        UpdateItemCount(player.SpeedBonus, _speedSpriteInstances, _speedSprite, _speedSpriteHolder, "SpeedSprite");
     }
 
     private void UpdateItemCount(

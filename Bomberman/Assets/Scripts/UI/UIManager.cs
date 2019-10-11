@@ -10,19 +10,4 @@ public class UIManager : MonoBehaviour
     {
         _playersBoardView.Initialize(players);
     }
-
-    public void UpdatePlayerPower(int playerId, int power)
-    {
-        _playersBoardView.UpdatePlayerPower(playerId, power);
-    }
-
-    public void UpdatePlayerBombCount(int playerId, int bombCount)
-    {
-        _playersBoardView.UpdatePlayerBombCount(playerId, bombCount);
-    }
-
-    public void UpdatePlayerSpeed(int playerId, int speedBonus)
-    {
-        _playersBoardView.UpdatePlayerSpeed(playerId, speedBonus);
-    }
 }

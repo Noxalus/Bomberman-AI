@@ -18,19 +18,4 @@ public class PlayersBoardView : MonoBehaviour
             _playerDataViewInstances.Add(player.Id, playerDataView);
         }
     }
-
-    internal void UpdatePlayerPower(int playerId, int power)
-    {
-        _playerDataViewInstances[playerId].UpdatePowerCount(power);
-    }
-
-    public void UpdatePlayerBombCount(int playerId, int bombCount)
-    {
-        _playerDataViewInstances[playerId].UpdateBombCount(bombCount);
-    }
-
-    internal void UpdatePlayerSpeed(int playerId, int speed)
-    {
-        _playerDataViewInstances[playerId].UpdateSpeedCount(speed);
-    }
 }

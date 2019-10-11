@@ -9,4 +9,6 @@ using UnityEngine;
 public class GameSettings : ScriptableObject
 {
     public List<Color> PlayersColor = new List<Color>();
+    public float WallDensity = 0.75f;
+    public EBonusTypeBoolDictionary AvailableBonus = new EBonusTypeBoolDictionary();
 }

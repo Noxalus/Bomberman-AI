@@ -48,7 +48,7 @@ public class GameManager : MonoBehaviour
         if (_map != null)
         {
             _wallGenerator.Initialize(_map);
-            _wallGenerator.GenerateWalls(0.75f);
+            _wallGenerator.GenerateWalls(_gameSettings.WallDensity);
 
             StartGame(4);
         }
@@ -60,9 +60,6 @@ public class GameManager : MonoBehaviour
         {
             var player = Instantiate(_playerPrefab, _map.GetSpawnPosition(i), Quaternion.identity);
             player.Initialize(i, _gameSettings.PlayersColor[i], this);
-            player.OnPowerChange.AddListener(OnPlayerPowerChange);
-            player.OnBombCountChange.AddListener(OnPlayerBombChange);
-            player.OnSpeedChange.AddListener(OnPlayerSpeedChange);
             _players.Add(player);
         }
 
@@ -75,20 +72,5 @@ public class GameManager : MonoBehaviour
         bomb.transform.position = cellPosition + _map.GameTilemap.tileAnchor;
 
         _bombs.Add(bomb);
-    }
-
-    private void OnPlayerPowerChange(Player player)
-    {
-        _uiManager.UpdatePlayerPower(player.Id, player.Power);
-    }
-
-    private void OnPlayerBombChange(Player player)
-    {
-        _uiManager.UpdatePlayerBombCount(player.Id, player.BombCount);
-    }
-
-    private void OnPlayerSpeedChange(Player player)
-    {
-        _uiManager.UpdatePlayerSpeed(player.Id, player.SpeedBonus);
     }
 }
