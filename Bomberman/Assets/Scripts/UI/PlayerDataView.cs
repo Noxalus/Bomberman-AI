@@ -10,7 +10,7 @@ public class PlayerDataView : MonoBehaviour
     [Header("Inner references")]
 
     [SerializeField] private TextMeshProUGUI _scoreText = null;
-    [SerializeField] private Transform _powerSpriteHolder = null;
+    [SerializeField] private RectTransform _powerSpriteHolder = null;
     [SerializeField] private RectTransform _bombSpriteHolder = null;
     [SerializeField] private RectTransform _speedSpriteHolder = null;
 
@@ -35,58 +35,53 @@ public class PlayerDataView : MonoBehaviour
     {
         Clear();
 
-        UpdatePower(player.Power);
-        UpdateBomb(player.BombCount);
+        UpdatePowerCount(player.Power);
+        UpdateBombCount(player.BombCount);
+        UpdateSpeedCount(player.SpeedBonus);
     }
 
-    public void UpdatePower(int value)
+    public void UpdatePowerCount(int value)
+    {
+        UpdateItemCount(value, _powerSpriteInstances, _powerSprite, _powerSpriteHolder, "PowerSprite");
+    }
+
+    public void UpdateBombCount(int value)
+    {
+        UpdateItemCount(value, _bombSpriteInstances, _bombSprite, _bombSpriteHolder, "BombSprite");
+    }
+
+    public void UpdateSpeedCount(int value)
+    {
+        UpdateItemCount(value, _speedSpriteInstances, _speedSprite, _speedSpriteHolder, "SpeedSprite");
+    }
+
+    private void UpdateItemCount(
+        int value, 
+        List<GameObject> itemInstances, 
+        Sprite itemSprite, 
+        RectTransform holder, 
+        string newInstanceName = "Sprite")
     {
         // Increase
-        if (value > _powerSpriteInstances.Count)
+        if (value > itemInstances.Count)
         {
-            while (_powerSpriteInstances.Count < value)
+            while (itemInstances.Count < value)
             {
-                GameObject icon = Instantiate(new GameObject("PowerSprite"), _powerSpriteHolder);
+                GameObject icon = Instantiate(new GameObject(newInstanceName), holder);
                 Image iconImage = icon.AddComponent<Image>();
-                iconImage.sprite = _powerSprite;
+                iconImage.sprite = itemSprite;
 
-                _powerSpriteInstances.Add(icon);
+                itemInstances.Add(icon);
             }
         }
         // Decrease
         else
         {
-            while (_powerSpriteInstances.Count > value)
+            while (itemInstances.Count > value)
             {
-                var index = _powerSpriteInstances.Count - 1;
-                Destroy(_powerSpriteInstances[index].gameObject);
-                _powerSpriteInstances.RemoveAt(index);
-            }
-        }
-    }
-
-    public void UpdateBomb(int value)
-    {
-        // Increase
-        if (value > _bombSpriteInstances.Count)
-        {
-            while (_bombSpriteInstances.Count < value)
-            {
-                GameObject icon = Instantiate(new GameObject("BombSprite"), _bombSpriteHolder);
-                Image iconImage = icon.AddComponent<Image>();
-                iconImage.sprite = _bombSprite;
-
-                _bombSpriteInstances.Add(icon);
-            }
-        }
-        // Decrease
-        else
-        {
-            while (_bombSpriteInstances.Count > value)
-            {
-                var index = _bombSpriteInstances.Count - 1;
-                Destroy(_bombSpriteInstances[index].gameObject);
-                _bombSpriteInstances.RemoveAt(index);
+                var index = itemInstances.Count - 1;
+                Destroy(itemInstances[index].gameObject);
+                itemInstances.RemoveAt(index);
             }
         }
     }

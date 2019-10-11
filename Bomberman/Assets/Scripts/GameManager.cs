@@ -59,7 +59,9 @@ public class GameManager : MonoBehaviour
         {
             var player = Instantiate(_playerPrefab, _map.GetSpawnPosition(i), Quaternion.identity);
             player.Initialize(i, this);
+            player.OnPowerChange.AddListener(OnPlayerPowerChange);
             player.OnBombCountChange.AddListener(OnPlayerBombChange);
+            player.OnSpeedChange.AddListener(OnPlayerSpeedChange);
             _players.Add(player);
         }
 
@@ -74,8 +76,18 @@ public class GameManager : MonoBehaviour
         _bombs.Add(bomb);
     }
 
+    private void OnPlayerPowerChange(Player player)
+    {
+        _uiManager.UpdatePlayerBombCount(player.Id, player.Power);
+    }
+
     private void OnPlayerBombChange(Player player)
     {
         _uiManager.UpdatePlayerBombCount(player.Id, player.BombCount);
+    }
+
+    private void OnPlayerSpeedChange(Player player)
+    {
+        _uiManager.UpdatePlayerBombCount(player.Id, player.SpeedBonus);
     }
 }

@@ -21,6 +21,6 @@ public class PlayersBoardView : MonoBehaviour
 
     public void UpdatePlayerBombCount(int playerId, int bombCount)
     {
-        _playerDataViewInstances[playerId].UpdateBomb(bombCount);
+        _playerDataViewInstances[playerId].UpdateBombCount(bombCount);
     }
 }

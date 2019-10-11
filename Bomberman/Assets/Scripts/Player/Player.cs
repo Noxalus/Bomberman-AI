@@ -20,9 +20,11 @@ public class Player : MonoBehaviour
     private int _currentBombCount = 1;
     private float _bombTimer = 2f;
     private int _bombPower = 1;
+    private int _speedBonus = 1;
 
     public int Power => _bombPower;
     public int BombCount => _currentBombCount;
+    public int SpeedBonus => _speedBonus;
 
     public int Id => _id;
 
