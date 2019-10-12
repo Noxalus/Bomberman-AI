@@ -19,5 +19,7 @@ MonoBehaviour:
   - {r: 0.94708157, g: 1, b: 0, a: 1}
   WallDensity: 0.75
   AvailableBonus:
-    m_keys: 01000000020000000300000004000000
-    m_values: 01010101
+    m_keys: 0100000002000000030000000400000005000000
+    m_values: 0101010000
+  BonusProbability: 1
+  SpeedBonusIncrement: 0.25
