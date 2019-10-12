@@ -2,12 +2,6 @@
 
 public class WallGenerator : MonoBehaviour
 {
-    [Header("Scene references")]
-    [SerializeField] private Transform _destructibleWallHolder = null;
-
-    [Header("Assets references")]
-    [SerializeField] private DestructibleWall _destructiveWallPrefab = null;
-
     private Map _map = null;
 
     public void Initialize(Map map)
@@ -15,17 +9,16 @@ public class WallGenerator : MonoBehaviour
         _map = map;
     }
 
-    public void GenerateWalls(float wallPercentage)
+    public void GenerateWalls(float wallPercentage, Transform holder)
     {
         var wallOffset = new Vector3(0.5f, 1f, 0f);
-        Vector2Int min = Vector2Int.zero;
-        Vector2Int max = Vector2Int.zero;
 
-        for (int y = _map.GameTilemap.origin.y; y < _map.GameTilemap.size.y; y++)
+        for (int y = 0; y <= _map.MapSize.y; y++)
         {
-            for (int x = _map.GameTilemap.origin.x; x < _map.GameTilemap.size.x; x++)
+            for (int x = 0; x <= _map.MapSize.x; x++)
             {
-                var cellPosition = new Vector3Int(x, -y, 0);
+                var normalizedCellPosition = new Vector2Int(x, y);
+                var cellPosition = _map.GetCellPositionFromNormalizedPosition(normalizedCellPosition);
                 var tile = _map.GameTilemap.GetTile(cellPosition);
 
                 if (tile)
@@ -37,30 +30,12 @@ public class WallGenerator : MonoBehaviour
                         continue;
                     }
 
-                    if (cellPosition.x < min.x)
-                        min.x = cellPosition.x;
-                    else if (cellPosition.x > max.x)
-                        max.x = cellPosition.x;
-
-                    if (cellPosition.y < min.y)
-                        min.y = cellPosition.y;
-                    else if (cellPosition.y > max.y)
-                        max.y = cellPosition.y;
-
                     if (Random.value < wallPercentage)
                     {
-                        Instantiate(
-                            _destructiveWallPrefab,
-                            worldPosition,
-                            Quaternion.identity,
-                            _destructibleWallHolder
-                        );
+                        _map.AddDestructibleWall(worldPosition);
                     }
                 }
             }
         }
-
-        Debug.Log($"Min: {min}");
-        Debug.Log($"Max: {max}");
     }
 }

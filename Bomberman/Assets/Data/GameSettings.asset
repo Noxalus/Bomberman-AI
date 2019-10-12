@@ -17,7 +17,7 @@ MonoBehaviour:
   - {r: 1, g: 0, b: 0, a: 1}
   - {r: 1, g: 0, b: 0.9263606, a: 1}
   - {r: 0.94708157, g: 1, b: 0, a: 1}
-  WallDensity: 0.75
+  WallDensity: 1
   AvailableBonus:
     m_keys: 0100000002000000030000000400000005000000
     m_values: 0101010000

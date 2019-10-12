@@ -81,9 +81,13 @@ MonoBehaviour:
   OnSpeedChange:
     m_PersistentCalls:
       m_Calls: []
+  _maxBombCount: 5
+  _bombPower: 5
+  _bombTimer: 2
+  _speedBonus: 1
+  _spriteRenderer: {fileID: 5898646105182986101}
   _bombPrefab: {fileID: 994818420137486450, guid: e569da9b821b8204c91e4b77a3ce8879,
     type: 3}
-  _spriteRenderer: {fileID: 5898646105182986101}
 --- !u!114 &5898646104984227177
 MonoBehaviour:
   m_ObjectHideFlags: 0
