@@ -13,6 +13,7 @@ public class Player : MonoBehaviour
     public PlayerDataChangeEvent OnPowerChange;
     public PlayerDataChangeEvent OnBombCountChange;
     public PlayerDataChangeEvent OnSpeedChange;
+    public PlayerDataChangeEvent OnDeath;
 
     [Header("Configuration")]
 
@@ -24,6 +25,7 @@ public class Player : MonoBehaviour
     [Header("Inner references")]
 
     [SerializeField] private SpriteRenderer _spriteRenderer = null;
+    [SerializeField] private Animator _animator = null;
 
     [Header("Assets")]
 
@@ -34,6 +36,7 @@ public class Player : MonoBehaviour
     private Color _color = Color.white;
     private int _score = 0;
     private int _currentBombCount = 1;
+    private bool _isDead = false;
 
     public int Id => _id;
     public Color Color => _color;
@@ -42,6 +45,10 @@ public class Player : MonoBehaviour
     public int BombCount => _currentBombCount;
     public int SpeedBonus => _speedBonus;
 
+    private void Destroy()
+    {
+        Destroy(gameObject);
+    }
 
     public void Initialize(int id, Color color, GameManager gameManager)
     {
@@ -51,6 +58,7 @@ public class Player : MonoBehaviour
 
         _spriteRenderer.color = color;
         _currentBombCount = _maxBombCount;
+        _isDead = false;
     }
 
     public void AddBomb()
@@ -100,7 +108,13 @@ public class Player : MonoBehaviour
 
     public void Kill()
     {
+        if (_isDead)
+            return;
+
         Debug.Log("Player killed");
-        //Destroy(gameObject);
+        _isDead = true;
+        _animator.SetBool("IsDead", _isDead);
+
+        OnDeath?.Invoke(this);
     }
 }
