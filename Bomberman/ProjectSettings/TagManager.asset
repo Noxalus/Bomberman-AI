@@ -6,6 +6,7 @@ TagManager:
   tags:
   - DestructibleWall
   - Bomb
+  - Explosion
   layers:
   - Default
   - TransparentFX
@@ -43,9 +44,6 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
-  - name: Bonus
-    uniqueID: 1404490691
-    locked: 0
   - name: Bombs
     uniqueID: 2235457995
     locked: 0
@@ -54,6 +52,9 @@ TagManager:
     locked: 0
   - name: DestructibleWalls
     uniqueID: 2020126075
+    locked: 0
+  - name: Bonus
+    uniqueID: 1404490691
     locked: 0
   - name: Player
     uniqueID: 2348683305

@@ -34,16 +34,16 @@ public class Explosion : MonoBehaviour
 
                 if (topEntityType != EEntityType.UnbreakableWall)
                 {
-                    var topExplosion = Instantiate(_explosionCenter, transform);
-                    var topExplosionAnimator = topExplosion.GetComponent<Animator>();
-                    topExplosionAnimator.SetBool("Top", true);
-                    topExplosionAnimator.SetBool("Bound", (i == power));
-                    topExplosion.transform.localPosition = topPosition;
-
                     if (topEntityType == EEntityType.DestructibleWall)
                     {
                         stopTop = true;
                     }
+
+                    var topExplosion = Instantiate(_explosionCenter, transform);
+                    var topExplosionAnimator = topExplosion.GetComponent<Animator>();
+                    topExplosionAnimator.SetBool("Top", true);
+                    topExplosionAnimator.SetBool("Bound", (i == power) || stopTop);
+                    topExplosion.transform.localPosition = topPosition;
                 }
                 else
                 {
@@ -60,16 +60,16 @@ public class Explosion : MonoBehaviour
 
                 if (bottomEntityType != EEntityType.UnbreakableWall)
                 {
-                    var bottomExplosion = Instantiate(_explosionCenter, transform);
-                    var bottomExplosionAnimator = bottomExplosion.GetComponent<Animator>();
-                    bottomExplosionAnimator.SetBool("Bottom", true);
-                    bottomExplosionAnimator.SetBool("Bound", (i == power));
-                    bottomExplosion.transform.localPosition = bottomPosition;
-
                     if (bottomEntityType == EEntityType.DestructibleWall)
                     {
                         stopBottom = true;
                     }
+
+                    var bottomExplosion = Instantiate(_explosionCenter, transform);
+                    var bottomExplosionAnimator = bottomExplosion.GetComponent<Animator>();
+                    bottomExplosionAnimator.SetBool("Bottom", true);
+                    bottomExplosionAnimator.SetBool("Bound", (i == power) || stopBottom);
+                    bottomExplosion.transform.localPosition = bottomPosition;
                 }
                 else
                 {
@@ -86,16 +86,16 @@ public class Explosion : MonoBehaviour
 
                 if (leftEntityType != EEntityType.UnbreakableWall)
                 {
-                    var leftExplosion = Instantiate(_explosionCenter, transform);
-                    var leftExplosionAnimator = leftExplosion.GetComponent<Animator>();
-                    leftExplosionAnimator.SetBool("Left", true);
-                    leftExplosionAnimator.SetBool("Bound", (i == power));
-                    leftExplosion.transform.localPosition = leftPosition;
-
                     if (leftEntityType == EEntityType.DestructibleWall)
                     {
                         stopLeft = true;
                     }
+
+                    var leftExplosion = Instantiate(_explosionCenter, transform);
+                    var leftExplosionAnimator = leftExplosion.GetComponent<Animator>();
+                    leftExplosionAnimator.SetBool("Left", true);
+                    leftExplosionAnimator.SetBool("Bound", (i == power) || stopLeft);
+                    leftExplosion.transform.localPosition = leftPosition;
                 }
                 else
                 {
@@ -113,16 +113,16 @@ public class Explosion : MonoBehaviour
 
                 if (rightEntityType != EEntityType.UnbreakableWall)
                 {
-                    var rightExplosion = Instantiate(_explosionCenter, transform);
-                    var rightExplosionAnimator = rightExplosion.GetComponent<Animator>();
-                    rightExplosionAnimator.SetBool("Right", true);
-                    rightExplosionAnimator.SetBool("Bound", (i == power));
-                    rightExplosion.transform.localPosition = rightPosition;
-
                     if (rightEntityType == EEntityType.DestructibleWall)
                     {
                         stopRight = true;
                     }
+
+                    var rightExplosion = Instantiate(_explosionCenter, transform);
+                    var rightExplosionAnimator = rightExplosion.GetComponent<Animator>();
+                    rightExplosionAnimator.SetBool("Right", true);
+                    rightExplosionAnimator.SetBool("Bound", (i == power) || stopRight);
+                    rightExplosion.transform.localPosition = rightPosition;
                 }
                 else
                 {

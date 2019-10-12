@@ -7,8 +7,10 @@ public class Bonus : MonoBehaviour
     [SerializeField] private EBonusTypeBonusSpriteDictionary _bonusSpritesDictionary = new EBonusTypeBonusSpriteDictionary();
     [SerializeField] private SpriteRenderer _normalSpriteRenderer = null;
     [SerializeField] private SpriteRenderer _highlightedSpriteRenderer = null;
+    [SerializeField] private Animator _animator = null;
 
     private EBonusType _type = EBonusType.None;
+    private bool _isInvincible = true;
 
     private void Destroy()
     {
@@ -21,6 +23,13 @@ public class Bonus : MonoBehaviour
 
         _normalSpriteRenderer.sprite = _bonusSpritesDictionary[_type].NormalSprite;
         _highlightedSpriteRenderer.sprite = _bonusSpritesDictionary[_type].HighlightedSprite;
+
+        _isInvincible = true;
+    }
+
+    public void OnSpawnAnimationFinish()
+    {
+        _isInvincible = false;
     }
 
     public void OnTriggerEnter2D(Collider2D collision)
@@ -31,6 +40,13 @@ public class Bonus : MonoBehaviour
             SoundManager.PlaySound("bonusPickup");
             ApplyEffect(player);
             Destroy();
+        }
+        else if (collision.tag == "Explosion")
+        {
+            if (!_isInvincible)
+            {
+                _animator.SetBool("InFire", true);
+            }
         }
     }
 
