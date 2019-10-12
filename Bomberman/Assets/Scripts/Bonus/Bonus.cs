@@ -4,7 +4,6 @@ using Random = UnityEngine.Random;
 
 public class Bonus : MonoBehaviour
 {
-    [SerializeField] private GameSettings _gameSettings = null;
     [SerializeField] private EBonusTypeBonusSpriteDictionary _bonusSpritesDictionary = new EBonusTypeBonusSpriteDictionary();
     [SerializeField] private SpriteRenderer _normalSpriteRenderer = null;
     [SerializeField] private SpriteRenderer _highlightedSpriteRenderer = null;

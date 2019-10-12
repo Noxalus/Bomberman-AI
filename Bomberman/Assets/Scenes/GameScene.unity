@@ -595,7 +595,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1170194922}
   - component: {fileID: 1170194921}
-  - component: {fileID: 1170194923}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -615,7 +614,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5110fd39191f6914d9da337c138b3bac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _wallGenerator: {fileID: 1170194923}
+  _wallGenerator: {fileID: 0}
   _uiManager: {fileID: 664700361}
   _playerPrefab: {fileID: 1046089035201037414, guid: f5206e82857e02b4c82a2a4dfe5f9768,
     type: 3}
@@ -634,21 +633,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1170194923
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1170194920}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aa377be974fc3884e9c5d32f4032dfd1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _destructibleWallHolder: {fileID: 2124962825}
-  _destructiveWallPrefab: {fileID: 8731644710309082280, guid: ab4f995859fef2843b0a1cc794fde38e,
-    type: 3}
 --- !u!1 &1738806085
 GameObject:
   m_ObjectHideFlags: 0

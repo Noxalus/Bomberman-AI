@@ -7,7 +7,6 @@ public class GameManager : MonoBehaviour
 {
     [Header("Scene reference")]
 
-    [SerializeField] private WallGenerator _wallGenerator = null;
     [SerializeField] private UIManager _uiManager = null;
 
     [Header("Assets reference")]
@@ -47,9 +46,7 @@ public class GameManager : MonoBehaviour
 
         if (_map != null)
         {
-            _wallGenerator.Initialize(_map);
-            _wallGenerator.GenerateWalls(_gameSettings.WallDensity, _map.transform);
-
+            _map.GenerateDestrucibleWalls(_gameSettings.WallDensity);
             StartGame(4);
         }
     }

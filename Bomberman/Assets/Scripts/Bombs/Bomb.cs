@@ -8,7 +8,6 @@ public class Bomb : MonoBehaviour
     [Header("Inner references")]
 
     [SerializeField] private Collider2D _collider = null;
-    [SerializeField] private Animator _animator = null;
 
     [Header("Assets references")]
 

@@ -66,17 +66,17 @@ public class PlayerDataView : MonoBehaviour
 
     private void OnPlayerPowerChange(Player player)
     {
-        UpdateItemCount(player.Power, _powerSpriteInstances, _powerSprite, _powerSpriteHolder, "PowerSprite");
+        UpdateItemCount(player.Power, _powerSpriteInstances, _powerSprite, _powerSpriteHolder, "PowerIcon");
     }
 
     private void OnPlayerBombCountChange(Player player)
     {
-        UpdateItemCount(player.BombCount, _bombSpriteInstances, _bombSprite, _bombSpriteHolder, "BombSprite");
+        UpdateItemCount(player.BombCount, _bombSpriteInstances, _bombSprite, _bombSpriteHolder, "BombIcon");
     }
 
     private void OnPlayerSpeedChange(Player player)
     {
-        UpdateItemCount(player.SpeedBonus, _speedSpriteInstances, _speedSprite, _speedSpriteHolder, "SpeedSprite");
+        UpdateItemCount(player.SpeedBonus, _speedSpriteInstances, _speedSprite, _speedSpriteHolder, "SpeedIcon");
     }
 
     private void UpdateItemCount(
@@ -84,7 +84,7 @@ public class PlayerDataView : MonoBehaviour
         List<GameObject> itemInstances, 
         Sprite itemSprite, 
         RectTransform holder, 
-        string newInstanceName = "Sprite")
+        string newInstanceName = "Icon")
     {
         // Increase
         if (value > itemInstances.Count)

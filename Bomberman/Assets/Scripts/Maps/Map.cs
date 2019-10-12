@@ -16,7 +16,7 @@ public class Map : MonoBehaviour
     [SerializeField] private DestructibleWall _destructibleWallPrefab = null;
 
     private List<Vector3Int> _playerSpawnCells = new List<Vector3Int>();
-    private EEntityType[,] _mapEntities;
+    private EEntityType[,] _entitiesMap;
 
     public Grid GameGrid => _grid;
     public Tilemap GameTilemap => _tilemap;
@@ -37,7 +37,6 @@ public class Map : MonoBehaviour
         }
 
         ComputeMapSize();
-
         InitializeEntitiesMap();
     }
 
@@ -60,9 +59,33 @@ public class Map : MonoBehaviour
         return false;
     }
 
-    public bool OverlapWall(Vector3 worldPosition)
+    public EEntityType GetEntityType(Vector3 worldPosition)
+    {
+        var normalizedCellPosition = GetNormalizedCellPositionFromWorldPosition(worldPosition);
+
+        if (IsNormalizedCellPositionOutOfBound(normalizedCellPosition))
+        {
+            return EEntityType.UnbreakableWall;
+        }
+
+        return _entitiesMap[normalizedCellPosition.x, normalizedCellPosition.y];
+    }
+
+    public bool OverlapUnbreakableWall(Vector3 worldPosition)
     {
         return CollisionMap.OverlapPoint(new Vector2(worldPosition.x, worldPosition.y));
+    }
+
+    private bool IsNormalizedCellPositionOutOfBound(Vector3Int normalizedCellPosition)
+    {
+        return (normalizedCellPosition.x < 0 || normalizedCellPosition.x > _mapSize.x ||
+                normalizedCellPosition.y < 0 || normalizedCellPosition.y > _mapSize.y);
+    } 
+
+    public Vector3Int GetNormalizedCellPositionFromWorldPosition(Vector3 worldPosition)
+    {
+        var normalizedCellPosition = GameTilemap.WorldToCell(worldPosition) - new Vector3Int(_mapOrigin.x, _mapOrigin.y, 0);
+        return normalizedCellPosition;
     }
 
     // Get cell position in world space from normalized cell position (which goes from 0 to MapSize)
@@ -70,6 +93,34 @@ public class Map : MonoBehaviour
     {
         var position = normalizedCellPosition + _mapOrigin;
         return new Vector3Int(position.x, position.y, 0);
+    }
+
+    public void GenerateDestrucibleWalls(float wallPercentage)
+    {
+        for (int y = 0; y <= MapSize.y; y++)
+        {
+            for (int x = 0; x <= MapSize.x; x++)
+            {
+                var normalizedCellPosition = new Vector2Int(x, y);
+                var cellPosition = GetCellPositionFromNormalizedPosition(normalizedCellPosition);
+                var tile = GameTilemap.GetTile(cellPosition);
+
+                if (tile)
+                {
+                    var worldPosition = GameGrid.CellToWorld(cellPosition) + GameTilemap.tileAnchor;
+
+                    if (OverlapPlayerSpawn(cellPosition) || OverlapUnbreakableWall(worldPosition))
+                    {
+                        continue;
+                    }
+
+                    if (Random.value < wallPercentage)
+                    {
+                        AddDestructibleWall(worldPosition);
+                    }
+                }
+            }
+        }
     }
 
     public void AddDestructibleWall(Vector3 worldPosition)
@@ -81,18 +132,32 @@ public class Map : MonoBehaviour
             transform
         );
 
+        var normalizedCellPosition = GetNormalizedCellPositionFromWorldPosition(worldPosition);
+
+        if (!IsNormalizedCellPositionOutOfBound(normalizedCellPosition))
+        {
+            _entitiesMap[normalizedCellPosition.x, normalizedCellPosition.y] = EEntityType.DestructibleWall;
+        }
+
         destructibleWall.OnExplode.AddListener(OnDestructibleWallExplode);
     }
 
     private void InitializeEntitiesMap()
     {
-        _mapEntities = new EEntityType[_mapSize.x, _mapSize.y];
+        _entitiesMap = new EEntityType[_mapSize.x + 1, _mapSize.y + 1];
         FindUnbreakableWalls();
     }
 
     private void OnDestructibleWallExplode(DestructibleWall destructibleWall)
     {
         destructibleWall.OnExplode.RemoveListener(OnDestructibleWallExplode);
+
+        var normalizedCellPosition = GetNormalizedCellPositionFromWorldPosition(destructibleWall.transform.position);
+
+        if (!IsNormalizedCellPositionOutOfBound(normalizedCellPosition))
+        {
+            _entitiesMap[normalizedCellPosition.x, normalizedCellPosition.y] = EEntityType.None;
+        }
     }
 
     private void ComputeMapSize()
@@ -141,9 +206,9 @@ public class Map : MonoBehaviour
                 {
                     var worldPosition = GameGrid.CellToWorld(cellPosition) + GameTilemap.tileAnchor;
 
-                    if (OverlapWall(worldPosition))
+                    if (OverlapUnbreakableWall(worldPosition))
                     {
-                        _mapEntities[normalizedCellPosition.x, normalizedCellPosition.y] = EEntityType.UnbreakableWall;
+                        _entitiesMap[normalizedCellPosition.x, normalizedCellPosition.y] = EEntityType.UnbreakableWall;
                     }
                 }
             }

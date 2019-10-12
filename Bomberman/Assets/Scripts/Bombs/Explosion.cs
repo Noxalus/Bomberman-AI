@@ -28,14 +28,22 @@ public class Explosion : MonoBehaviour
             if (!stopTop)
             {
                 Vector3Int topPosition = new Vector3Int(0, i * cellSize.y, 0);
+                EEntityType topEntityType = map.GetEntityType(
+                    map.GameGrid.CellToWorld(currentCellPosition + topPosition) + map.GameTilemap.tileAnchor
+                );
 
-                if (!map.OverlapWall(map.GameGrid.CellToWorld(currentCellPosition + topPosition) + map.GameTilemap.tileAnchor))
+                if (topEntityType != EEntityType.UnbreakableWall)
                 {
                     var topExplosion = Instantiate(_explosionCenter, transform);
                     var topExplosionAnimator = topExplosion.GetComponent<Animator>();
                     topExplosionAnimator.SetBool("Top", true);
                     topExplosionAnimator.SetBool("Bound", (i == power));
                     topExplosion.transform.localPosition = topPosition;
+
+                    if (topEntityType == EEntityType.DestructibleWall)
+                    {
+                        stopTop = true;
+                    }
                 }
                 else
                 {
@@ -46,14 +54,22 @@ public class Explosion : MonoBehaviour
             if (!stopBottom)
             {
                 Vector3Int bottomPosition = new Vector3Int(0, -i * cellSize.y, 0);
+                EEntityType bottomEntityType = map.GetEntityType(
+                    map.GameGrid.CellToWorld(currentCellPosition + bottomPosition) + map.GameTilemap.tileAnchor
+                );
 
-                if (!map.OverlapWall(map.GameGrid.CellToWorld(currentCellPosition + bottomPosition) + map.GameTilemap.tileAnchor))
+                if (bottomEntityType != EEntityType.UnbreakableWall)
                 {
                     var bottomExplosion = Instantiate(_explosionCenter, transform);
                     var bottomExplosionAnimator = bottomExplosion.GetComponent<Animator>();
                     bottomExplosionAnimator.SetBool("Bottom", true);
                     bottomExplosionAnimator.SetBool("Bound", (i == power));
                     bottomExplosion.transform.localPosition = bottomPosition;
+
+                    if (bottomEntityType == EEntityType.DestructibleWall)
+                    {
+                        stopBottom = true;
+                    }
                 }
                 else
                 {
@@ -61,18 +77,25 @@ public class Explosion : MonoBehaviour
                 }
             }
 
-
             if (!stopLeft)
             {
                 Vector3Int leftPosition = new Vector3Int(-i * cellSize.x, 0, 0);
+                EEntityType leftEntityType = map.GetEntityType(
+                    map.GameGrid.CellToWorld(currentCellPosition + leftPosition) + map.GameTilemap.tileAnchor
+                );
 
-                if (!map.OverlapWall(map.GameGrid.CellToWorld(currentCellPosition + leftPosition) + map.GameTilemap.tileAnchor))
+                if (leftEntityType != EEntityType.UnbreakableWall)
                 {
                     var leftExplosion = Instantiate(_explosionCenter, transform);
                     var leftExplosionAnimator = leftExplosion.GetComponent<Animator>();
                     leftExplosionAnimator.SetBool("Left", true);
                     leftExplosionAnimator.SetBool("Bound", (i == power));
                     leftExplosion.transform.localPosition = leftPosition;
+
+                    if (leftEntityType == EEntityType.DestructibleWall)
+                    {
+                        stopLeft = true;
+                    }
                 }
                 else
                 {
@@ -84,14 +107,22 @@ public class Explosion : MonoBehaviour
             if (!stopRight)
             {
                 Vector3Int rightPosition = new Vector3Int(i * cellSize.x, 0, 0);
+                EEntityType rightEntityType = map.GetEntityType(
+                    map.GameGrid.CellToWorld(currentCellPosition + rightPosition) + map.GameTilemap.tileAnchor
+                );
 
-                if (!map.OverlapWall(map.GameGrid.CellToWorld(currentCellPosition + rightPosition) + map.GameTilemap.tileAnchor))
+                if (rightEntityType != EEntityType.UnbreakableWall)
                 {
                     var rightExplosion = Instantiate(_explosionCenter, transform);
                     var rightExplosionAnimator = rightExplosion.GetComponent<Animator>();
                     rightExplosionAnimator.SetBool("Right", true);
                     rightExplosionAnimator.SetBool("Bound", (i == power));
                     rightExplosion.transform.localPosition = rightPosition;
+
+                    if (rightEntityType == EEntityType.DestructibleWall)
+                    {
+                        stopRight = true;
+                    }
                 }
                 else
                 {
