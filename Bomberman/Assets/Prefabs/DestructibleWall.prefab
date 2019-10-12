@@ -72,7 +72,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 2020126075
-  m_SortingLayer: 3
+  m_SortingLayer: 4
   m_SortingOrder: 0
   m_Sprite: {fileID: 2868539044483428322, guid: 854eafd897e0b0945aaa0110651e6a7e,
     type: 3}
@@ -99,6 +99,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _animator: {fileID: 5583527708749838030}
+  _gameSettings: {fileID: 11400000, guid: e6857ad653acb384db35baec132fd935, type: 2}
+  _bonusPrefab: {fileID: 64690320495906843, guid: 1a42da4e68a27834abd1aa6246e481d8,
+    type: 3}
 --- !u!61 &3786677729639268389
 BoxCollider2D:
   m_ObjectHideFlags: 0

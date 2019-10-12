@@ -4,5 +4,6 @@
     Power = 1,
     Bomb = 2,
     Speed = 3,
-    Score = 4
+    Bad = 4,
+    Score = 5
 }

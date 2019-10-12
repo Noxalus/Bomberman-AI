@@ -10,8 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 538936f34c1d3dd4eb0de7005c1caa3b, type: 3}
-  m_Name: PowerBonusSprite
+  m_Name: BombBonusData
   m_EditorClassIdentifier: 
-  Normal: {fileID: 1729840402284382006, guid: b4fec29a98565a04d9db179ac395f610, type: 3}
-  Highlighted: {fileID: 148264454483829304, guid: b4fec29a98565a04d9db179ac395f610,
+  NormalSprite: {fileID: 8943728508470143933, guid: b4fec29a98565a04d9db179ac395f610,
+    type: 3}
+  HighlightedSprite: {fileID: 6334439168542168994, guid: b4fec29a98565a04d9db179ac395f610,
     type: 3}
