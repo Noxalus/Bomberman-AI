@@ -38,6 +38,7 @@ public class PlayerDataView : MonoBehaviour
 
         _player = player;
 
+        _player.OnScoreChange.AddListener(OnPlayerScoreChange);
         _player.OnPowerChange.AddListener(OnPlayerPowerChange);
         _player.OnBombCountChange.AddListener(OnPlayerBombCountChange);
         _player.OnSpeedChange.AddListener(OnPlayerSpeedChange);
@@ -52,9 +53,15 @@ public class PlayerDataView : MonoBehaviour
 
     private void Destroy()
     {
+        _player.OnScoreChange.RemoveListener(OnPlayerScoreChange);
         _player.OnPowerChange.RemoveListener(OnPlayerPowerChange);
         _player.OnBombCountChange.RemoveListener(OnPlayerBombCountChange);
         _player.OnSpeedChange.RemoveListener(OnPlayerSpeedChange);
+    }
+
+    private void OnPlayerScoreChange(Player player)
+    {
+        _scoreText.text = player.Score.ToString();
     }
 
     private void OnPlayerPowerChange(Player player)

@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 538936f34c1d3dd4eb0de7005c1caa3b, type: 3}
   m_Name: BadBonusData
   m_EditorClassIdentifier: 
-  NormalSprite: {fileID: -7537718560547632580, guid: b4fec29a98565a04d9db179ac395f610,
+  NormalSprite: {fileID: -6785928222664068552, guid: b4fec29a98565a04d9db179ac395f610,
     type: 3}
-  HighlightedSprite: {fileID: 0}
+  HighlightedSprite: {fileID: -7537718560547632580, guid: b4fec29a98565a04d9db179ac395f610,
+    type: 3}

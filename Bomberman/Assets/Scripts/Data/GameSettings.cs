@@ -12,6 +12,7 @@ public class GameSettings : ScriptableObject
     public float WallDensity = 0.75f;
     public EBonusTypeBoolDictionary AvailableBonus = new EBonusTypeBoolDictionary();
     public float BonusProbability = 1f;
+    public float SpeedBonusIncrement = 0.25f;
 
     public List<EBonusType> GetAvailableBonus()
     {

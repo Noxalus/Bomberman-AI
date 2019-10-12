@@ -5,10 +5,11 @@ using static UnityEngine.InputSystem.InputAction;
 public class PlayerMovement : MonoBehaviour
 {
     [SerializeField] private Player _player = null;
-    [SerializeField] private float _moveSpeed = 5f;
+    [SerializeField] private float _baseSpeed = 5f;
     [SerializeField] private Rigidbody2D _rigidbody = null;
     [SerializeField] private Animator _animator = null;
     [SerializeField] private PlayerInput _input = null;
+    [SerializeField] private GameSettings _gameSettings = null;
 
     private Vector2 _movement = Vector2.zero;
 
@@ -52,6 +53,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void FixedUpdate()
     {
-        _rigidbody.MovePosition(_rigidbody.position + _movement * _moveSpeed * Time.fixedDeltaTime);
+        float speed = _baseSpeed + (_player.SpeedBonus * _gameSettings.SpeedBonusIncrement);
+        _rigidbody.MovePosition(_rigidbody.position + _movement * speed * Time.fixedDeltaTime);
     }
 }

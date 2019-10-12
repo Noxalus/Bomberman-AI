@@ -69,6 +69,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: db97cdc26f2a82e46a78590233041070, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  OnScoreChange:
+    m_PersistentCalls:
+      m_Calls: []
   OnPowerChange:
     m_PersistentCalls:
       m_Calls: []
@@ -94,10 +97,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _player: {fileID: 1046089035201037414}
-  _moveSpeed: 5
+  _baseSpeed: 5
   _rigidbody: {fileID: 5898646104984227176}
   _animator: {fileID: 5898646105182986100}
   _input: {fileID: 573729156273392390}
+  _gameSettings: {fileID: 11400000, guid: e6857ad653acb384db35baec132fd935, type: 2}
 --- !u!58 &5898646104984227179
 CircleCollider2D:
   m_ObjectHideFlags: 0
