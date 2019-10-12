@@ -37,7 +37,8 @@ public class Map : MonoBehaviour
         }
 
         ComputeMapSize();
-        _mapEntities = new EEntityType[_mapSize.x, _mapSize.y];
+
+        InitializeEntitiesMap();
     }
 
     public Vector3 GetSpawnPosition(int index)
@@ -83,6 +84,12 @@ public class Map : MonoBehaviour
         destructibleWall.OnExplode.AddListener(OnDestructibleWallExplode);
     }
 
+    private void InitializeEntitiesMap()
+    {
+        _mapEntities = new EEntityType[_mapSize.x, _mapSize.y];
+        FindUnbreakableWalls();
+    }
+
     private void OnDestructibleWallExplode(DestructibleWall destructibleWall)
     {
         destructibleWall.OnExplode.RemoveListener(OnDestructibleWallExplode);
@@ -117,5 +124,29 @@ public class Map : MonoBehaviour
 
         _mapOrigin = min;
         _mapSize = new Vector2Int(max.x - min.x, max.y - min.y);
+    }
+
+    // Copy the unbreakable walls position to the entities map
+    private void FindUnbreakableWalls()
+    {
+        for (int y = 0; y <= MapSize.y; y++)
+        {
+            for (int x = 0; x <= MapSize.x; x++)
+            {
+                var normalizedCellPosition = new Vector2Int(x, y);
+                var cellPosition = GetCellPositionFromNormalizedPosition(normalizedCellPosition);
+                var tile = GameTilemap.GetTile(cellPosition);
+
+                if (tile)
+                {
+                    var worldPosition = GameGrid.CellToWorld(cellPosition) + GameTilemap.tileAnchor;
+
+                    if (OverlapWall(worldPosition))
+                    {
+                        _mapEntities[normalizedCellPosition.x, normalizedCellPosition.y] = EEntityType.UnbreakableWall;
+                    }
+                }
+            }
+        }
     }
 }

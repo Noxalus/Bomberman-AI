@@ -11,8 +11,6 @@ public class WallGenerator : MonoBehaviour
 
     public void GenerateWalls(float wallPercentage, Transform holder)
     {
-        var wallOffset = new Vector3(0.5f, 1f, 0f);
-
         for (int y = 0; y <= _map.MapSize.y; y++)
         {
             for (int x = 0; x <= _map.MapSize.x; x++)

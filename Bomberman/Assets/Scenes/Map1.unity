@@ -2370,6 +2370,8 @@ MonoBehaviour:
   - {fileID: 1901988822}
   - {fileID: 2078214270}
   - {fileID: 1529035158}
+  _destructibleWallPrefab: {fileID: 8731644710309082280, guid: ab4f995859fef2843b0a1cc794fde38e,
+    type: 3}
 --- !u!156049354 &1168836240
 Grid:
   m_ObjectHideFlags: 0
