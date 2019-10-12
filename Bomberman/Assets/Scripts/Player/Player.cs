@@ -111,8 +111,12 @@ public class Player : MonoBehaviour
         if (_isDead)
             return;
 
-        Debug.Log("Player killed");
         _isDead = true;
+
+        Debug.Log("Player killed");
+
+        SoundManager.PlaySound("playerDeath");
+
         _animator.SetBool("IsDead", _isDead);
 
         OnDeath?.Invoke(this);
