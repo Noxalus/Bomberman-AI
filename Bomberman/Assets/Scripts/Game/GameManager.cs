@@ -25,6 +25,7 @@ public class GameManager : MonoBehaviour
     private Map _map = null;
     private List<Player> _players = new List<Player>();
     private List<Bomb> _bombs = new List<Bomb>();
+    private List<Explosion> _explosions = new List<Explosion>();
     private int _deadPlayerCount = 0;
 
     private void Start()
@@ -80,6 +81,7 @@ public class GameManager : MonoBehaviour
     {
         _map.Clear();
         ClearBombs();
+        ClearExplosions();
 
         MusicManager.Instance.PlayMusic(_map.Music);
         _map.GenerateDestrucibleWalls(_gameSettings.WallDensity);
@@ -118,10 +120,16 @@ public class GameManager : MonoBehaviour
 
     private void OnBombExplode(Bomb bomb)
     {
+        bomb.OnExplosion.RemoveListener(OnBombExplode);
+
         bomb.Player.UpdateCurrentBombCount(1);
 
         Explosion explosion = Instantiate(_explosionPrefab, bomb.transform.position, Quaternion.identity);
         explosion.Initialize(bomb, _map);
+
+        _map.SetEntityType(EEntityType.Explosion, explosion.transform.position);
+
+        _explosions.Add(explosion);
     }
 
     private void ClearBombs()
@@ -133,6 +141,17 @@ public class GameManager : MonoBehaviour
         }
 
         _bombs.Clear();
+    }
+
+    private void ClearExplosions()
+    {
+        foreach (var explosion in _explosions)
+        {
+            if (explosion && explosion.gameObject)
+                Destroy(explosion.gameObject);
+        }
+
+        _explosions.Clear();
     }
 
     private void Update()

@@ -38,7 +38,7 @@ public class Explosion : MonoBehaviour
         centerExplosion.transform.localPosition = Vector2.zero;
         centerExplosion.OnExplosionFinished += OnExplosionFinished;
 
-        _map.SetEntity(EEntityType.Explosion, centerExplosion.transform.position);
+        _map.SetEntityType(EEntityType.Explosion, centerExplosion.transform.position);
         _explosionSprites.Add(centerExplosion);
 
         bool stopTop = false;
@@ -95,7 +95,7 @@ public class Explosion : MonoBehaviour
             animator.SetBool(ANIMATOR_IS_BOUND_KEY, isBound || stop);
             explosion.transform.localPosition = offset;
 
-            _map.SetEntity(EEntityType.Explosion, explosion.transform.position);
+            _map.SetEntityType(EEntityType.Explosion, explosion.transform.position);
 
             _explosionSprites.Add(explosion);
         }
@@ -133,7 +133,8 @@ public class Explosion : MonoBehaviour
     {
         foreach (var explosionSprite in _explosionSprites)
         {
-            _map.SetEntity(EEntityType.None, explosionSprite.transform.position);
+            if (_map.GetEntityType(explosionSprite.transform.position) != EEntityType.Bonus)
+                _map.SetEntityType(EEntityType.None, explosionSprite.transform.position);
         }
 
         Destroy(gameObject);

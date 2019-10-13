@@ -88,7 +88,14 @@ public class Map : MonoBehaviour
 
     private void ClearEntitiesMap()
     {
-        Array.Clear(_entitiesMap, 0, _entitiesMap.Length);
+        for (int y = 0; y <= _mapSize.y; y++)
+        {
+            for (int x = 0; x <= _mapSize.x; x++)
+            {
+                if (_entitiesMap[x, y] != EEntityType.UnbreakableWall)
+                    _entitiesMap[x, y] = EEntityType.None;
+            }
+        }
     }
 
     public EEntityType GetEntityType(Vector3Int normalizedCellPosition)
@@ -117,7 +124,7 @@ public class Map : MonoBehaviour
     {
         return (normalizedCellPosition.x < 0 || normalizedCellPosition.x > _mapSize.x ||
                 normalizedCellPosition.y < 0 || normalizedCellPosition.y > _mapSize.y);
-    } 
+    }
 
     public Vector3Int GetNormalizedCellPositionFromWorldPosition(Vector3 worldPosition)
     {
@@ -125,7 +132,7 @@ public class Map : MonoBehaviour
         return normalizedCellPosition;
     }
 
-    public void SetEntity(EEntityType entityType, Vector3 worldPosition)
+    public void SetEntityType(EEntityType entityType, Vector3 worldPosition)
     {
         var normalizedCellPosition = GetNormalizedCellPositionFromWorldPosition(worldPosition);
         _entitiesMap[normalizedCellPosition.x, normalizedCellPosition.y] = entityType;
@@ -234,6 +241,8 @@ public class Map : MonoBehaviour
         Bonus bonus = Instantiate(_bonusPrefab, position, Quaternion.identity, transform);
         bonus.Initalize(_gameSettings.GetAvailableBonus());
 
+        SetEntityType(EEntityType.Bonus, position);
+
         _bonus.Add(bonus);
     }
 
@@ -311,7 +320,7 @@ public class Map : MonoBehaviour
 
                     if (OverlapUnbreakableWall(worldPosition))
                     {
-                        _entitiesMap[normalizedCellPosition.x, normalizedCellPosition.y] = EEntityType.UnbreakableWall;
+                        SetEntityType(EEntityType.UnbreakableWall, worldPosition);
                     }
                 }
             }
