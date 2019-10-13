@@ -87,7 +87,7 @@ public class GameManager : MonoBehaviour
 
         foreach (var player in _players)
         {
-            player.Respawn(_map.GetSpawnPosition(player.Id));
+            player.Spawn(_map.GetSpawnPosition(player.Id));
         }
     }
 

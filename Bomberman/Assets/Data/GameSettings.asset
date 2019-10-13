@@ -24,6 +24,6 @@ MonoBehaviour:
   AvailableBonus:
     m_keys: 0100000002000000030000000400000005000000
     m_values: 0101010001
-  PlayerBaseBombCount: 4
-  PlayerBaseSpeedBonus: 10
-  PlayerBaseBombPower: 4
+  PlayerBaseBombCount: 5
+  PlayerBaseSpeedBonus: 5
+  PlayerBaseBombPower: 5

@@ -19,17 +19,8 @@ public class PlayerMovement : MonoBehaviour
         _input.actions.FindAction("Move").performed += OnInputMove;
         _input.actions.FindAction("Move").canceled += ctx => _movement = Vector2.zero;
 
+        _player.OnSpawn.AddListener(player => _input.actions.Enable());
         _player.OnKill.AddListener(player => _input.actions.Disable());
-    }
-
-    private void OnEnable()
-    {
-        _input.actions.Enable();
-    }
-
-    private void OnDisable()
-    {
-        _input.actions.Disable();
     }
 
     private void OnInputMove(CallbackContext context)

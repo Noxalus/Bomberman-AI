@@ -13,6 +13,7 @@ public class Player : MonoBehaviour
     public PlayerEvent OnPowerChange;
     public PlayerEvent OnBombCountChange;
     public PlayerEvent OnSpeedChange;
+    public PlayerEvent OnSpawn;
     public PlayerEvent OnKill; // When he just get killed
     public PlayerEvent OnDeath; // When the death animation is finished
 
@@ -45,11 +46,6 @@ public class Player : MonoBehaviour
     public int BombCount => _currentBombCount;
     public int SpeedBonus => _speedBonus;
 
-    private void Destroy()
-    {
-        //Destroy(gameObject);
-    }
-
     public void Initialize(int id, Color color)
     {
         _id = id;
@@ -57,7 +53,7 @@ public class Player : MonoBehaviour
         _spriteRenderer.color = color;
     }
 
-    public void Respawn(Vector3 position)
+    public void Spawn(Vector3 position)
     {
         _rigidbody.simulated = true;
 
@@ -69,6 +65,10 @@ public class Player : MonoBehaviour
         UpdateSpeedBonus(_gameSettings.PlayerBaseSpeedBonus, true);
 
         _isDead = false;
+        _animator.SetBool("IsDead", _isDead);
+        _animator.SetTrigger("Respawn");
+
+        OnSpawn?.Invoke(this);
     }
 
     public void AddBomb()
