@@ -9,7 +9,7 @@ AnimatorStateTransition:
   m_Name: 
   m_Conditions:
   - m_ConditionMode: 2
-    m_ConditionEvent: Bound
+    m_ConditionEvent: IsBound
     m_EventTreshold: 0
   - m_ConditionMode: 1
     m_ConditionEvent: Bottom
@@ -66,7 +66,7 @@ AnimatorStateTransition:
     m_ConditionEvent: Right
     m_EventTreshold: 0
   - m_ConditionMode: 1
-    m_ConditionEvent: Bound
+    m_ConditionEvent: IsBound
     m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: -2128914791060680710}
@@ -94,7 +94,7 @@ AnimatorStateTransition:
     m_ConditionEvent: Left
     m_EventTreshold: 0
   - m_ConditionMode: 1
-    m_ConditionEvent: Bound
+    m_ConditionEvent: IsBound
     m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: -3545837709335512280}
@@ -162,7 +162,7 @@ AnimatorStateTransition:
   m_Name: 
   m_Conditions:
   - m_ConditionMode: 2
-    m_ConditionEvent: Bound
+    m_ConditionEvent: IsBound
     m_EventTreshold: 0
   - m_ConditionMode: 1
     m_ConditionEvent: Left
@@ -280,7 +280,7 @@ AnimatorStateTransition:
     m_ConditionEvent: Bottom
     m_EventTreshold: 0
   - m_ConditionMode: 1
-    m_ConditionEvent: Bound
+    m_ConditionEvent: IsBound
     m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: -8279874127595188692}
@@ -337,7 +337,7 @@ AnimatorController:
     m_DefaultInt: 0
     m_DefaultBool: 0
     m_Controller: {fileID: 0}
-  - m_Name: Bound
+  - m_Name: IsBound
     m_Type: 4
     m_DefaultFloat: 0
     m_DefaultInt: 0
@@ -383,7 +383,7 @@ AnimatorStateTransition:
   m_Name: 
   m_Conditions:
   - m_ConditionMode: 2
-    m_ConditionEvent: Bound
+    m_ConditionEvent: IsBound
     m_EventTreshold: 0
   - m_ConditionMode: 1
     m_ConditionEvent: Top
@@ -440,7 +440,7 @@ AnimatorStateTransition:
     m_ConditionEvent: Top
     m_EventTreshold: 0
   - m_ConditionMode: 1
-    m_ConditionEvent: Bound
+    m_ConditionEvent: IsBound
     m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: 9146813120384363072}
@@ -465,7 +465,7 @@ AnimatorStateTransition:
   m_Name: 
   m_Conditions:
   - m_ConditionMode: 2
-    m_ConditionEvent: Bound
+    m_ConditionEvent: IsBound
     m_EventTreshold: 0
   - m_ConditionMode: 1
     m_ConditionEvent: Right
@@ -525,7 +525,7 @@ AnimatorStateTransition:
     m_ConditionEvent: Right
     m_EventTreshold: 0
   - m_ConditionMode: 2
-    m_ConditionEvent: Bound
+    m_ConditionEvent: IsBound
     m_EventTreshold: 0
   - m_ConditionMode: 2
     m_ConditionEvent: Top
