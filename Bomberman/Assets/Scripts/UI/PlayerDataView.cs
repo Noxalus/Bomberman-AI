@@ -91,7 +91,8 @@ public class PlayerDataView : MonoBehaviour
         {
             while (itemInstances.Count < value)
             {
-                GameObject icon = Instantiate(new GameObject(newInstanceName), holder);
+                GameObject icon = new GameObject(newInstanceName);
+                icon.transform.SetParent(holder);
                 Image iconImage = icon.AddComponent<Image>();
                 iconImage.sprite = itemSprite;
 
