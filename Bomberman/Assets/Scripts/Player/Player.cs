@@ -26,6 +26,7 @@ public class Player : MonoBehaviour
 
     [SerializeField] private SpriteRenderer _spriteRenderer = null;
     [SerializeField] private Animator _animator = null;
+    [SerializeField] private Rigidbody2D _rigidbody = null;
 
     [Header("Assets")]
 
@@ -61,6 +62,8 @@ public class Player : MonoBehaviour
 
     public void Respawn(Vector3 position)
     {
+        _rigidbody.simulated = true;
+
         transform.position = position;
 
         // Default stats
@@ -142,5 +145,6 @@ public class Player : MonoBehaviour
     public void OnDeathAnimationFinish()
     {
         OnDeath?.Invoke(this);
+        _rigidbody.simulated = false;
     }
 }
