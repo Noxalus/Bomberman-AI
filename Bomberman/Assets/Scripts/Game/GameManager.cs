@@ -9,6 +9,7 @@ public class GameManager : MonoBehaviour
     [Header("Scene reference")]
 
     [SerializeField] private UIManager _uiManager = null;
+    [SerializeField] private DebugManager _debugManager = null;
 
     [Header("Assets reference")]
 
@@ -50,6 +51,7 @@ public class GameManager : MonoBehaviour
 
         if (_map != null)
         {
+            _debugManager.Initialize(_map);
             StartGame(_gameSettings.PlayersCount);
         }
         else

@@ -81,8 +81,19 @@ public class Map : MonoBehaviour
 
     public void Clear()
     {
+        ClearEntitiesMap();
         ClearBonus();
         ClearDestructibleWalls();
+    }
+
+    private void ClearEntitiesMap()
+    {
+        Array.Clear(_entitiesMap, 0, _entitiesMap.Length);
+    }
+
+    public EEntityType GetEntityType(Vector3Int normalizedCellPosition)
+    {
+        return _entitiesMap[normalizedCellPosition.x, normalizedCellPosition.y];
     }
 
     public EEntityType GetEntityType(Vector3 worldPosition)
@@ -112,6 +123,12 @@ public class Map : MonoBehaviour
     {
         var normalizedCellPosition = GameTilemap.WorldToCell(worldPosition) - new Vector3Int(_mapOrigin.x, _mapOrigin.y, 0);
         return normalizedCellPosition;
+    }
+
+    public void SetEntity(EEntityType entityType, Vector3 worldPosition)
+    {
+        var normalizedCellPosition = GetNormalizedCellPositionFromWorldPosition(worldPosition);
+        _entitiesMap[normalizedCellPosition.x, normalizedCellPosition.y] = entityType;
     }
 
     // Get cell position in world space from normalized cell position (which goes from 0 to MapSize)
