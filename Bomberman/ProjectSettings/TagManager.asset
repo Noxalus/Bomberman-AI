@@ -47,14 +47,17 @@ TagManager:
   - name: Bombs
     uniqueID: 2235457995
     locked: 0
+  - name: Bonus
+    uniqueID: 1404490691
+    locked: 0
   - name: Explosion
     uniqueID: 1516557609
     locked: 0
   - name: DestructibleWalls
     uniqueID: 2020126075
     locked: 0
-  - name: Bonus
-    uniqueID: 1404490691
+  - name: BonusFlame
+    uniqueID: 3283249461
     locked: 0
   - name: Player
     uniqueID: 2348683305

@@ -9,6 +9,7 @@ public class DestructibleWall : MonoBehaviour
     [Header("Events")]
 
     public DestructibleWallEvent OnExplode;
+    public DestructibleWallEvent OnDestroy;
 
     [Header("Inner references")]
 
@@ -19,6 +20,7 @@ public class DestructibleWall : MonoBehaviour
     // Call by the animator
     public void Destroy()
     {
+        OnDestroy?.Invoke(this);
         Destroy(gameObject);
     }
 

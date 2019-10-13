@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using Random = UnityEngine.Random;
@@ -41,7 +42,7 @@ public class Map : MonoBehaviour
     private Vector2Int _mapSize = Vector2Int.zero;
     private Vector2Int _mapOrigin = Vector2Int.zero;
 
-    private List<DestructibleWall> _destructibleWallInstances = new List<DestructibleWall>();
+    private List<DestructibleWall> _destructibleWalls = new List<DestructibleWall>();
     private List<Bonus> _bonus = new List<Bonus>();
 
     #endregion
@@ -120,6 +121,22 @@ public class Map : MonoBehaviour
         return new Vector3Int(position.x, position.y, 0);
     }
 
+    public void DestroyAllDestructibleWalls()
+    {
+        List<DestructibleWall> wallsToDestroy = new List<DestructibleWall>();
+
+        foreach (var destructibleWall in _destructibleWalls)
+        {
+            if (destructibleWall)
+                wallsToDestroy.Add(destructibleWall);
+        }
+
+        foreach (var wallToDestroy in wallsToDestroy)
+        {
+            wallToDestroy.Explode();
+        }
+    }
+
     public void GenerateDestrucibleWalls(float wallPercentage)
     {
         for (int y = 0; y <= MapSize.y; y++)
@@ -150,7 +167,7 @@ public class Map : MonoBehaviour
 
     public void ClearDestructibleWalls()
     {
-        foreach (var destructibleWall in _destructibleWallInstances)
+        foreach (var destructibleWall in _destructibleWalls)
         {
             if (destructibleWall && destructibleWall.gameObject)
             {
@@ -158,7 +175,7 @@ public class Map : MonoBehaviour
             }
         }
 
-        _destructibleWallInstances.Clear();
+        _destructibleWalls.Clear();
     }
 
     public void ClearBonus()
@@ -183,7 +200,7 @@ public class Map : MonoBehaviour
             transform
         );
 
-        _destructibleWallInstances.Add(destructibleWall);
+        _destructibleWalls.Add(destructibleWall);
 
         var normalizedCellPosition = GetNormalizedCellPositionFromWorldPosition(worldPosition);
 
@@ -192,7 +209,7 @@ public class Map : MonoBehaviour
             _entitiesMap[normalizedCellPosition.x, normalizedCellPosition.y] = EEntityType.DestructibleWall;
         }
 
-        destructibleWall.OnExplode.AddListener(OnDestructibleWallExplode);
+        destructibleWall.OnDestroy.AddListener(OnDestructibleWallDestroy);
     }
 
     void AddBonus(Vector3 position)
@@ -209,9 +226,9 @@ public class Map : MonoBehaviour
         FindUnbreakableWalls();
     }
 
-    private void OnDestructibleWallExplode(DestructibleWall destructibleWall)
+    private void OnDestructibleWallDestroy(DestructibleWall destructibleWall)
     {
-        destructibleWall.OnExplode.RemoveListener(OnDestructibleWallExplode);
+        destructibleWall.OnDestroy.RemoveListener(OnDestructibleWallDestroy);
 
         var normalizedCellPosition = GetNormalizedCellPositionFromWorldPosition(destructibleWall.transform.position);
 
@@ -220,7 +237,7 @@ public class Map : MonoBehaviour
             _entitiesMap[normalizedCellPosition.x, normalizedCellPosition.y] = EEntityType.None;
         }
 
-        _destructibleWallInstances.Remove(destructibleWall);
+        _destructibleWalls.Remove(destructibleWall);
 
         // Spanw a bonus?
         if (Random.value < _gameSettings.BonusProbability)

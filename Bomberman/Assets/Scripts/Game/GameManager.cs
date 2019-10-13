@@ -135,9 +135,14 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.R))
         {
             StartRound();
+        }
+
+        if (Input.GetKeyDown(KeyCode.A))
+        {
+            _map.DestroyAllDestructibleWalls();
         }
     }
 }

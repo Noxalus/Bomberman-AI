@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class Explosion : MonoBehaviour
@@ -18,8 +19,11 @@ public class Explosion : MonoBehaviour
 
     [SerializeField] ExplosionSprite _explosionCenter = null;
 
+    public List<ExplosionSprite> ExplosionSprites => _explosionSprites;
+
     private Map _map = null;
     private Bomb _bomb = null;
+    private List<ExplosionSprite> _explosionSprites = new List<ExplosionSprite>();
 
     public void Initialize(Bomb bomb, Map map)
     {
@@ -82,11 +86,13 @@ public class Explosion : MonoBehaviour
                 stop = true;
             }
 
-            var topExplosion = Instantiate(_explosionCenter, transform);
-            var topExplosionAnimator = topExplosion.GetComponent<Animator>();
-            topExplosionAnimator.SetBool(OffsetToSide(offset), true);
-            topExplosionAnimator.SetBool(ANIMATOR_IS_BOUND_KEY, isBound || stop);
-            topExplosion.transform.localPosition = offset;
+            var explosion = Instantiate(_explosionCenter, transform);
+            var animator = explosion.GetComponent<Animator>();
+            animator.SetBool(OffsetToSide(offset), true);
+            animator.SetBool(ANIMATOR_IS_BOUND_KEY, isBound || stop);
+            explosion.transform.localPosition = offset;
+
+            _explosionSprites.Add(explosion);
         }
         else
         {
