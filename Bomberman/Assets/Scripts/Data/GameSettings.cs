@@ -8,12 +8,19 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "GameSettings.asset", menuName = "Bomberman/GameSettings/GameSettings")]
 public class GameSettings : ScriptableObject
 {
-    public int PlayersCount = 4;
+    [Header("Constants")]
+
     public List<Color> PlayersColor = new List<Color>();
-    public float WallDensity = 0.75f;
-    public EBonusTypeBoolDictionary AvailableBonus = new EBonusTypeBoolDictionary();
-    public float BonusProbability = 1f;
     public float SpeedBonusIncrement = 0.25f;
+
+    [Header("Map configuration")]
+
+    public int PlayersCount = 4;
+    public float WallDensity = 0.75f;
+    public float BonusProbability = 1f;
+    public EBonusTypeBoolDictionary AvailableBonus = new EBonusTypeBoolDictionary();
+
+    [Header("Base player stats")]
 
     public int PlayerBaseBombCount = 1;
     public int PlayerBaseSpeedBonus = 0;

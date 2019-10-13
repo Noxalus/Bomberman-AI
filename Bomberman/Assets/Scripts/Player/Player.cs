@@ -2,25 +2,19 @@
 using UnityEngine.Events;
 
 [System.Serializable]
-public class PlayerDataChangeEvent : UnityEvent<Player> {}
+public class PlayerEvent : UnityEvent<Player> {}
 
 public class Player : MonoBehaviour
 {
     [Header("Events")]
 
-    public PlayerDataChangeEvent OnScoreChange;
-    public PlayerDataChangeEvent OnPowerChange;
-    public PlayerDataChangeEvent OnBombCountChange;
-    public PlayerDataChangeEvent OnSpeedChange;
-    public PlayerDataChangeEvent OnKill; // When he just get killed
-    public PlayerDataChangeEvent OnDeath; // When the death animation is finished
-
-    [Header("Configuration")]
-
-    [SerializeField] private int _maxBombCount = 1;
-    [SerializeField] private int _bombPower = 1;
-    [SerializeField] private float _bombTimer = 2f;
-    [SerializeField] private int _speedBonus = 1;
+    public PlayerEvent OnPlantBomb;
+    public PlayerEvent OnScoreChange;
+    public PlayerEvent OnPowerChange;
+    public PlayerEvent OnBombCountChange;
+    public PlayerEvent OnSpeedChange;
+    public PlayerEvent OnKill; // When he just get killed
+    public PlayerEvent OnDeath; // When the death animation is finished
 
     [Header("Inner references")]
 
@@ -30,20 +24,24 @@ public class Player : MonoBehaviour
 
     [Header("Assets")]
 
-    [SerializeField] private Bomb _bombPrefab = null;
     [SerializeField] private GameSettings _gameSettings = null;
 
     private GameManager _gameManager = null;
     private int _id = 0;
     private Color _color = Color.white;
     private int _score = 0;
+    private int _maxBombCount = 1;
     private int _currentBombCount = 1;
+    private int _bombPower = 1;
+    private float _bombTimer = 2f;
+    private int _speedBonus = 1;
     private bool _isDead = false;
 
     public int Id => _id;
     public Color Color => _color;
     public int Score => _score;
     public int Power => _bombPower;
+    public  float BombTimer => _bombTimer;
     public int BombCount => _currentBombCount;
     public int SpeedBonus => _speedBonus;
 
@@ -52,11 +50,10 @@ public class Player : MonoBehaviour
         //Destroy(gameObject);
     }
 
-    public void Initialize(int id, Color color, GameManager gameManager)
+    public void Initialize(int id, Color color)
     {
         _id = id;
         _color = color;
-        _gameManager = gameManager;
         _spriteRenderer.color = color;
     }
 
@@ -67,11 +64,10 @@ public class Player : MonoBehaviour
         transform.position = position;
 
         // Default stats
-        _maxBombCount = _gameSettings.PlayerBaseBombCount;
-        _speedBonus = _gameSettings.PlayerBaseSpeedBonus;
-        _bombPower = _gameSettings.PlayerBaseBombPower;
+        UpdatePower(_gameSettings.PlayerBaseBombPower, true);
+        UpdateMaxBombCount(_gameSettings.PlayerBaseBombCount, true);
+        UpdateSpeedBonus(_gameSettings.PlayerBaseSpeedBonus, true);
 
-        _currentBombCount = _maxBombCount; 
         _isDead = false;
     }
 
@@ -79,32 +75,50 @@ public class Player : MonoBehaviour
     {
         if (_currentBombCount > 0)
         {
-            var bomb = Instantiate(_bombPrefab, Vector2.zero, Quaternion.identity);
-            bomb.Initialize(this, _gameManager.Map, _bombTimer, _bombPower);
-            bomb.OnExplosion += OnBombExplosion;
-            _currentBombCount--;
-
-            _gameManager.AddBomb(bomb, transform.position);
+            OnPlantBomb?.Invoke(this);
             OnBombCountChange?.Invoke(this);
         }
     }
 
-    public void UpdateBombCount(int amount)
+    public void UpdateCurrentBombCount(int amount)
     {
-        _maxBombCount += amount;
         _currentBombCount += amount;
         OnBombCountChange?.Invoke(this);
     }
 
-    public void UpdateSpeedBonus(int amount)
+    public void UpdateMaxBombCount(int amount, bool reset = false)
     {
-        _speedBonus += amount;
+        if (reset)
+        {
+            _maxBombCount = amount;
+            _currentBombCount = amount;
+        }
+        else
+        {
+            _maxBombCount += amount;
+            _currentBombCount += amount;
+        }
+
+        OnBombCountChange?.Invoke(this);
+    }
+
+    public void UpdateSpeedBonus(int amount, bool reset = false)
+    {
+        if (reset)
+            _speedBonus = amount;
+        else
+            _speedBonus += amount;
+
         OnSpeedChange?.Invoke(this);
     }
 
-    public void UpdatePower(int amount)
+    public void UpdatePower(int amount, bool reset = false)
     {
-        _bombPower += amount;
+        if (reset)
+            _bombPower = amount;
+        else
+            _bombPower += amount;
+
         OnPowerChange?.Invoke(this);
     }
 
@@ -116,8 +130,7 @@ public class Player : MonoBehaviour
 
     public void OnBombExplosion()
     {
-        _currentBombCount++;
-        OnBombCountChange?.Invoke(this);
+        UpdateCurrentBombCount(1);
     }
 
     public void Kill(Player killer)

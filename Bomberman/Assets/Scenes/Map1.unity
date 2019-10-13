@@ -2373,6 +2373,9 @@ MonoBehaviour:
   _destructibleWallPrefab: {fileID: 8731644710309082280, guid: ab4f995859fef2843b0a1cc794fde38e,
     type: 3}
   _music: {fileID: 8300000, guid: 3a335cb4988b3a943bc313a853fad14b, type: 3}
+  _gameSettings: {fileID: 11400000, guid: e6857ad653acb384db35baec132fd935, type: 2}
+  _bonusPrefab: {fileID: 64690320495906843, guid: 1a42da4e68a27834abd1aa6246e481d8,
+    type: 3}
 --- !u!156049354 &1168836240
 Grid:
   m_ObjectHideFlags: 0

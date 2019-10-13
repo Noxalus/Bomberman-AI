@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using Random = UnityEngine.Random;
 
 public class Map : MonoBehaviour
 {
@@ -15,8 +16,10 @@ public class Map : MonoBehaviour
 
     [Header("Assets")]
 
-    [SerializeField] private DestructibleWall _destructibleWallPrefab = null;
+    [SerializeField] private GameSettings _gameSettings = null;
     [SerializeField] private AudioClip _music = null;
+    [SerializeField] private Bonus _bonusPrefab = null;
+    [SerializeField] private DestructibleWall _destructibleWallPrefab = null;
 
     #endregion
 
@@ -34,9 +37,12 @@ public class Map : MonoBehaviour
 
     private List<Vector3Int> _playerSpawnCells = new List<Vector3Int>();
     private EEntityType[,] _entitiesMap;
+
     private Vector2Int _mapSize = Vector2Int.zero;
     private Vector2Int _mapOrigin = Vector2Int.zero;
+
     private List<DestructibleWall> _destructibleWallInstances = new List<DestructibleWall>();
+    private List<Bonus> _bonus = new List<Bonus>();
 
     #endregion
 
@@ -70,6 +76,12 @@ public class Map : MonoBehaviour
         }
 
         return false;
+    }
+
+    public void Clear()
+    {
+        ClearBonus();
+        ClearDestructibleWalls();
     }
 
     public EEntityType GetEntityType(Vector3 worldPosition)
@@ -110,8 +122,6 @@ public class Map : MonoBehaviour
 
     public void GenerateDestrucibleWalls(float wallPercentage)
     {
-        ClearDestructibleWalls();
-
         for (int y = 0; y <= MapSize.y; y++)
         {
             for (int x = 0; x <= MapSize.x; x++)
@@ -142,10 +152,26 @@ public class Map : MonoBehaviour
     {
         foreach (var destructibleWall in _destructibleWallInstances)
         {
-            Destroy(destructibleWall.gameObject);
+            if (destructibleWall && destructibleWall.gameObject)
+            {
+                Destroy(destructibleWall.gameObject);
+            }
         }
 
         _destructibleWallInstances.Clear();
+    }
+
+    public void ClearBonus()
+    {
+        foreach (var bonus in _bonus)
+        {
+            if (bonus && bonus.gameObject)
+            {
+                Destroy(bonus.gameObject);
+            }
+        }
+
+        _bonus.Clear();
     }
 
     public void AddDestructibleWall(Vector3 worldPosition)
@@ -169,6 +195,14 @@ public class Map : MonoBehaviour
         destructibleWall.OnExplode.AddListener(OnDestructibleWallExplode);
     }
 
+    void AddBonus(Vector3 position)
+    {
+        Bonus bonus = Instantiate(_bonusPrefab, position, Quaternion.identity, transform);
+        bonus.Initalize(_gameSettings.GetAvailableBonus());
+
+        _bonus.Add(bonus);
+    }
+
     private void InitializeEntitiesMap()
     {
         _entitiesMap = new EEntityType[_mapSize.x + 1, _mapSize.y + 1];
@@ -184,6 +218,14 @@ public class Map : MonoBehaviour
         if (!IsNormalizedCellPositionOutOfBound(normalizedCellPosition))
         {
             _entitiesMap[normalizedCellPosition.x, normalizedCellPosition.y] = EEntityType.None;
+        }
+
+        _destructibleWallInstances.Remove(destructibleWall);
+
+        // Spanw a bonus?
+        if (Random.value < _gameSettings.BonusProbability)
+        {
+            AddBonus(destructibleWall.transform.position);
         }
     }
 

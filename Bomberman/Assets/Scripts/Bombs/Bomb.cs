@@ -1,17 +1,20 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
+using UnityEngine.Events;
+
+[System.Serializable]
+public class BombEvent : UnityEvent<Bomb> { }
 
 public class Bomb : MonoBehaviour
 {
-    public Action OnExplosion;
+    [Header("Events")]
+
+    public BombEvent OnExplosion;
 
     [Header("Inner references")]
 
     [SerializeField] private Collider2D _collider = null;
 
-    [Header("Assets references")]
-
-    [SerializeField] private Explosion _explosionPrefab = null;
+    public int Power => _power;
 
     private Player _player;
     private Map _map;
@@ -28,13 +31,25 @@ public class Bomb : MonoBehaviour
         _collider.enabled = false;
     }
 
-    public void Initialize(Player player, Map map, float timer, int power)
+    public void Initialize(float timer, int power)
     {
-        _player = player;
-        _map = map;
         _timer = timer;
         _power = power;
 
+        Initialize();
+    }
+
+    public void Initialize(Player player)
+    {
+        _player = player;
+        _timer = player.BombTimer;
+        _power = player.Power;
+
+        Initialize();
+    }
+
+    private void Initialize()
+    {
         _currentTimer = _timer;
         _isExploding = false;
     }
@@ -69,10 +84,7 @@ public class Bomb : MonoBehaviour
 
         SoundManager.Instance.PlaySound("BombExplode");
 
-        Explosion explosion = Instantiate(_explosionPrefab, transform.position, Quaternion.identity);
-        explosion.Initialize(this, _map, _power);
-
-        OnExplosion?.Invoke();
+        OnExplosion?.Invoke(this);
 
         Destroy(gameObject);
     }

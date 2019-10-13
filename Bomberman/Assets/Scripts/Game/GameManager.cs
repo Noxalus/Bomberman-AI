@@ -12,8 +12,10 @@ public class GameManager : MonoBehaviour
 
     [Header("Assets reference")]
 
-    [SerializeField] private Player _playerPrefab = null;
     [SerializeField] private GameSettings _gameSettings = null;
+    [SerializeField] private Player _playerPrefab = null;
+    [SerializeField] private Bomb _bombPrefab = null;
+    [SerializeField] private Explosion _explosionPrefab = null;
 
     public Map Map => _map;
 
@@ -61,8 +63,9 @@ public class GameManager : MonoBehaviour
         for (int i = 0; i < playerCount; i++)
         {
             var player = Instantiate(_playerPrefab);
-            player.Initialize(i, _gameSettings.PlayersColor[i], this);
+            player.Initialize(i, _gameSettings.PlayersColor[i]);
             player.OnDeath.AddListener(OnPlayerDeath);
+            player.OnPlantBomb.AddListener(AddBomb);
             _players.Add(player);
         }
 
@@ -73,6 +76,9 @@ public class GameManager : MonoBehaviour
 
     private void StartRound()
     {
+        _map.Clear();
+        ClearBombs();
+
         MusicManager.Instance.PlayMusic(_map.Music);
         _map.GenerateDestrucibleWalls(_gameSettings.WallDensity);
         _deadPlayerCount = 0;
@@ -95,11 +101,43 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void AddBomb(Bomb bomb, Vector3 worldPosition)
+    public void AddBomb(Player player)
     {
-        var cellPosition = _map.GameGrid.WorldToCell(worldPosition);
-        bomb.transform.position = cellPosition + _map.GameTilemap.tileAnchor;
+        var cellPosition = _map.GameGrid.WorldToCell(player.transform.position);
+        var position = cellPosition + _map.GameTilemap.tileAnchor;
+        var bomb = Instantiate(_bombPrefab, position, Quaternion.identity, _map.transform);
+        bomb.Initialize(player);
+        bomb.OnExplosion.AddListener(OnBombExplode);
+
+        player.UpdateCurrentBombCount(-1);
 
         _bombs.Add(bomb);
+    }
+
+    private void OnBombExplode(Bomb bomb)
+    {
+        bomb.Player.UpdateCurrentBombCount(1);
+
+        Explosion explosion = Instantiate(_explosionPrefab, bomb.transform.position, Quaternion.identity);
+        explosion.Initialize(bomb, _map);
+    }
+
+    private void ClearBombs()
+    {
+        foreach (var bomb in _bombs)
+        {
+            if (bomb && bomb.gameObject)
+                Destroy(bomb.gameObject);
+        }
+
+        _bombs.Clear();
+    }
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            StartRound();
+        }
     }
 }

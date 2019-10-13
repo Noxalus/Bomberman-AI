@@ -61,7 +61,7 @@ public class Bonus : MonoBehaviour
                 player.UpdatePower(1);
                 break;
             case EBonusType.Bomb:
-                player.UpdateBombCount(1);
+                player.UpdateMaxBombCount(1);
                 break;
             case EBonusType.Speed:
                 player.UpdateSpeedBonus(1);

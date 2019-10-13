@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using UnityEngine.Events;
-using Random = UnityEngine.Random;
 
 [System.Serializable]
 public class DestructibleWallEvent : UnityEvent<DestructibleWall> {}
@@ -15,24 +14,11 @@ public class DestructibleWall : MonoBehaviour
 
     [SerializeField] private Animator _animator = null;
 
-    [Header("Assets")]
-
-    [SerializeField] private GameSettings _gameSettings = null;
-    [SerializeField] private Bonus _bonusPrefab = null;
-
     private bool _isExploding = false;
 
     // Call by the animator
     public void Destroy()
     {
-        // Spanw a bonus?
-        if (Random.value < _gameSettings.BonusProbability)
-        {
-            Bonus bonus = Instantiate(_bonusPrefab);
-            bonus.Initalize(_gameSettings.GetAvailableBonus());
-            bonus.transform.position = transform.position;
-        }
-
         Destroy(gameObject);
     }
 

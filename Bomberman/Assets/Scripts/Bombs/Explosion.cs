@@ -8,7 +8,7 @@ public class Explosion : MonoBehaviour
 
     private Bomb _bomb = null;
 
-    public void Initialize(Bomb bomb, Map map, int power)
+    public void Initialize(Bomb bomb, Map map)
     {
         _bomb = bomb;
         Vector3Int currentCellPosition = map.GameGrid.WorldToCell(transform.position);
@@ -16,6 +16,7 @@ public class Explosion : MonoBehaviour
         var centerExplosion = Instantiate(_explosionCenter, transform);
         centerExplosion.transform.localPosition = Vector2.zero;
         centerExplosion.OnExplosionFinished += OnExplosionFinished;
+        int power = bomb.Power;
 
         bool stopTop = false;
         bool stopRight = false;
