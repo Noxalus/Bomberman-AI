@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -21,6 +22,7 @@ public class GameManager : MonoBehaviour
     private Map _map = null;
     private List<Player> _players = new List<Player>();
     private List<Bomb> _bombs = new List<Bomb>();
+    private int _deadPlayerCount = 0;
 
     private void Start()
     {
@@ -46,8 +48,11 @@ public class GameManager : MonoBehaviour
 
         if (_map != null)
         {
-            _map.GenerateDestrucibleWalls(_gameSettings.WallDensity);
-            StartGame(4);
+            StartGame(_gameSettings.PlayersCount);
+        }
+        else
+        {
+            throw new Exception("The loaded map doesn't contain a Map component!");
         }
     }
 
@@ -55,12 +60,38 @@ public class GameManager : MonoBehaviour
     {
         for (int i = 0; i < playerCount; i++)
         {
-            var player = Instantiate(_playerPrefab, _map.GetSpawnPosition(i), Quaternion.identity);
+            var player = Instantiate(_playerPrefab);
             player.Initialize(i, _gameSettings.PlayersColor[i], this);
+            player.OnDeath.AddListener(OnPlayerDeath);
             _players.Add(player);
         }
 
         _uiManager.Initialize(_players);
+
+        StartRound();
+    }
+
+    private void StartRound()
+    {
+        _map.GenerateDestrucibleWalls(_gameSettings.WallDensity);
+        _deadPlayerCount = 0;
+
+        foreach (var player in _players)
+        {
+            player.Respawn(_map.GetSpawnPosition(player.Id));
+        }
+    }
+
+    private void OnPlayerDeath(Player player)
+    {
+        player.OnDeath.RemoveListener(OnPlayerDeath);
+
+        _deadPlayerCount++;
+
+        if (_deadPlayerCount >= _players.Count - 1)
+        {
+            StartRound();
+        }
     }
 
     public void AddBomb(Bomb bomb, Vector3 worldPosition)

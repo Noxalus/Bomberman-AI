@@ -30,6 +30,7 @@ public class Player : MonoBehaviour
     [Header("Assets")]
 
     [SerializeField] private Bomb _bombPrefab = null;
+    [SerializeField] private GameSettings _gameSettings = null;
 
     private GameManager _gameManager = null;
     private int _id = 0;
@@ -47,7 +48,7 @@ public class Player : MonoBehaviour
 
     private void Destroy()
     {
-        Destroy(gameObject);
+        //Destroy(gameObject);
     }
 
     public void Initialize(int id, Color color, GameManager gameManager)
@@ -55,9 +56,19 @@ public class Player : MonoBehaviour
         _id = id;
         _color = color;
         _gameManager = gameManager;
-
         _spriteRenderer.color = color;
-        _currentBombCount = _maxBombCount;
+    }
+
+    public void Respawn(Vector3 position)
+    {
+        transform.position = position;
+
+        // Default stats
+        _maxBombCount = _gameSettings.PlayerBaseBombCount;
+        _speedBonus = _gameSettings.PlayerBaseSpeedBonus;
+        _bombPower = _gameSettings.PlayerBaseBombPower;
+
+        _currentBombCount = _maxBombCount; 
         _isDead = false;
     }
 
@@ -115,7 +126,7 @@ public class Player : MonoBehaviour
 
         Debug.Log("Player killed");
 
-        SoundManager.PlaySound("playerDeath");
+        SoundManager.Instance.PlaySound("PlayerDeath");
 
         _animator.SetBool("IsDead", _isDead);
 

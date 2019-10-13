@@ -37,7 +37,7 @@ public class Bonus : MonoBehaviour
         if (collision.tag == "Player")
         {
             Player player = collision.gameObject.GetComponent<Player>();
-            SoundManager.PlaySound("bonusPickup");
+            SoundManager.Instance.PlaySound("BonusPickup");
             ApplyEffect(player);
             Destroy();
         }

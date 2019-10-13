@@ -67,7 +67,7 @@ public class Bomb : MonoBehaviour
 
         _isExploding = true;
 
-        SoundManager.PlaySound("bombExplode");
+        SoundManager.Instance.PlaySound("BombExplode");
 
         Explosion explosion = Instantiate(_explosionPrefab, transform.position, Quaternion.identity);
         explosion.Initialize(this, _map, _power);

@@ -26,6 +26,7 @@ public class Map : MonoBehaviour
 
     private Vector2Int _mapSize = Vector2Int.zero;
     private Vector2Int _mapOrigin = Vector2Int.zero;
+    private List<DestructibleWall> _destructibleWallInstances = new List<DestructibleWall>();
 
     private void Awake()
     {
@@ -97,6 +98,8 @@ public class Map : MonoBehaviour
 
     public void GenerateDestrucibleWalls(float wallPercentage)
     {
+        ClearDestructibleWalls();
+
         for (int y = 0; y <= MapSize.y; y++)
         {
             for (int x = 0; x <= MapSize.x; x++)
@@ -123,6 +126,16 @@ public class Map : MonoBehaviour
         }
     }
 
+    public void ClearDestructibleWalls()
+    {
+        foreach (var destructibleWall in _destructibleWallInstances)
+        {
+            Destroy(destructibleWall.gameObject);
+        }
+
+        _destructibleWallInstances.Clear();
+    }
+
     public void AddDestructibleWall(Vector3 worldPosition)
     {
         DestructibleWall destructibleWall = Instantiate(
@@ -131,6 +144,8 @@ public class Map : MonoBehaviour
             Quaternion.identity,
             transform
         );
+
+        _destructibleWallInstances.Add(destructibleWall);
 
         var normalizedCellPosition = GetNormalizedCellPositionFromWorldPosition(worldPosition);
 

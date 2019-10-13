@@ -12,14 +12,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 85b437e1589fb6342872fa7d8ab53e4c, type: 3}
   m_Name: GameSettings
   m_EditorClassIdentifier: 
+  PlayersCount: 4
   PlayersColor:
   - {r: 1, g: 1, b: 1, a: 1}
   - {r: 1, g: 0, b: 0, a: 1}
   - {r: 1, g: 0, b: 0.9263606, a: 1}
   - {r: 0.94708157, g: 1, b: 0, a: 1}
-  WallDensity: 1
+  WallDensity: 0.75
   AvailableBonus:
     m_keys: 0100000002000000030000000400000005000000
-    m_values: 0101010000
+    m_values: 0101010001
   BonusProbability: 1
   SpeedBonusIncrement: 0.25
+  PlayerBaseBombCount: 1
+  PlayerBaseSpeedBonus: 0
+  PlayerBaseBombPower: 1
