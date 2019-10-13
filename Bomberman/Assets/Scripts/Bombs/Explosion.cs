@@ -144,9 +144,15 @@ public class Explosion : MonoBehaviour
     {
         if (collision.tag == "Player")
         {
-            var killer = _bomb.Player;
-            collision.GetComponent<Player>().Kill(killer);
-            killer.UpdateScore(1);
+            var player = collision.GetComponent<Player>();
+
+            if (!player.IsInvincible)
+            {
+                var killer = _bomb.Player;
+
+                player.Kill(killer);
+                killer.UpdateScore(1);
+            }
         }
         else if (collision.tag == "DestructibleWall")
         {

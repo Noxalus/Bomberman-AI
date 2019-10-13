@@ -12,6 +12,7 @@ public class GameSettings : ScriptableObject
 
     public List<Color> PlayersColor = new List<Color>();
     public float SpeedBonusIncrement = 0.25f;
+    public float PlayerSpawnInvincibleTimer = 2.5f; // in seconds
 
     [Header("Map configuration")]
 
