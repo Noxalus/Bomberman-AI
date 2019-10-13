@@ -15,6 +15,7 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] private GameSettings _gameSettings = null;
     [SerializeField] private Player _playerPrefab = null;
+    [SerializeField] private Player _aiPlayerPrefab = null;
     [SerializeField] private Bomb _bombPrefab = null;
     [SerializeField] private Explosion _explosionPrefab = null;
 
@@ -66,7 +67,13 @@ public class GameManager : MonoBehaviour
     {
         for (int i = 0; i < playerCount; i++)
         {
-            var player = Instantiate(_playerPrefab);
+            Player player;
+
+            if (i < _gameSettings.AIPlayersCount)
+                player = Instantiate(_playerPrefab);
+            else
+                player = Instantiate(_aiPlayerPrefab);
+
             player.Initialize(i, _gameSettings.PlayersColor[i]);
             player.OnDeath.AddListener(OnPlayerDeath);
             player.OnPlantBomb.AddListener(AddBomb);
