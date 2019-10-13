@@ -70,9 +70,9 @@ public class GameManager : MonoBehaviour
             Player player;
 
             if (i < _gameSettings.AIPlayersCount)
-                player = Instantiate(_playerPrefab);
-            else
                 player = Instantiate(_aiPlayerPrefab);
+            else
+                player = Instantiate(_playerPrefab);
 
             player.Initialize(i, _gameSettings.PlayersColor[i]);
             player.OnDeath.AddListener(OnPlayerDeath);
@@ -91,7 +91,9 @@ public class GameManager : MonoBehaviour
         ClearBombs();
         ClearExplosions();
 
+        StopAllCoroutines();
         StopCoroutine(UpdateTimer());
+
         _time = TimeSpan.FromSeconds(0);
         _uiManager.UpdateTimer(_time);
 
@@ -109,8 +111,6 @@ public class GameManager : MonoBehaviour
 
     private void OnPlayerDeath(Player player)
     {
-        player.OnDeath.RemoveListener(OnPlayerDeath);
-
         _deadPlayerCount++;
 
         if (_deadPlayerCount >= _players.Count - 1)
@@ -121,6 +121,11 @@ public class GameManager : MonoBehaviour
 
     public void AddBomb(Player player)
     {
+        var entity = _map.GetEntityType(player.transform.position);
+
+        if (entity != EEntityType.None)
+            return;
+
         var cellPosition = _map.GameGrid.WorldToCell(player.transform.position);
         var position = cellPosition + _map.GameTilemap.tileAnchor;
         var bomb = Instantiate(_bombPrefab, position, Quaternion.identity, _map.transform);

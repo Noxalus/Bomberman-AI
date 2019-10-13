@@ -88,7 +88,9 @@ public class Player : MonoBehaviour
 
     public void Spawn(Vector3 position)
     {
-        StopCoroutine(SpawnInvicibleTimer(_gameSettings.PlayerSpawnInvincibleTimer));
+        _isDead = false;
+        _animator.SetBool(ANIMATOR_IS_DEAD_KEY, _isDead);
+        _animator.SetTrigger(ANIMATOR_RESPAWN_KEY);
 
         _rigidbody.simulated = true;
 
@@ -99,11 +101,9 @@ public class Player : MonoBehaviour
         UpdateMaxBombCount(_gameSettings.PlayerBaseBombCount, true);
         UpdateSpeedBonus(_gameSettings.PlayerBaseSpeedBonus, true);
 
-        _isDead = false;
-        _animator.SetBool(ANIMATOR_IS_DEAD_KEY, _isDead);
-        _animator.SetTrigger(ANIMATOR_RESPAWN_KEY);
-
         SetIsInvicible(true);
+
+        StopCoroutine(SpawnInvicibleTimer(_gameSettings.PlayerSpawnInvincibleTimer));
         StartCoroutine(SpawnInvicibleTimer(_gameSettings.PlayerSpawnInvincibleTimer));
 
         OnSpawn?.Invoke(this);
@@ -199,10 +199,11 @@ public class Player : MonoBehaviour
         // Suicide?
         if (killer.Id == Id)
         {
+            Debug.Log($"Player just suicide himself...");
             UpdateScore(-2);
         }
-
-        Debug.Log($"Player killed by {killer.Id}");
+        else
+            Debug.Log($"Player killed by {killer.Id}");
 
         SoundManager.Instance.PlaySound("PlayerDeath");
 
@@ -213,7 +214,7 @@ public class Player : MonoBehaviour
 
     public void OnDeathAnimationFinish()
     {
-        OnDeath?.Invoke(this);
         _rigidbody.simulated = false;
+        OnDeath?.Invoke(this);
     }
 }
