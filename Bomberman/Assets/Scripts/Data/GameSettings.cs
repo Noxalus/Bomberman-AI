@@ -16,6 +16,7 @@ public class GameSettings : ScriptableObject
 
     [Header("Map configuration")]
 
+    public string SelectedMapName = "Map1";
     public int PlayersCount = 4;
     public float WallDensity = 0.75f;
     public float BonusProbability = 1f;

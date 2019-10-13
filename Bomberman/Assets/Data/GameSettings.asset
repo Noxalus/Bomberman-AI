@@ -18,8 +18,10 @@ MonoBehaviour:
   - {r: 1, g: 0, b: 0.9263606, a: 1}
   - {r: 0.94708157, g: 1, b: 0, a: 1}
   SpeedBonusIncrement: 0.25
+  PlayerSpawnInvincibleTimer: 2.5
+  SelectedMapName: Map1
   PlayersCount: 4
-  WallDensity: 0.5
+  WallDensity: 1
   BonusProbability: 1
   AvailableBonus:
     m_keys: 0100000002000000030000000400000005000000

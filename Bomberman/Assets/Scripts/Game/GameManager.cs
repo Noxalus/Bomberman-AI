@@ -36,7 +36,7 @@ public class GameManager : MonoBehaviour
 
     IEnumerator LoadMapScene()
     {
-        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync("Map1", LoadSceneMode.Additive);
+        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(_gameSettings.SelectedMapName, LoadSceneMode.Additive);
 
         // Wait until the asynchronous scene fully loads
         while (!asyncLoad.isDone)

@@ -146,7 +146,7 @@ public class Explosion : MonoBehaviour
         {
             var player = collision.GetComponent<Player>();
 
-            if (!player.IsInvincible)
+            if (!player.IsInvincible && !player.IsDead)
             {
                 var killer = _bomb.Player;
 

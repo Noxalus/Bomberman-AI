@@ -74,6 +74,7 @@ public class Player : MonoBehaviour
     public  float BombTimer => _bombTimer;
     public int BombCount => _currentBombCount;
     public int SpeedBonus => _speedBonus;
+    public bool IsDead => _isDead;
     public bool IsInvincible => _isInvincible;
 
     #endregion
