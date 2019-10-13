@@ -1,5 +1,4 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.Events;
 
 [System.Serializable]
@@ -13,7 +12,8 @@ public class Player : MonoBehaviour
     public PlayerDataChangeEvent OnPowerChange;
     public PlayerDataChangeEvent OnBombCountChange;
     public PlayerDataChangeEvent OnSpeedChange;
-    public PlayerDataChangeEvent OnDeath;
+    public PlayerDataChangeEvent OnKill; // When he just get killed
+    public PlayerDataChangeEvent OnDeath; // When the death animation is finished
 
     [Header("Configuration")]
 
@@ -117,19 +117,30 @@ public class Player : MonoBehaviour
         OnBombCountChange?.Invoke(this);
     }
 
-    public void Kill()
+    public void Kill(Player killer)
     {
         if (_isDead)
             return;
 
         _isDead = true;
 
-        Debug.Log("Player killed");
+        // Suicide?
+        if (killer.Id == Id)
+        {
+            UpdateScore(-2);
+        }
+
+        Debug.Log($"Player killed by {killer.Id}");
 
         SoundManager.Instance.PlaySound("PlayerDeath");
 
         _animator.SetBool("IsDead", _isDead);
 
+        OnKill?.Invoke(this);
+    }
+
+    public void OnDeathAnimationFinish()
+    {
         OnDeath?.Invoke(this);
     }
 }

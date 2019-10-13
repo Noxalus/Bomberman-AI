@@ -1,5 +1,4 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class Explosion : MonoBehaviour
 {
@@ -141,7 +140,9 @@ public class Explosion : MonoBehaviour
     {
         if (collision.tag == "Player")
         {
-            collision.GetComponent<Player>().Kill();
+            var killer = _bomb.Player;
+            collision.GetComponent<Player>().Kill(killer);
+            killer.UpdateScore(1);
         }
         else if (collision.tag == "DestructibleWall")
         {
