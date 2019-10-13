@@ -9,6 +9,11 @@ public class DebugManager : MonoBehaviour
 
     private Map _map = null;
 
+    private void Awake()
+    {
+        Show(false);
+    }
+
     public void Initialize(Map map)
     {
         _map = map;
@@ -16,17 +21,18 @@ public class DebugManager : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKey(KeyCode.F1))
-            _canvasGroup.alpha = 1;
-        else
-            _canvasGroup.alpha = 0;
-
-        _canvasGroup.alpha = 1;
+        if (Input.GetKeyDown(KeyCode.F1))
+            Show(_canvasGroup.alpha == 0);
 
         if (_map != null)
         {
             UpdateLogicalMap();
         }
+    }
+
+    public void Show(bool show = true)
+    {
+        _canvasGroup.alpha = show ? 1 : 0;
     }
 
     public void UpdateLogicalMap()

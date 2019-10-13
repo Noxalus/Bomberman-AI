@@ -27,6 +27,7 @@ public class GameManager : MonoBehaviour
     private List<Bomb> _bombs = new List<Bomb>();
     private List<Explosion> _explosions = new List<Explosion>();
     private int _deadPlayerCount = 0;
+    private TimeSpan _time;
 
     private void Start()
     {
@@ -83,6 +84,10 @@ public class GameManager : MonoBehaviour
         ClearBombs();
         ClearExplosions();
 
+        StopCoroutine(UpdateTimer());
+        _time = TimeSpan.FromSeconds(0);
+        _uiManager.UpdateTimer(_time);
+
         MusicManager.Instance.PlayMusic(_map.Music);
         _map.GenerateDestrucibleWalls(_gameSettings.WallDensity);
         _deadPlayerCount = 0;
@@ -91,6 +96,8 @@ public class GameManager : MonoBehaviour
         {
             player.Spawn(_map.GetSpawnPosition(player.Id));
         }
+
+        StartCoroutine(UpdateTimer());
     }
 
     private void OnPlayerDeath(Player player)
@@ -114,6 +121,8 @@ public class GameManager : MonoBehaviour
         bomb.OnExplosion.AddListener(OnBombExplode);
 
         player.UpdateCurrentBombCount(-1);
+
+        _map.SetEntityType(EEntityType.Bomb, bomb.transform.position);
 
         _bombs.Add(bomb);
     }
@@ -164,6 +173,18 @@ public class GameManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.A))
         {
             _map.DestroyAllDestructibleWalls();
+        }
+    }
+
+    private IEnumerator UpdateTimer()
+    {
+        float refreshTime = 1f;
+
+        while (true)
+        {
+            yield return new WaitForSeconds(refreshTime);
+            _time += TimeSpan.FromSeconds(refreshTime);
+            _uiManager.UpdateTimer(_time);
         }
     }
 }

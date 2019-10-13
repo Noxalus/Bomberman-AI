@@ -49,6 +49,10 @@ public abstract class Service<T> : MonoBehaviour where T : Component
         if (instance == null)
         {
             instance = this as T;
+
+            // Ensure the GameObject is on the scene root
+            transform.SetParent(null);
+
             DontDestroyOnLoad(gameObject);
         }
         else
