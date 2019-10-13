@@ -70,7 +70,11 @@ public class GameManager : MonoBehaviour
             Player player;
 
             if (i < _gameSettings.AIPlayersCount)
+            {
                 player = Instantiate(_aiPlayerPrefab);
+                // TODO: Refactor this using the AIManager
+                player.GetComponent<NormalAIBehaviour>().Initialize(_map);
+            }
             else
                 player = Instantiate(_playerPrefab);
 

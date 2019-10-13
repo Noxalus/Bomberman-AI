@@ -22,7 +22,7 @@ MonoBehaviour:
   PlayerBaseSpeed: 2.5
   SelectedMapName: Map1
   PlayersCount: 1
-  AIPlayersCount: 0
+  AIPlayersCount: 1
   WallDensity: 0
   BonusProbability: 1
   AvailableBonus:

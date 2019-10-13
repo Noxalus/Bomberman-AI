@@ -103,6 +103,11 @@ public class Map : MonoBehaviour
         return _entitiesMap[normalizedCellPosition.x, normalizedCellPosition.y];
     }
 
+    public EEntityType GetEntityType(Vector2Int normalizedCellPosition)
+    {
+        return _entitiesMap[normalizedCellPosition.x, normalizedCellPosition.y];
+    }
+
     public EEntityType GetEntityType(Vector3 worldPosition)
     {
         var normalizedCellPosition = GetNormalizedCellPositionFromWorldPosition(worldPosition);
@@ -120,16 +125,16 @@ public class Map : MonoBehaviour
         return CollisionMap.OverlapPoint(new Vector2(worldPosition.x, worldPosition.y));
     }
 
-    private bool IsNormalizedCellPositionOutOfBound(Vector3Int normalizedCellPosition)
+    public  bool IsNormalizedCellPositionOutOfBound(Vector2Int normalizedCellPosition)
     {
         return (normalizedCellPosition.x < 0 || normalizedCellPosition.x > _mapSize.x ||
                 normalizedCellPosition.y < 0 || normalizedCellPosition.y > _mapSize.y);
     }
 
-    public Vector3Int GetNormalizedCellPositionFromWorldPosition(Vector3 worldPosition)
+    public Vector2Int GetNormalizedCellPositionFromWorldPosition(Vector3 worldPosition)
     {
-        var normalizedCellPosition = GameTilemap.WorldToCell(worldPosition) - new Vector3Int(_mapOrigin.x, _mapOrigin.y, 0);
-        return normalizedCellPosition;
+        var cellPosition = GameTilemap.WorldToCell(worldPosition);
+        return new Vector2Int(cellPosition.x, cellPosition.y) - _mapOrigin;
     }
 
     public void SetEntityType(EEntityType entityType, Vector3 worldPosition)

@@ -51,6 +51,14 @@ public class PlayerDataView : MonoBehaviour
         _portraitImage.color = player.Color;
     }
 
+    private void Destroy()
+    {
+        _player.OnScoreChange.RemoveListener(OnPlayerScoreChange);
+        _player.OnPowerChange.RemoveListener(OnPlayerPowerChange);
+        _player.OnBombCountChange.RemoveListener(OnPlayerBombCountChange);
+        _player.OnSpeedChange.RemoveListener(OnPlayerSpeedChange);
+    }
+
     private void OnPlayerScoreChange(Player player)
     {
         _scoreText.text = player.Score.ToString();
