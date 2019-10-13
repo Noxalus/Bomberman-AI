@@ -2344,7 +2344,7 @@ GameObject:
   - component: {fileID: 1168836240}
   - component: {fileID: 1168836239}
   m_Layer: 0
-  m_Name: Grid
+  m_Name: Map
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2372,6 +2372,7 @@ MonoBehaviour:
   - {fileID: 1529035158}
   _destructibleWallPrefab: {fileID: 8731644710309082280, guid: ab4f995859fef2843b0a1cc794fde38e,
     type: 3}
+  _music: {fileID: 8300000, guid: 3a335cb4988b3a943bc313a853fad14b, type: 3}
 --- !u!156049354 &1168836240
 Grid:
   m_ObjectHideFlags: 0

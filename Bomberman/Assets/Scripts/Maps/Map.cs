@@ -4,6 +4,8 @@ using UnityEngine.Tilemaps;
 
 public class Map : MonoBehaviour
 {
+    #region Serialized fields
+
     [Header("Inner references")]
 
     [SerializeField] private Grid _grid = null;
@@ -14,19 +16,29 @@ public class Map : MonoBehaviour
     [Header("Assets")]
 
     [SerializeField] private DestructibleWall _destructibleWallPrefab = null;
+    [SerializeField] private AudioClip _music = null;
 
-    private List<Vector3Int> _playerSpawnCells = new List<Vector3Int>();
-    private EEntityType[,] _entitiesMap;
+    #endregion
+
+    #region Properties
 
     public Grid GameGrid => _grid;
     public Tilemap GameTilemap => _tilemap;
     public TilemapCollider2D CollisionMap => _collisionMap;
-
+    public AudioClip Music => _music;
     public Vector2Int MapSize => _mapSize;
 
+    #endregion
+
+    #region Private fields
+
+    private List<Vector3Int> _playerSpawnCells = new List<Vector3Int>();
+    private EEntityType[,] _entitiesMap;
     private Vector2Int _mapSize = Vector2Int.zero;
     private Vector2Int _mapOrigin = Vector2Int.zero;
     private List<DestructibleWall> _destructibleWallInstances = new List<DestructibleWall>();
+
+    #endregion
 
     private void Awake()
     {

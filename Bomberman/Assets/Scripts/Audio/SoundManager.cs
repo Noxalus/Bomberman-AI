@@ -12,11 +12,6 @@ public class SoundManager : Service<SoundManager>
     [SerializeField] private AudioClip _bombExplodeSound = null;
     [SerializeField] private AudioClip _bonusPickedupSound = null;
 
-    public void PlaySound(AudioClipData soundData)
-    {
-        _audioSource.PlayOneShot(soundData.Clip);
-    }
-
     public void PlaySound(string soundName)
     {
         switch (soundName)

@@ -73,6 +73,7 @@ public class GameManager : MonoBehaviour
 
     private void StartRound()
     {
+        MusicManager.Instance.PlayMusic(_map.Music);
         _map.GenerateDestrucibleWalls(_gameSettings.WallDensity);
         _deadPlayerCount = 0;
 
