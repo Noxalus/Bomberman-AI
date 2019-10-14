@@ -204,6 +204,8 @@ MonoBehaviour:
   _animator: {fileID: 7903295033436883380}
   _costMatrixText: {fileID: 4441764945576394396}
   _gameSettings: {fileID: 11400000, guid: e6857ad653acb384db35baec132fd935, type: 2}
+  _debugSpeedFactor: 1
+  _debugSprite: {fileID: 21300000, guid: 0cd1a40e6f2001141ad63510115fd2e6, type: 3}
 --- !u!1 &5714434584144988963
 GameObject:
   m_ObjectHideFlags: 0
@@ -220,7 +222,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &3368484825389829657
 Transform:
   m_ObjectHideFlags: 0
@@ -271,9 +273,9 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingLayerID: -1946283991
+  m_SortingLayer: 6
+  m_SortingOrder: 1
   m_Sprite: {fileID: -8603092258021579888, guid: c95b568a47694f646a9745fde5afb679,
     type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -397,6 +399,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: AIPlayer
       objectReference: {fileID: 0}
+    - target: {fileID: 5898646105182986101, guid: f5206e82857e02b4c82a2a4dfe5f9768,
+        type: 3}
+      propertyPath: m_SortingOrder
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5898646104984227183, guid: f5206e82857e02b4c82a2a4dfe5f9768,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -451,6 +458,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5898646104984227179, guid: f5206e82857e02b4c82a2a4dfe5f9768,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 573729156273392390, guid: f5206e82857e02b4c82a2a4dfe5f9768, type: 3}

@@ -131,7 +131,7 @@ public class GameManager : MonoBehaviour
             return;
 
         var cellPosition = _map.GameGrid.WorldToCell(player.transform.position);
-        var position = cellPosition + _map.GameTilemap.tileAnchor;
+        var position = cellPosition;
         var bomb = Instantiate(_bombPrefab, position, Quaternion.identity, _map.transform);
         bomb.Initialize(player);
         bomb.OnExplosion.AddListener(OnBombExplode);

@@ -143,11 +143,27 @@ public class Map : MonoBehaviour
         _entitiesMap[normalizedCellPosition.x, normalizedCellPosition.y] = entityType;
     }
 
+    public Vector3 CellToWorld(Vector2Int cellPosition)
+    {
+        return GameTilemap.CellToWorld(new Vector3Int(cellPosition.x, cellPosition.y, 0)) + GameTilemap.tileAnchor;
+    }
+
+    public Vector3 CellToWorld(Vector3Int cellPosition)
+    {
+        return GameTilemap.CellToWorld(cellPosition) + GameTilemap.tileAnchor;
+    }
+
     // Get cell position in world space from normalized cell position (which goes from 0 to MapSize)
     public Vector3Int GetCellPositionFromNormalizedPosition(Vector2Int normalizedCellPosition)
     {
-        var position = normalizedCellPosition + _mapOrigin;
-        return new Vector3Int(position.x, position.y, 0);
+        var cellPosition = normalizedCellPosition + _mapOrigin;
+        return new Vector3Int(cellPosition.x, cellPosition.y, 0);
+    }
+
+    public Vector3 GetWorldPositionFromNormalizedPosition(Vector2Int normalizedCellPosition)
+    {
+        var cellPosition = GetCellPositionFromNormalizedPosition(normalizedCellPosition);
+        return CellToWorld(cellPosition);
     }
 
     public void DestroyAllDestructibleWalls()
@@ -178,7 +194,7 @@ public class Map : MonoBehaviour
 
                 if (tile)
                 {
-                    var worldPosition = GameGrid.CellToWorld(cellPosition) + GameTilemap.tileAnchor;
+                    var worldPosition = CellToWorld(cellPosition);
 
                     if (OverlapPlayerSpawn(cellPosition) || OverlapUnbreakableWall(worldPosition))
                     {
@@ -321,7 +337,7 @@ public class Map : MonoBehaviour
 
                 if (tile)
                 {
-                    var worldPosition = GameGrid.CellToWorld(cellPosition) + GameTilemap.tileAnchor;
+                    var worldPosition = CellToWorld(cellPosition);
 
                     if (OverlapUnbreakableWall(worldPosition))
                     {

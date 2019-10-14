@@ -20,7 +20,7 @@ MonoBehaviour:
   SpeedBonusIncrement: 0.25
   PlayerSpawnInvincibleTimer: 2.5
   PlayerBaseSpeed: 2.5
-  SelectedMapName: Map1
+  SelectedMapName: Map3
   PlayersCount: 1
   AIPlayersCount: 1
   WallDensity: 0

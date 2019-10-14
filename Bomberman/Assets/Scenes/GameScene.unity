@@ -630,10 +630,10 @@ RectTransform:
   m_Father: {fileID: 1799113568}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 109.07, y: -117.335}
+  m_SizeDelta: {x: 178.14, y: 194.67}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1095431077
 MonoBehaviour:
@@ -947,10 +947,10 @@ RectTransform:
   m_Father: {fileID: 1860693782}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 125, y: -304}
+  m_SizeDelta: {x: 218.14, y: 234.67}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1799113569
 MonoBehaviour:
@@ -1034,7 +1034,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1860693782
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1053,7 +1053,7 @@ RectTransform:
   m_AnchorMin: {x: 1, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 608}
+  m_SizeDelta: {x: 250, y: 608}
   m_Pivot: {x: 1, y: 0.5}
 --- !u!114 &1860693783
 MonoBehaviour:
@@ -1321,11 +1321,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1222798401}
     m_Modifications:
-    - target: {fileID: 5587445135400353169, guid: def4043e7a849a1488a875307c74c71b,
-        type: 3}
-      propertyPath: m_Name
-      value: Timer
-      objectReference: {fileID: 0}
     - target: {fileID: 5587445135400353168, guid: def4043e7a849a1488a875307c74c71b,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1430,6 +1425,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Pivot.y
       value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5587445135400353169, guid: def4043e7a849a1488a875307c74c71b,
+        type: 3}
+      propertyPath: m_Name
+      value: Timer
       objectReference: {fileID: 0}
     - target: {fileID: 5587445134331110596, guid: def4043e7a849a1488a875307c74c71b,
         type: 3}
