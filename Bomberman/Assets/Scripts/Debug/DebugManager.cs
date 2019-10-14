@@ -44,6 +44,7 @@ public class DebugManager : MonoBehaviour
             {
                 Vector3Int normalizedCellPosition = new Vector3Int(x, _map.MapSize.y - y, 0); 
                 logicalMapString.Append(EntityTypeToString(_map.GetEntityType(normalizedCellPosition)));
+                logicalMapString.Append(" ");
             }
 
             logicalMapString.Append("\n");

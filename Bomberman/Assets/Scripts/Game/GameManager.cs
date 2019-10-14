@@ -10,12 +10,13 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] private UIManager _uiManager = null;
     [SerializeField] private DebugManager _debugManager = null;
+    [SerializeField] private AIManager _aiManager = null;
 
     [Header("Assets reference")]
 
     [SerializeField] private GameSettings _gameSettings = null;
     [SerializeField] private Player _playerPrefab = null;
-    [SerializeField] private Player _aiPlayerPrefab = null;
+    [SerializeField] private AIPlayer _aiPlayerPrefab = null;
     [SerializeField] private Bomb _bombPrefab = null;
     [SerializeField] private Explosion _explosionPrefab = null;
 
@@ -65,23 +66,32 @@ public class GameManager : MonoBehaviour
 
     private void StartGame(int playerCount = 1)
     {
+        List<AIPlayer> aiPlayers = new List<AIPlayer>();
+
         for (int i = 0; i < playerCount; i++)
         {
             Player player;
 
             if (i < _gameSettings.AIPlayersCount)
             {
-                player = Instantiate(_aiPlayerPrefab);
-                // TODO: Refactor this using the AIManager
-                player.GetComponent<NormalAIBehaviour>().Initialize(_map);
+                AIPlayer aiPlayer = Instantiate(_aiPlayerPrefab);
+                aiPlayers.Add(aiPlayer);
+                player = aiPlayer;
             }
             else
+            {
                 player = Instantiate(_playerPrefab);
+            }
 
             player.Initialize(i, _gameSettings.PlayersColor[i]);
             player.OnDeath.AddListener(OnPlayerDeath);
             player.OnPlantBomb.AddListener(AddBomb);
             _players.Add(player);
+        }
+
+        if (aiPlayers.Count > 0)
+        {
+            _aiManager.Initialize(_map, aiPlayers);
         }
 
         _uiManager.Initialize(_players);
