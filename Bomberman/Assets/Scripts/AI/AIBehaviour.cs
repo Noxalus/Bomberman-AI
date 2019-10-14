@@ -60,32 +60,11 @@ public class AIBehaviour : MonoBehaviour
 
     private void UpdateMovement()
     {
+        _movement = Vector2Int.zero;
+
         if (_isMovingToTarget)
         {
-            _movement = Vector2Int.zero;
-            var distance = new Vector2(
-                Mathf.Abs(transform.position.x - _nextPosition.x),
-                Mathf.Abs(transform.position.y - _nextPosition.y)
-            );
-
-            if (distance.x > 0.1f || distance.y > 0.1f)
-            {
-                if (distance.x > distance.y)
-                {
-                    if (transform.position.x > _nextPosition.x)
-                        _movement.x = -1;
-                    else
-                        _movement.x = 1;
-                }
-                else
-                {
-                    if (transform.position.y > _nextPosition.y)
-                        _movement.y = -1;
-                    else
-                        _movement.y = 1;
-                }
-            }
-            else
+            if (MoveToTarget())
             {
                 if (_currentPath.Count == 0)
                 {
@@ -93,12 +72,52 @@ public class AIBehaviour : MonoBehaviour
                     _movement = Vector2Int.zero;
                     Debug.Log("Reached target!");
                     ClearPathDebugSprites();
+                    _rigidbody.position = _targetPosition;
                 }
                 else
                 {
+                    Debug.Log("Reached next position");
+                    _rigidbody.position = _nextPosition;
                     _nextPosition = _aiManager.WorldPosition(_currentPath.Pop());
+                    MoveToTarget();
                 }
             }
+        }
+    }
+
+    private bool MoveToTarget()
+    {
+        float speed = (_gameSettings.PlayerBaseSpeed + (_player.SpeedBonus * _gameSettings.SpeedBonusIncrement)) * _debugSpeedFactor;
+
+        var distance = new Vector2(
+               Mathf.Abs(transform.position.x - _nextPosition.x),
+               Mathf.Abs(transform.position.y - _nextPosition.y)
+           );
+
+        if (distance.x > speed * Time.fixedDeltaTime || distance.y > speed * Time.fixedDeltaTime)
+        {
+            if (distance.x > distance.y)
+            {
+                if (transform.position.x > _nextPosition.x)
+                    _movement.x = -1;
+                else
+                    _movement.x = 1;
+            }
+            else
+            {
+                if (transform.position.y > _nextPosition.y)
+                    _movement.y = -1;
+                else
+                    _movement.y = 1;
+            }
+
+            Debug.Log("Movement: " + _movement);
+
+            return false;
+        }
+        else
+        {
+            return true;
         }
     }
 
@@ -106,8 +125,9 @@ public class AIBehaviour : MonoBehaviour
     {
         _targetPosition = targetPosition.HasValue ? targetPosition.Value : SearchNextTarget();
 
-        var targetNormalizedCellPosition = _aiManager.CellPosition(_targetPosition);
-        _currentPath = _aiManager.ComputePath(targetNormalizedCellPosition);
+        var targetCellPosition = _aiManager.CellPosition(_targetPosition);
+        var origin = _aiManager.CellPosition(transform.position);
+        _currentPath = _aiManager.ComputePath(origin, targetCellPosition);
         _nextPosition = _aiManager.WorldPosition(_currentPath.Pop());
 
         ClearPathDebugSprites();

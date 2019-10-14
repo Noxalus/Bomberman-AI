@@ -5,6 +5,12 @@ using UnityEngine;
 
 public class AIManager : MonoBehaviour
 {
+    #region Constants
+
+    private const int MAX_PATH_LENGTH = 1000;
+
+    #endregion
+
     #region Serialized fields
 
     // Debug
@@ -40,16 +46,15 @@ public class AIManager : MonoBehaviour
         }
     }
 
-    public Stack<Vector2Int> ComputePath(Vector2Int target)
+    public Stack<Vector2Int> ComputePath(Vector2Int origin, Vector2Int target)
     {
-        var origin = _map.GetNormalizedCellPositionFromWorldPosition(transform.position);
-        int[,] costMatrix = ComputeCostMap(origin);
+        int[,] costMap = ComputeCostMap(origin);
 
         var path = new Stack<Vector2Int>();
         path.Push(target);
 
         var direction = EDirection.None;
-        while (origin != target && path.Count < 10000)
+        while (origin != target && path.Count < MAX_PATH_LENGTH)
         {
             var min = _map.MapSize.x * _map.MapSize.y;
 
@@ -57,34 +62,43 @@ public class AIManager : MonoBehaviour
 
             foreach (var neighbourPair in neighbours)
             {
-                if (costMatrix[neighbourPair.Value.x, neighbourPair.Value.y] < min)
+                if (costMap[neighbourPair.Value.x, neighbourPair.Value.y] < min)
                 {
-                    min = costMatrix[neighbourPair.Value.x, neighbourPair.Value.y];
+                    min = costMap[neighbourPair.Value.x, neighbourPair.Value.y];
                     direction = neighbourPair.Key;
                 }
             }
 
-            switch (direction)
-            {
-                case EDirection.Up:
-                    target.y--;
-                    break;
-                case EDirection.Down:
-                    target.y++;
-                    break;
-                case EDirection.Right:
-                    target.x++;
-                    break;
-                case EDirection.Left:
-                    target.x--;
-                    break;
-            }
+            target += DirectionToMotion(direction);
 
             if (target != origin)
                 path.Push(target);
         }
 
         return path;
+    }
+
+    private Vector2Int DirectionToMotion(EDirection direction)
+    {
+        var motion = Vector2Int.zero;
+
+        switch (direction)
+        {
+            case EDirection.Up:
+                motion.y--;
+                break;
+            case EDirection.Down:
+                motion.y++;
+                break;
+            case EDirection.Right:
+                motion.x++;
+                break;
+            case EDirection.Left:
+                motion.x--;
+                break;
+        }
+
+        return motion;
     }
 
     private Dictionary<EDirection, Vector2Int> GetNeighbours(Vector2Int position)
@@ -147,8 +161,7 @@ public class AIManager : MonoBehaviour
                     costMatrix[currentPosition.x + 1, currentPosition.y] = id;
                     queue.Enqueue(new Vector2Int(currentPosition.x + 1, currentPosition.y));
                 }
-                // Bottom => TODO: Why don't <= with MapSize.y but yes for MapSize.x?
-                if (currentPosition.y + 1 < _map.MapSize.y && IsAccessible(new Vector2Int(currentPosition.x, currentPosition.y + 1)) &&
+                if (currentPosition.y + 1 <= _map.MapSize.y && IsAccessible(new Vector2Int(currentPosition.x, currentPosition.y + 1)) &&
                     costMatrix[currentPosition.x, currentPosition.y + 1] > id)
                 {
                     costMatrix[currentPosition.x, currentPosition.y + 1] = id;
@@ -169,6 +182,7 @@ public class AIManager : MonoBehaviour
 
         return costMatrix;
     }
+
     private void DrawCostMap(int[,] costMatrix)
     {
         StringBuilder costMapString = new StringBuilder();
@@ -207,7 +221,7 @@ public class AIManager : MonoBehaviour
         return _map.GetWorldPositionFromNormalizedPosition(normalizeCellPosition);
     }
 
-    // Actually returns normalized position
+    // Actually returns normalized cell position
     public Vector2Int CellPosition(Vector3 worldPosition)
     {
         return _map.GetNormalizedCellPositionFromWorldPosition(worldPosition);

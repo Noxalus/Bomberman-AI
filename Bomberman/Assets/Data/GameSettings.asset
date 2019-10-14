@@ -20,10 +20,10 @@ MonoBehaviour:
   SpeedBonusIncrement: 0.25
   PlayerSpawnInvincibleTimer: 2.5
   PlayerBaseSpeed: 2.5
-  SelectedMapName: Map3
+  SelectedMapName: Map1
   PlayersCount: 1
   AIPlayersCount: 1
-  WallDensity: 0
+  WallDensity: 0.7
   BonusProbability: 1
   AvailableBonus:
     m_keys: 0100000002000000030000000400000005000000
