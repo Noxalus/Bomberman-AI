@@ -71,6 +71,10 @@ public class AIManager : MonoBehaviour
 
             target += DirectionToMotion(direction);
 
+            // No way to reach the target
+            if (target == path.Peek())
+                return new Stack<Vector2Int>();
+
             if (target != origin)
                 path.Push(target);
         }

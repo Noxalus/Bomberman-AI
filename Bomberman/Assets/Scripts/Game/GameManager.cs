@@ -30,15 +30,16 @@ public class GameManager : MonoBehaviour
     private List<Explosion> _explosions = new List<Explosion>();
     private int _deadPlayerCount = 0;
     private TimeSpan _time;
+    private int _currentMapIndex = 0;
 
     private void Start()
     {
-        StartCoroutine(LoadMapScene());
+        StartCoroutine(LoadMapScene(_gameSettings.Maps[_currentMapIndex]));
     }
 
-    IEnumerator LoadMapScene()
+    IEnumerator LoadMapScene(string mapName)
     {
-        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(_gameSettings.SelectedMapName, LoadSceneMode.Additive);
+        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(mapName, LoadSceneMode.Additive);
 
         // Wait until the asynchronous scene fully loads
         while (!asyncLoad.isDone)
@@ -199,6 +200,21 @@ public class GameManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.A))
         {
             _map.DestroyAllDestructibleWalls();
+        }
+
+        if (Input.GetKeyDown(KeyCode.PageUp))
+        {
+            _currentMapIndex = (_currentMapIndex + 1) % _gameSettings.Maps.Count;
+            StartCoroutine(LoadMapScene(_gameSettings.Maps[_currentMapIndex]));
+        }
+        else if (Input.GetKeyDown(KeyCode.PageDown))
+        {
+            _currentMapIndex = _currentMapIndex - 1;
+
+            if (_currentMapIndex < 0)
+                _currentMapIndex = _gameSettings.Maps.Count - 1;
+
+            StartCoroutine(LoadMapScene(_gameSettings.Maps[_currentMapIndex]));
         }
     }
 

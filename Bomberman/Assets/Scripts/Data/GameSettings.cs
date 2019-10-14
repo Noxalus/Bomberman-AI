@@ -17,7 +17,7 @@ public class GameSettings : ScriptableObject
 
     [Header("Map configuration")]
 
-    public string SelectedMapName = "Map1";
+    public List<string> Maps = new List<string>{ "Map1", "Map2", "Map3" };
     public int PlayersCount = 4;
     public int AIPlayersCount = 2;
     public float WallDensity = 0.75f;

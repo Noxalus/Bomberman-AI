@@ -128,6 +128,13 @@ public class AIBehaviour : MonoBehaviour
         var targetCellPosition = _aiManager.CellPosition(_targetPosition);
         var origin = _aiManager.CellPosition(transform.position);
         _currentPath = _aiManager.ComputePath(origin, targetCellPosition);
+
+        if (_currentPath.Count == 0)
+        {
+            Debug.LogWarning("No way to reach the target !");
+            return;
+        }
+
         _nextPosition = _aiManager.WorldPosition(_currentPath.Pop());
 
         ClearPathDebugSprites();
