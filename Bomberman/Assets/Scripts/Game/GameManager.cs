@@ -8,6 +8,7 @@ public class GameManager : MonoBehaviour
 {
     [Header("Scene reference")]
 
+    [SerializeField] private Camera _camera = null;
     [SerializeField] private UIManager _uiManager = null;
     [SerializeField] private DebugManager _debugManager = null;
     [SerializeField] private AIManager _aiManager = null;
@@ -253,6 +254,38 @@ public class GameManager : MonoBehaviour
                 _currentMapIndex = _gameSettings.Maps.Count - 1;
 
             SwitchMap(_gameSettings.Maps[_currentMapIndex]);
+        }
+
+        if (Input.GetMouseButton(1))
+        {
+            var worldPosition = _camera.ScreenToWorldPoint(Input.mousePosition);
+            var normalizedCellPosition = _map.GetNormalizedCellPositionFromWorldPosition(worldPosition);
+
+            if (_aiManager.IsAccessible(normalizedCellPosition))
+            {
+                worldPosition = _aiManager.WorldPosition(normalizedCellPosition);
+                _map.AddDestructibleWall(worldPosition);
+            }
+            else
+            {
+                Debug.LogWarning("Not a valid position for a wall...");
+            }
+        }
+        else if (Input.GetMouseButtonDown(2))
+        {
+            RaycastHit2D hit = Physics2D.Raycast(_camera.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);
+
+            if (hit.collider != null)
+            {
+                Transform objectHit = hit.transform;
+
+                var destructibleWall = objectHit.gameObject.GetComponent<DestructibleWall>();
+
+                if (destructibleWall != null)
+                    destructibleWall.Explode();
+                else
+                    Debug.LogWarning("No destructible wall found here!");
+            }
         }
     }
 
