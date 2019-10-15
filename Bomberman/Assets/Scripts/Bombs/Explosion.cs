@@ -78,9 +78,7 @@ public class Explosion : MonoBehaviour
     {
         bool stop = false;
 
-        EEntityType entityType = _map.GetEntityType(
-            _map.GameGrid.CellToWorld(position + offset)
-        );
+        EEntityType entityType = _map.GetEntityType(position + offset);
 
         if (entityType != EEntityType.UnbreakableWall || entityType == EEntityType.Explosion)
         {

@@ -16,4 +16,9 @@ public class UIManager : MonoBehaviour
     {
         _timer.UpdateTimer(time);
     }
+
+    public void Clear()
+    {
+        _playersBoardView.Clear();
+    }
 }

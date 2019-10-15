@@ -34,10 +34,38 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        StartCoroutine(LoadMapScene(_gameSettings.Maps[_currentMapIndex]));
+        LoadMap(_gameSettings.Maps[_currentMapIndex]);
     }
 
-    IEnumerator LoadMapScene(string mapName)
+    private void LoadMap(string mapName)
+    {
+        StartCoroutine(LoadMapSceneCoroutine(_gameSettings.Maps[_currentMapIndex]));
+    }
+
+    private void UnloadCurrentMap()
+    {
+        SceneManager.UnloadSceneAsync(_gameSettings.Maps[_currentMapIndex]);
+    }
+
+    private void SwitchMap(string mapName)
+    {
+        // Make sure to clean all elements from the previous map
+        ClearPlayers();
+        _uiManager.Clear();
+        _aiManager.Clear();
+
+        LoadMap(mapName);
+    }
+
+    private void ClearPlayers()
+    {
+        foreach (var player in _players)
+            Destroy(player.gameObject);
+
+        _players.Clear();
+    }
+
+    IEnumerator LoadMapSceneCoroutine(string mapName)
     {
         AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(mapName, LoadSceneMode.Additive);
 
@@ -100,11 +128,16 @@ public class GameManager : MonoBehaviour
         StartRound();
     }
 
-    private void StartRound()
+    private void ClearRoundData()
     {
         _map.Clear();
         ClearBombs();
         ClearExplosions();
+    }
+
+    private void StartRound()
+    {
+        ClearRoundData();
 
         StopAllCoroutines();
         StopCoroutine(UpdateTimer());
@@ -204,17 +237,22 @@ public class GameManager : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.PageUp))
         {
+            UnloadCurrentMap();
+
             _currentMapIndex = (_currentMapIndex + 1) % _gameSettings.Maps.Count;
-            StartCoroutine(LoadMapScene(_gameSettings.Maps[_currentMapIndex]));
+
+           SwitchMap(_gameSettings.Maps[_currentMapIndex]);
         }
         else if (Input.GetKeyDown(KeyCode.PageDown))
         {
-            _currentMapIndex = _currentMapIndex - 1;
+            UnloadCurrentMap();
+
+            _currentMapIndex--;
 
             if (_currentMapIndex < 0)
                 _currentMapIndex = _gameSettings.Maps.Count - 1;
 
-            StartCoroutine(LoadMapScene(_gameSettings.Maps[_currentMapIndex]));
+            SwitchMap(_gameSettings.Maps[_currentMapIndex]);
         }
     }
 

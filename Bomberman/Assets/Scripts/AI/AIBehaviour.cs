@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -31,6 +32,20 @@ public class AIBehaviour : MonoBehaviour
     public void Initialize(AIManager aiManager)
     {
         _aiManager = aiManager;
+
+        _movement = Vector2.zero;
+        _targetPosition = Vector3.zero;
+        _isMovingToTarget = false;
+        _currentPath = new Stack<Vector2Int>();
+        _nextPosition = Vector3.zero;
+    }
+
+    public void Clear()
+    {
+        foreach (var pathDebugSprite in _pathDebugSprites)
+            Destroy(pathDebugSprite.gameObject);
+
+        _pathDebugSprites.Clear();
     }
 
     private void Update()

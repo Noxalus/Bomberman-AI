@@ -215,6 +215,7 @@ MonoBehaviour:
   _animator: {fileID: 7903295033436883380}
   _rigidbody: {fileID: 4876474262725627214}
   _gameSettings: {fileID: 11400000, guid: e6857ad653acb384db35baec132fd935, type: 2}
+  _behaviour: {fileID: 8603090934371629033}
 --- !u!114 &8603090934371629033
 MonoBehaviour:
   m_ObjectHideFlags: 0

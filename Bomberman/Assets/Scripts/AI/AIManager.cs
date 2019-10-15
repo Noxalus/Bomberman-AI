@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Text;
 using TMPro;
 using UnityEngine;
@@ -21,7 +22,7 @@ public class AIManager : MonoBehaviour
     #region Private fields
 
     private Map _map = null;
-    private List<AIPlayer> _aiPlayers = null;
+    private List<AIPlayer> _aiPlayers = new List<AIPlayer>();
     private Vector2Int _areaSize = Vector2Int.zero;
 
     #endregion
@@ -40,11 +41,17 @@ public class AIManager : MonoBehaviour
         _areaSize = _map.MapSize;
 
         foreach (var aiPlayer in aiPlayers)
-        {
-            var behaviour = aiPlayer.GetComponent<AIBehaviour>();
-            behaviour.Initialize(this);
-        }
+            aiPlayer.Behaviour.Initialize(this);
     }
+
+    public void Clear()
+    {
+        foreach (var aiPlayer in _aiPlayers)
+            Destroy(aiPlayer.gameObject);
+
+        _aiPlayers.Clear();
+    }
+
 
     public Stack<Vector2Int> ComputePath(Vector2Int origin, Vector2Int target)
     {

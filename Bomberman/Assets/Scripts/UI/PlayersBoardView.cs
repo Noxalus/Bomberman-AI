@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayersBoardView : MonoBehaviour
@@ -17,5 +16,13 @@ public class PlayersBoardView : MonoBehaviour
 
             _playerDataViewInstances.Add(player.Id, playerDataView);
         }
+    }
+
+    public void Clear()
+    {
+        foreach (var _playerDataView in _playerDataViewInstances.Values)
+            Destroy(_playerDataView.gameObject);
+
+        _playerDataViewInstances.Clear();
     }
 }
