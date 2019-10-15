@@ -130,12 +130,12 @@ public class AIManager : MonoBehaviour
 
     public int[,] ComputeCostMap(Vector2Int targetNormalizedCellPosition)
     {
-        var costMatrix = new int[_map.MapSize.x + 1, _map.MapSize.y + 1];
+        var costMatrix = new int[AreaSize.x, AreaSize.y];
 
         // We put all cells at the "infinity" value
-        for (int x = 0; x <= _map.MapSize.x; x++)
-            for (int y = 0; y <= _map.MapSize.y; y++)
-                costMatrix[x, y] = _map.MapSize.x * _map.MapSize.y;
+        for (int x = 0; x < AreaSize.x; x++)
+            for (int y = 0; y < AreaSize.y; y++)
+                costMatrix[x, y] = AreaSize.x * AreaSize.y;
 
         int id = 0;
         var queue = new Queue<Vector2Int>();
@@ -159,13 +159,13 @@ public class AIManager : MonoBehaviour
                     queue.Enqueue(new Vector2Int(currentPosition.x, currentPosition.y - 1));
                 }
                 // Right
-                if (currentPosition.x + 1 <= _map.MapSize.x && IsAccessible(new Vector2Int(currentPosition.x + 1, currentPosition.y)) &&
+                if (currentPosition.x + 1 < AreaSize.x && IsAccessible(new Vector2Int(currentPosition.x + 1, currentPosition.y)) &&
                     costMatrix[currentPosition.x + 1, currentPosition.y] > id)
                 {
                     costMatrix[currentPosition.x + 1, currentPosition.y] = id;
                     queue.Enqueue(new Vector2Int(currentPosition.x + 1, currentPosition.y));
                 }
-                if (currentPosition.y + 1 <= _map.MapSize.y && IsAccessible(new Vector2Int(currentPosition.x, currentPosition.y + 1)) &&
+                if (currentPosition.y + 1 < AreaSize.y && IsAccessible(new Vector2Int(currentPosition.x, currentPosition.y + 1)) &&
                     costMatrix[currentPosition.x, currentPosition.y + 1] > id)
                 {
                     costMatrix[currentPosition.x, currentPosition.y + 1] = id;
@@ -191,15 +191,16 @@ public class AIManager : MonoBehaviour
     {
         StringBuilder costMapString = new StringBuilder();
 
-        for (int y = 0; y <= _map.MapSize.y; y++)
+        for (int y = 0; y < AreaSize.y; y++)
         {
-            for (int x = 0; x <= _map.MapSize.x; x++)
+            for (int x = 0; x < AreaSize.x; x++)
             {
                 string c = "_";
 
-                if (costMatrix[x, _map.MapSize.y - y] >= 0 && costMatrix[x, _map.MapSize.y - y] < 26)
-                    c = char.ConvertFromUtf32(97 + costMatrix[x, _map.MapSize.y - y]);
-                else if (costMatrix[x, _map.MapSize.y - y] >= _map.MapSize.x * _map.MapSize.y)
+                var yDown = (AreaSize.y - 1) - y;
+                if (costMatrix[x, yDown] >= 0 && costMatrix[x, yDown] < 26)
+                    c = char.ConvertFromUtf32(97 + costMatrix[x, yDown]);
+                else if (costMatrix[x, yDown] >= AreaSize.x * AreaSize.y)
                     c = "X";
 
                 costMapString.Append(c + " ");

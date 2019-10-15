@@ -88,9 +88,9 @@ public class Map : MonoBehaviour
 
     private void ClearEntitiesMap()
     {
-        for (int y = 0; y <= _mapSize.y; y++)
+        for (int y = 0; y < _mapSize.y; y++)
         {
-            for (int x = 0; x <= _mapSize.x; x++)
+            for (int x = 0; x < _mapSize.x; x++)
             {
                 if (_entitiesMap[x, y] != EEntityType.UnbreakableWall)
                     _entitiesMap[x, y] = EEntityType.None;
@@ -127,8 +127,8 @@ public class Map : MonoBehaviour
 
     public  bool IsNormalizedCellPositionOutOfBound(Vector2Int normalizedCellPosition)
     {
-        return (normalizedCellPosition.x < 0 || normalizedCellPosition.x > _mapSize.x ||
-                normalizedCellPosition.y < 0 || normalizedCellPosition.y > _mapSize.y);
+        return normalizedCellPosition.x < 0 || normalizedCellPosition.x > _mapSize.x - 1 ||
+               normalizedCellPosition.y < 0 || normalizedCellPosition.y > _mapSize.y - 1;
     }
 
     public Vector2Int GetNormalizedCellPositionFromWorldPosition(Vector3 worldPosition)
@@ -184,9 +184,9 @@ public class Map : MonoBehaviour
 
     public void GenerateDestrucibleWalls(float wallPercentage)
     {
-        for (int y = 0; y <= MapSize.y; y++)
+        for (int y = 0; y < MapSize.y; y++)
         {
-            for (int x = 0; x <= MapSize.x; x++)
+            for (int x = 0; x < MapSize.x; x++)
             {
                 var normalizedCellPosition = new Vector2Int(x, y);
                 var cellPosition = GetCellPositionFromNormalizedPosition(normalizedCellPosition);
@@ -269,7 +269,7 @@ public class Map : MonoBehaviour
 
     private void InitializeEntitiesMap()
     {
-        _entitiesMap = new EEntityType[_mapSize.x + 1, _mapSize.y + 1];
+        _entitiesMap = new EEntityType[_mapSize.x, _mapSize.y];
         FindUnbreakableWalls();
     }
 
@@ -321,15 +321,15 @@ public class Map : MonoBehaviour
         }
 
         _mapOrigin = min;
-        _mapSize = new Vector2Int(max.x - min.x, max.y - min.y);
+        _mapSize = new Vector2Int((max.x - min.x) + 1, (max.y - min.y) + 1);
     }
 
     // Copy the unbreakable walls position to the entities map
     private void FindUnbreakableWalls()
     {
-        for (int y = 0; y <= MapSize.y; y++)
+        for (int y = 0; y < MapSize.y; y++)
         {
-            for (int x = 0; x <= MapSize.x; x++)
+            for (int x = 0; x < MapSize.x; x++)
             {
                 var normalizedCellPosition = new Vector2Int(x, y);
                 var cellPosition = GetCellPositionFromNormalizedPosition(normalizedCellPosition);

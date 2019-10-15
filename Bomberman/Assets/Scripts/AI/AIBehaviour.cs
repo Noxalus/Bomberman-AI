@@ -184,9 +184,9 @@ public class AIBehaviour : MonoBehaviour
     {
         // TODO: Add cost matrix logic here
         List<Vector2Int> availablePositions = new List<Vector2Int>();
-        for (int x = 0; x <= _aiManager.AreaSize.x; x++)
+        for (int x = 0; x < _aiManager.AreaSize.x; x++)
         {
-            for (int y = 0; y <= _aiManager.AreaSize.y; y++)
+            for (int y = 0; y < _aiManager.AreaSize.y; y++)
             {
                 var normalizedCellPosition = new Vector2Int(x, y);
                 if (_aiManager.IsAccessible(normalizedCellPosition))

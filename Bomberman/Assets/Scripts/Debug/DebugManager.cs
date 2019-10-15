@@ -38,11 +38,11 @@ public class DebugManager : MonoBehaviour
     public void UpdateLogicalMap()
     {
         StringBuilder logicalMapString = new StringBuilder();
-        for (int y = 0; y <= _map.MapSize.y; y++)
+        for (int y = 0; y < _map.MapSize.y; y++)
         {
-            for (int x = 0; x <= _map.MapSize.x; x++)
+            for (int x = 0; x < _map.MapSize.x; x++)
             {
-                Vector3Int normalizedCellPosition = new Vector3Int(x, _map.MapSize.y - y, 0); 
+                Vector3Int normalizedCellPosition = new Vector3Int(x, (_map.MapSize.y - 1) - y, 0); 
                 logicalMapString.Append(EntityTypeToString(_map.GetEntityType(normalizedCellPosition)));
                 logicalMapString.Append(" ");
             }
