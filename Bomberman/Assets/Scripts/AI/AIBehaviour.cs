@@ -56,11 +56,11 @@ public class AIBehaviour : MonoBehaviour
             var mousePosition = Input.mousePosition;
             var worldPosition = Camera.main.ScreenToWorldPoint(mousePosition);
 
-            var normalizedCellPosition = _aiManager.CellPosition(worldPosition);
+            var cellPosition = _aiManager.CellPosition(worldPosition);
 
-            if (_aiManager.IsAccessible(normalizedCellPosition))
+            if (_aiManager.IsAccessible(cellPosition))
             {
-                worldPosition = _aiManager.WorldPosition(normalizedCellPosition);
+                worldPosition = _aiManager.WorldPosition(cellPosition);
                 UpdateTarget(worldPosition);
             }
             else
@@ -203,10 +203,10 @@ public class AIBehaviour : MonoBehaviour
         {
             for (int y = 0; y < _aiManager.AreaSize.y; y++)
             {
-                var normalizedCellPosition = new Vector2Int(x, y);
-                if (_aiManager.IsAccessible(normalizedCellPosition))
+                var cellPosition = new Vector2Int(x, y);
+                if (_aiManager.IsAccessible(cellPosition))
                 {
-                    availablePositions.Add(normalizedCellPosition);
+                    availablePositions.Add(cellPosition);
                 }
             }
         }

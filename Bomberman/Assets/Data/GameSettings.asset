@@ -21,6 +21,7 @@ MonoBehaviour:
   PlayerSpawnInvincibleTimer: 2.5
   PlayerBaseSpeed: 2.5
   Maps:
+  - Map0
   - Map1
   - Map2
   - Map3
@@ -28,8 +29,8 @@ MonoBehaviour:
   - Map8
   - Map9
   PlayersCount: 1
-  AIPlayersCount: 1
-  WallDensity: 0
+  AIPlayersCount: 0
+  WallDensity: 1
   BonusProbability: 1
   AvailableBonus:
     m_keys: 0100000002000000030000000400000005000000

@@ -31,7 +31,7 @@ public class Explosion : MonoBehaviour
         _map = map;
 
         int power = bomb.Power;
-        Vector3Int currentCellPosition = map.GameGrid.WorldToCell(transform.position);
+        Vector2Int currentCellPosition = map.WorldToCell(transform.position);
         Vector2Int cellSize = Vector2Int.one;
 
         var centerExplosion = Instantiate(_explosionCenter, transform);
@@ -50,31 +50,31 @@ public class Explosion : MonoBehaviour
         {
             if (!stopTop)
             {
-                Vector3Int topPosition = new Vector3Int(0, i * cellSize.y, 0);
+                Vector2Int topPosition = new Vector2Int(0, i * cellSize.y);
                 stopTop = InstantiateExplosion(currentCellPosition, topPosition, i == power);
             }
 
             if (!stopBottom)
             {
-                Vector3Int bottomPosition = new Vector3Int(0, -i * cellSize.y, 0);
+                Vector2Int bottomPosition = new Vector2Int(0, -i * cellSize.y);
                 stopBottom = InstantiateExplosion(currentCellPosition, bottomPosition, i == power);
             }
 
             if (!stopLeft)
             {
-                Vector3Int leftPosition = new Vector3Int(-i * cellSize.x, 0, 0);
+                Vector2Int leftPosition = new Vector2Int(-i * cellSize.x, 0);
                 stopLeft = InstantiateExplosion(currentCellPosition, leftPosition, i == power);
             }
 
             if (!stopRight)
             {
-                Vector3Int rightPosition = new Vector3Int(i * cellSize.x, 0, 0);
+                Vector2Int rightPosition = new Vector2Int(i * cellSize.x, 0);
                 stopRight = InstantiateExplosion(currentCellPosition, rightPosition, i == power);
             }
         }
     }
 
-    private bool InstantiateExplosion(Vector3Int position, Vector3Int offset, bool isBound)
+    private bool InstantiateExplosion(Vector2Int position, Vector2Int offset, bool isBound)
     {
         bool stop = false;
 
@@ -91,7 +91,7 @@ public class Explosion : MonoBehaviour
             var animator = explosion.GetComponent<Animator>();
             animator.SetBool(OffsetToSide(offset), true);
             animator.SetBool(ANIMATOR_IS_BOUND_KEY, isBound || stop);
-            explosion.transform.localPosition = offset;
+            explosion.transform.localPosition = new Vector3(offset.x, offset.y, 0);
 
             _map.SetEntityType(EEntityType.Explosion, explosion.transform.position);
 
@@ -105,7 +105,7 @@ public class Explosion : MonoBehaviour
         return stop;
     }
 
-    private string OffsetToSide(Vector3Int offset)
+    private string OffsetToSide(Vector2Int offset)
     {
         if (offset.x > 0)
         {

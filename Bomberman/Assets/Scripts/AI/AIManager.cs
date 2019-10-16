@@ -117,19 +117,19 @@ public class AIManager : MonoBehaviour
         var neighbours = new Dictionary<EDirection, Vector2Int>();
 
         var topPosition = new Vector2Int(position.x, position.y - 1);
-        if (!_map.IsNormalizedCellPositionOutOfBound(topPosition))
+        if (!_map.IsOutOfBound(topPosition))
             neighbours.Add(EDirection.Up, topPosition);
 
         var bottomPosition = new Vector2Int(position.x, position.y + 1);
-        if (!_map.IsNormalizedCellPositionOutOfBound(bottomPosition))
+        if (!_map.IsOutOfBound(bottomPosition))
             neighbours.Add(EDirection.Down, bottomPosition);
 
         var rightPosition = new Vector2Int(position.x + 1, position.y);
-        if (!_map.IsNormalizedCellPositionOutOfBound(rightPosition))
+        if (!_map.IsOutOfBound(rightPosition))
             neighbours.Add(EDirection.Right, rightPosition);
 
         var leftPosition = new Vector2Int(position.x - 1, position.y);
-        if (!_map.IsNormalizedCellPositionOutOfBound(leftPosition))
+        if (!_map.IsOutOfBound(leftPosition))
             neighbours.Add(EDirection.Left, leftPosition);
 
         return neighbours;
@@ -221,21 +221,17 @@ public class AIManager : MonoBehaviour
 
     public bool IsAccessible(Vector2Int normalizedCellPosition)
     {
-        return !_map.IsNormalizedCellPositionOutOfBound(normalizedCellPosition) &&
-                _map.GetEntityType(normalizedCellPosition) != EEntityType.UnbreakableWall &&
-                _map.GetEntityType(normalizedCellPosition) != EEntityType.DestructibleWall &&
-                _map.GetEntityType(normalizedCellPosition) != EEntityType.Explosion &&
-                _map.GetEntityType(normalizedCellPosition) != EEntityType.Bomb;
+        return !_map.IsAccessible(normalizedCellPosition);
     }
 
-    public Vector3 WorldPosition(Vector2Int normalizeCellPosition)
+    public Vector3 WorldPosition(Vector2Int cellPosition)
     {
-        return _map.GetWorldPositionFromNormalizedPosition(normalizeCellPosition);
+        return _map.CellToWorld(cellPosition);
     }
 
     // Actually returns normalized cell position
     public Vector2Int CellPosition(Vector3 worldPosition)
     {
-        return _map.GetNormalizedCellPositionFromWorldPosition(worldPosition);
+        return _map.WorldToCell(worldPosition);
     }
 }

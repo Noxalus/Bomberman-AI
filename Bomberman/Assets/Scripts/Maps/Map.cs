@@ -36,7 +36,7 @@ public class Map : MonoBehaviour
 
     #region Private fields
 
-    private List<Vector3Int> _playerSpawnCells = new List<Vector3Int>();
+    private List<Vector2Int> _playerSpawnCells = new List<Vector2Int>();
     private EEntityType[,] _entitiesMap;
 
     private Vector2Int _mapSize = Vector2Int.zero;
@@ -53,244 +53,26 @@ public class Map : MonoBehaviour
 
         foreach (Transform spawnTransform in _playerSpawns)
         {
-            _playerSpawnCells.Add(_grid.WorldToCell(spawnTransform.position));
+            _playerSpawnCells.Add(WorldToCell(spawnTransform.position));
         }
 
         ComputeMapSize();
         InitializeEntitiesMap();
     }
 
-    public Vector3 GetSpawnPosition(int index)
-    {
-        return _playerSpawns[index].position;
-    }
-
-    public bool OverlapPlayerSpawn(Vector3Int cellPosition)
-    {
-        foreach (Vector3Int spawnCellPosition in _playerSpawnCells)
-        {
-            if ((cellPosition.x >= spawnCellPosition.x - 1 && cellPosition.x <= spawnCellPosition.x + 1) &&
-                (cellPosition.y >= spawnCellPosition.y - 1 && cellPosition.y <= spawnCellPosition.y + 1))
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    public void Clear()
-    {
-        ClearEntitiesMap();
-        ClearBonus();
-        ClearDestructibleWalls();
-    }
-
-    private void ClearEntitiesMap()
-    {
-        for (int y = 0; y < _mapSize.y; y++)
-        {
-            for (int x = 0; x < _mapSize.x; x++)
-            {
-                if (_entitiesMap[x, y] != EEntityType.UnbreakableWall)
-                    _entitiesMap[x, y] = EEntityType.None;
-            }
-        }
-    }
-
-    public EEntityType GetEntityType(Vector3Int normalizedCellPosition)
-    {
-        return _entitiesMap[normalizedCellPosition.x, normalizedCellPosition.y];
-    }
-
-    public EEntityType GetEntityType(Vector2Int normalizedCellPosition)
-    {
-        return _entitiesMap[normalizedCellPosition.x, normalizedCellPosition.y];
-    }
-
-    public EEntityType GetEntityType(Vector3 worldPosition)
-    {
-        var normalizedCellPosition = GetNormalizedCellPositionFromWorldPosition(worldPosition);
-
-        if (IsNormalizedCellPositionOutOfBound(normalizedCellPosition))
-        {
-            return EEntityType.UnbreakableWall;
-        }
-
-        return _entitiesMap[normalizedCellPosition.x, normalizedCellPosition.y];
-    }
-
-    public bool OverlapUnbreakableWall(Vector3 worldPosition)
-    {
-        return CollisionMap.OverlapPoint(new Vector2(worldPosition.x, worldPosition.y));
-    }
-
-    public  bool IsNormalizedCellPositionOutOfBound(Vector2Int normalizedCellPosition)
-    {
-        return normalizedCellPosition.x < 0 || normalizedCellPosition.x > _mapSize.x - 1 ||
-               normalizedCellPosition.y < 0 || normalizedCellPosition.y > _mapSize.y - 1;
-    }
-
-    public Vector2Int GetNormalizedCellPositionFromWorldPosition(Vector3 worldPosition)
+    public Vector2Int WorldToCell(Vector3 worldPosition)
     {
         var cellPosition = GameTilemap.WorldToCell(worldPosition);
         return new Vector2Int(cellPosition.x, cellPosition.y) - _mapOrigin;
     }
 
-    public void SetEntityType(EEntityType entityType, Vector3 worldPosition)
-    {
-        var normalizedCellPosition = GetNormalizedCellPositionFromWorldPosition(worldPosition);
-        _entitiesMap[normalizedCellPosition.x, normalizedCellPosition.y] = entityType;
-    }
-
     public Vector3 CellToWorld(Vector2Int cellPosition)
     {
-        return GameTilemap.CellToWorld(new Vector3Int(cellPosition.x, cellPosition.y, 0)) + GameTilemap.tileAnchor;
-    }
+        // Update the given normalized cell position to "world" cell position
+        cellPosition += _mapOrigin;
+        Vector3 worldPosition = GameTilemap.CellToWorld(new Vector3Int(cellPosition.x, cellPosition.y, 0));
 
-    public Vector3 CellToWorld(Vector3Int cellPosition)
-    {
-        return GameTilemap.CellToWorld(cellPosition) + GameTilemap.tileAnchor;
-    }
-
-    // Get cell position in world space from normalized cell position (which goes from 0 to MapSize)
-    public Vector3Int GetCellPositionFromNormalizedPosition(Vector2Int normalizedCellPosition)
-    {
-        var cellPosition = normalizedCellPosition + _mapOrigin;
-        return new Vector3Int(cellPosition.x, cellPosition.y, 0);
-    }
-
-    public Vector3 GetWorldPositionFromNormalizedPosition(Vector2Int normalizedCellPosition)
-    {
-        var cellPosition = GetCellPositionFromNormalizedPosition(normalizedCellPosition);
-        return CellToWorld(cellPosition);
-    }
-
-    public void DestroyAllDestructibleWalls()
-    {
-        List<DestructibleWall> wallsToDestroy = new List<DestructibleWall>();
-
-        foreach (var destructibleWall in _destructibleWalls)
-        {
-            if (destructibleWall)
-                wallsToDestroy.Add(destructibleWall);
-        }
-
-        foreach (var wallToDestroy in wallsToDestroy)
-        {
-            wallToDestroy.Explode();
-        }
-    }
-
-    public void GenerateDestrucibleWalls(float wallPercentage)
-    {
-        for (int y = 0; y < MapSize.y; y++)
-        {
-            for (int x = 0; x < MapSize.x; x++)
-            {
-                var normalizedCellPosition = new Vector2Int(x, y);
-                var cellPosition = GetCellPositionFromNormalizedPosition(normalizedCellPosition);
-                var tile = GameTilemap.GetTile(cellPosition);
-
-                if (tile)
-                {
-                    var worldPosition = CellToWorld(cellPosition);
-
-                    if (OverlapPlayerSpawn(cellPosition) || OverlapUnbreakableWall(worldPosition))
-                    {
-                        continue;
-                    }
-
-                    if (Random.value < wallPercentage)
-                    {
-                        AddDestructibleWall(worldPosition);
-                    }
-                }
-            }
-        }
-    }
-
-    public void ClearDestructibleWalls()
-    {
-        foreach (var destructibleWall in _destructibleWalls)
-        {
-            if (destructibleWall && destructibleWall.gameObject)
-            {
-                Destroy(destructibleWall.gameObject);
-            }
-        }
-
-        _destructibleWalls.Clear();
-    }
-
-    public void ClearBonus()
-    {
-        foreach (var bonus in _bonus)
-        {
-            if (bonus && bonus.gameObject)
-            {
-                Destroy(bonus.gameObject);
-            }
-        }
-
-        _bonus.Clear();
-    }
-
-    public void AddDestructibleWall(Vector3 worldPosition)
-    {
-        DestructibleWall destructibleWall = Instantiate(
-            _destructibleWallPrefab,
-            worldPosition,
-            Quaternion.identity,
-            transform
-        );
-
-        _destructibleWalls.Add(destructibleWall);
-
-        var normalizedCellPosition = GetNormalizedCellPositionFromWorldPosition(worldPosition);
-
-        if (!IsNormalizedCellPositionOutOfBound(normalizedCellPosition))
-        {
-            _entitiesMap[normalizedCellPosition.x, normalizedCellPosition.y] = EEntityType.DestructibleWall;
-        }
-
-        destructibleWall.OnDestroy.AddListener(OnDestructibleWallDestroy);
-    }
-
-    void AddBonus(Vector3 position)
-    {
-        Bonus bonus = Instantiate(_bonusPrefab, position, Quaternion.identity, transform);
-        bonus.Initalize(_gameSettings.GetAvailableBonus());
-
-        SetEntityType(EEntityType.Bonus, position);
-
-        _bonus.Add(bonus);
-    }
-
-    private void InitializeEntitiesMap()
-    {
-        _entitiesMap = new EEntityType[_mapSize.x, _mapSize.y];
-        FindUnbreakableWalls();
-    }
-
-    private void OnDestructibleWallDestroy(DestructibleWall destructibleWall)
-    {
-        destructibleWall.OnDestroy.RemoveListener(OnDestructibleWallDestroy);
-
-        var normalizedCellPosition = GetNormalizedCellPositionFromWorldPosition(destructibleWall.transform.position);
-
-        if (!IsNormalizedCellPositionOutOfBound(normalizedCellPosition))
-        {
-            _entitiesMap[normalizedCellPosition.x, normalizedCellPosition.y] = EEntityType.None;
-        }
-
-        _destructibleWalls.Remove(destructibleWall);
-
-        // Spanw a bonus?
-        if (Random.value < _gameSettings.BonusProbability)
-        {
-            AddBonus(destructibleWall.transform.position);
-        }
+        return worldPosition + GameTilemap.tileAnchor;
     }
 
     private void ComputeMapSize()
@@ -324,6 +106,103 @@ public class Map : MonoBehaviour
         _mapSize = new Vector2Int((max.x - min.x) + 1, (max.y - min.y) + 1);
     }
 
+    public void Clear()
+    {
+        ClearEntitiesMap();
+        ClearBonus();
+        ClearDestructibleWalls();
+    }
+
+    public bool OverlapUnbreakableWall(Vector3 worldPosition)
+    {
+        return CollisionMap.OverlapPoint(new Vector2(worldPosition.x, worldPosition.y));
+    }
+
+    public bool IsOutOfBound(Vector2Int cellPosition)
+    {
+        return cellPosition.x < 0 || cellPosition.x > _mapSize.x - 1 ||
+               cellPosition.y < 0 || cellPosition.y > _mapSize.y - 1;
+    }
+
+    public bool IsAccessible(Vector2Int cellPosition)
+    {
+        return !IsOutOfBound(cellPosition) &&
+                GetEntityType(cellPosition) != EEntityType.UnbreakableWall &&
+                GetEntityType(cellPosition) != EEntityType.DestructibleWall &&
+                GetEntityType(cellPosition) != EEntityType.Explosion &&
+                GetEntityType(cellPosition) != EEntityType.Bomb;
+    }
+
+    #region Player spawn
+
+    public Vector3 GetSpawnPosition(int index)
+    {
+        return _playerSpawns[index].position;
+    }
+
+    public bool OverlapPlayerSpawn(Vector2Int cellPosition)
+    {
+        foreach (Vector2Int spawnCellPosition in _playerSpawnCells)
+        {
+            if ((cellPosition.x >= spawnCellPosition.x - 1 && cellPosition.x <= spawnCellPosition.x + 1) &&
+                (cellPosition.y >= spawnCellPosition.y - 1 && cellPosition.y <= spawnCellPosition.y + 1))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    #endregion
+
+    #region Entities map
+
+    private void InitializeEntitiesMap()
+    {
+        _entitiesMap = new EEntityType[_mapSize.x, _mapSize.y];
+        FindUnbreakableWalls();
+    }
+
+    public EEntityType GetEntityType(Vector2Int cellPosition)
+    {
+        return _entitiesMap[cellPosition.x, cellPosition.y];
+    }
+
+    public EEntityType GetEntityType(Vector3 worldPosition)
+    {
+        var cellPosition = WorldToCell(worldPosition);
+
+        if (IsOutOfBound(cellPosition))
+        {
+            return EEntityType.UnbreakableWall;
+        }
+
+        return _entitiesMap[cellPosition.x, cellPosition.y];
+    }
+
+    public void SetEntityType(EEntityType entityType, Vector3 worldPosition)
+    {
+        Vector2Int cellPosition = WorldToCell(worldPosition);
+        _entitiesMap[cellPosition.x, cellPosition.y] = entityType;
+    }
+
+    private void ClearEntitiesMap()
+    {
+        for (int y = 0; y < _mapSize.y; y++)
+        {
+            for (int x = 0; x < _mapSize.x; x++)
+            {
+                if (_entitiesMap[x, y] != EEntityType.UnbreakableWall)
+                    _entitiesMap[x, y] = EEntityType.None;
+            }
+        }
+    }
+
+    #endregion
+
+    #region Destructible walls
+
     // Copy the unbreakable walls position to the entities map
     private void FindUnbreakableWalls()
     {
@@ -331,9 +210,8 @@ public class Map : MonoBehaviour
         {
             for (int x = 0; x < MapSize.x; x++)
             {
-                var normalizedCellPosition = new Vector2Int(x, y);
-                var cellPosition = GetCellPositionFromNormalizedPosition(normalizedCellPosition);
-                var tile = GameTilemap.GetTile(cellPosition);
+                Vector2Int cellPosition = new Vector2Int(x, y) + _mapOrigin;
+                TileBase tile = GameTilemap.GetTile(new Vector3Int(cellPosition.x, cellPosition.y, 0));
 
                 if (tile)
                 {
@@ -347,4 +225,130 @@ public class Map : MonoBehaviour
             }
         }
     }
+
+    public void DestroyAllDestructibleWalls()
+    {
+        List<DestructibleWall> wallsToDestroy = new List<DestructibleWall>();
+
+        foreach (var destructibleWall in _destructibleWalls)
+        {
+            if (destructibleWall)
+                wallsToDestroy.Add(destructibleWall);
+        }
+
+        foreach (var wallToDestroy in wallsToDestroy)
+        {
+            wallToDestroy.Explode();
+        }
+    }
+
+    public void GenerateDestrucibleWalls(float wallPercentage)
+    {
+        for (int y = 0; y < MapSize.y; y++)
+        {
+            for (int x = 0; x < MapSize.x; x++)
+            {
+                Vector2Int cellPosition = new Vector2Int(x, y) + _mapOrigin;
+                TileBase tile = GameTilemap.GetTile(new Vector3Int(cellPosition.x, cellPosition.y, 0));
+
+                if (tile)
+                {
+                    var worldPosition = CellToWorld(cellPosition);
+
+                    if (OverlapPlayerSpawn(cellPosition) || OverlapUnbreakableWall(worldPosition))
+                    {
+                        continue;
+                    }
+
+                    if (Random.value < wallPercentage)
+                    {
+                        AddDestructibleWall(worldPosition);
+                    }
+                }
+            }
+        }
+    }
+
+    public void AddDestructibleWall(Vector3 worldPosition)
+    {
+        DestructibleWall destructibleWall = Instantiate(
+            _destructibleWallPrefab,
+            worldPosition,
+            Quaternion.identity,
+            transform
+        );
+
+        _destructibleWalls.Add(destructibleWall);
+
+        Vector2Int cellPosition = WorldToCell(worldPosition);
+
+        if (!IsOutOfBound(cellPosition))
+        {
+            _entitiesMap[cellPosition.x, cellPosition.y] = EEntityType.DestructibleWall;
+        }
+
+        destructibleWall.OnDestroy.AddListener(OnDestructibleWallDestroy);
+    }
+
+    private void OnDestructibleWallDestroy(DestructibleWall destructibleWall)
+    {
+        destructibleWall.OnDestroy.RemoveListener(OnDestructibleWallDestroy);
+
+        var cellPosition = WorldToCell(destructibleWall.transform.position);
+
+        if (!IsOutOfBound(cellPosition))
+        {
+            _entitiesMap[cellPosition.x, cellPosition.y] = EEntityType.None;
+        }
+
+        _destructibleWalls.Remove(destructibleWall);
+
+        // Spanw a bonus?
+        if (Random.value < _gameSettings.BonusProbability)
+        {
+            AddBonus(destructibleWall.transform.position);
+        }
+    }
+
+    public void ClearDestructibleWalls()
+    {
+        foreach (var destructibleWall in _destructibleWalls)
+        {
+            if (destructibleWall && destructibleWall.gameObject)
+            {
+                Destroy(destructibleWall.gameObject);
+            }
+        }
+
+        _destructibleWalls.Clear();
+    }
+
+    #endregion
+
+    #region Bonus
+
+    void AddBonus(Vector3 position)
+    {
+        Bonus bonus = Instantiate(_bonusPrefab, position, Quaternion.identity, transform);
+        bonus.Initalize(_gameSettings.GetAvailableBonus());
+
+        SetEntityType(EEntityType.Bonus, position);
+
+        _bonus.Add(bonus);
+    }
+
+    public void ClearBonus()
+    {
+        foreach (var bonus in _bonus)
+        {
+            if (bonus && bonus.gameObject)
+            {
+                Destroy(bonus.gameObject);
+            }
+        }
+
+        _bonus.Clear();
+    }
+
+    #endregion
 }

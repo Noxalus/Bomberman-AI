@@ -175,8 +175,8 @@ public class GameManager : MonoBehaviour
         if (entity != EEntityType.None)
             return;
 
-        var cellPosition = _map.GameGrid.WorldToCell(player.transform.position);
-        var position = cellPosition;
+        var cellPosition = _map.WorldToCell(player.transform.position);
+        var position = _map.CellToWorld(cellPosition);
         var bomb = Instantiate(_bombPrefab, position, Quaternion.identity, _map.transform);
         bomb.Initialize(player);
         bomb.OnExplosion.AddListener(OnBombExplode);
@@ -258,12 +258,12 @@ public class GameManager : MonoBehaviour
 
         if (Input.GetMouseButton(1))
         {
-            var worldPosition = _camera.ScreenToWorldPoint(Input.mousePosition);
-            var normalizedCellPosition = _map.GetNormalizedCellPositionFromWorldPosition(worldPosition);
+            Vector3 worldPosition = _camera.ScreenToWorldPoint(Input.mousePosition);
+            Vector2Int cellPosition = _map.WorldToCell(worldPosition);
 
-            if (_aiManager.IsAccessible(normalizedCellPosition))
+            if (_map.IsAccessible(cellPosition))
             {
-                worldPosition = _aiManager.WorldPosition(normalizedCellPosition);
+                worldPosition = _map.CellToWorld(cellPosition);
                 _map.AddDestructibleWall(worldPosition);
             }
             else
