@@ -1,0 +1,61 @@
+﻿using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+
+public class Minimap : MonoBehaviour
+{
+    [SerializeField]
+    private int _cellSize = 10;
+
+    [SerializeField]
+    private Vector2Int _size = new Vector2Int(150, 150);
+
+    protected Map _map;
+
+    List<Image> _cellImages = new List<Image>();
+    private GridLayoutGroup _gridLayout = null;
+    private LayoutElement _layoutElement = null;
+
+    public void Initialize(Map map)
+    {
+        _map = map;
+
+        _gridLayout = gameObject.AddComponent<GridLayoutGroup>();
+        _gridLayout.cellSize = new Vector2(_cellSize, _cellSize);
+
+        _layoutElement = gameObject.AddComponent<LayoutElement>();
+        _layoutElement.preferredWidth = _size.x;
+        _layoutElement.preferredHeight = _size.y;
+
+        InstantiateCells();
+    }
+
+    public void Clear()
+    {
+        foreach (var cellImage in _cellImages)
+            Destroy(cellImage.gameObject);
+
+        _cellImages.Clear();
+
+        Destroy(_gridLayout);
+        _gridLayout = null;
+
+        Destroy(_layoutElement);
+        _layoutElement = null;
+    }
+
+    public void InstantiateCells()
+    {
+        for (int y = 0; y < _map.MapSize.y; y++)
+        {
+            for (int x = 0; x < _map.MapSize.x; x++)
+            {
+                GameObject cell = new GameObject($"MinimapCell[{x},{y}]");
+                cell.transform.SetParent(transform);
+                Image cellImage = cell.AddComponent<Image>();
+
+                _cellImages.Add(cellImage);
+            }
+        }
+    }
+}

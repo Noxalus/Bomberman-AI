@@ -124,7 +124,7 @@ public class GameManager : MonoBehaviour
             _aiManager.Initialize(_map, aiPlayers);
         }
 
-        _uiManager.Initialize(_players);
+        _uiManager.Initialize(this);
 
         StartRound();
     }
