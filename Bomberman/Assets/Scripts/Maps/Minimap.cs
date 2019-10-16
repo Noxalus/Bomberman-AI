@@ -5,9 +5,6 @@ using UnityEngine.UI;
 public class Minimap : MonoBehaviour
 {
     [SerializeField]
-    private int _cellSize = 10;
-
-    [SerializeField]
     private Vector2Int _size = new Vector2Int(150, 150);
 
     protected Map _map;
@@ -20,8 +17,15 @@ public class Minimap : MonoBehaviour
     {
         _map = map;
 
+        int maxSize = Mathf.Max(_map.MapSize.x, _map.MapSize.y);
+
         _gridLayout = gameObject.AddComponent<GridLayoutGroup>();
-        _gridLayout.cellSize = new Vector2(_cellSize, _cellSize);
+        _gridLayout.childAlignment = TextAnchor.MiddleCenter;
+        _gridLayout.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
+        _gridLayout.constraintCount = _map.MapSize.x;
+        _gridLayout.cellSize = new Vector2(_size.x / maxSize, _size.y / maxSize);
+        _gridLayout.spacing = new Vector2(-_gridLayout.cellSize.x, -_gridLayout.cellSize.y);
+        _gridLayout.cellSize *= 2;
 
         _layoutElement = gameObject.AddComponent<LayoutElement>();
         _layoutElement.preferredWidth = _size.x;
@@ -57,5 +61,10 @@ public class Minimap : MonoBehaviour
                 _cellImages.Add(cellImage);
             }
         }
+    }
+
+    public Image GetCell(int x, int y)
+    {
+        return _cellImages[x + y * _map.MapSize.x];
     }
 }

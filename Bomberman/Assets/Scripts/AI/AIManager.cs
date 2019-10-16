@@ -1,8 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Text;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class AIManager : MonoBehaviour
 {
@@ -15,7 +15,7 @@ public class AIManager : MonoBehaviour
     #region Serialized fields
 
     // Debug
-    [SerializeField] private TextMeshProUGUI _costMapText = null;
+    [SerializeField] private Minimap _costMap = null;
 
     #endregion
 
@@ -24,6 +24,7 @@ public class AIManager : MonoBehaviour
     private Map _map = null;
     private List<AIPlayer> _aiPlayers = new List<AIPlayer>();
     private Vector2Int _areaSize = Vector2Int.zero;
+    private int[,] _cachedCostMatrix = null;
 
     #endregion
 
@@ -135,7 +136,7 @@ public class AIManager : MonoBehaviour
         return neighbours;
     }
 
-    public int[,] ComputeCostMap(Vector2Int targetNormalizedCellPosition)
+    public int[,] ComputeCostMap(Vector2Int targetPosition)
     {
         var costMatrix = new int[AreaSize.x, AreaSize.y];
 
@@ -144,15 +145,15 @@ public class AIManager : MonoBehaviour
             for (int y = 0; y < AreaSize.y; y++)
                 costMatrix[x, y] = AreaSize.x * AreaSize.y;
 
-        int id = 0;
+        int cellValue = 0;
         var queue = new Queue<Vector2Int>();
 
-        costMatrix[targetNormalizedCellPosition.x, targetNormalizedCellPosition.y] = id;
-        queue.Enqueue(targetNormalizedCellPosition);
+        costMatrix[targetPosition.x, targetPosition.y] = cellValue;
+        queue.Enqueue(targetPosition);
 
         while (queue.Count > 0)
         {
-            id++;
+            cellValue++;
             int counter = queue.Count;
             for (int i = 0; i < counter; i++)
             {
@@ -160,68 +161,69 @@ public class AIManager : MonoBehaviour
 
                 // Top
                 if (currentPosition.y - 1 >= 0 && IsAccessible(new Vector2Int(currentPosition.x, currentPosition.y - 1)) &&
-                    costMatrix[currentPosition.x, currentPosition.y - 1] > id)
+                    costMatrix[currentPosition.x, currentPosition.y - 1] > cellValue)
                 {
-                    costMatrix[currentPosition.x, currentPosition.y - 1] = id;
+                    costMatrix[currentPosition.x, currentPosition.y - 1] = cellValue;
                     queue.Enqueue(new Vector2Int(currentPosition.x, currentPosition.y - 1));
                 }
                 // Right
                 if (currentPosition.x + 1 < AreaSize.x && IsAccessible(new Vector2Int(currentPosition.x + 1, currentPosition.y)) &&
-                    costMatrix[currentPosition.x + 1, currentPosition.y] > id)
+                    costMatrix[currentPosition.x + 1, currentPosition.y] > cellValue)
                 {
-                    costMatrix[currentPosition.x + 1, currentPosition.y] = id;
+                    costMatrix[currentPosition.x + 1, currentPosition.y] = cellValue;
                     queue.Enqueue(new Vector2Int(currentPosition.x + 1, currentPosition.y));
                 }
                 if (currentPosition.y + 1 < AreaSize.y && IsAccessible(new Vector2Int(currentPosition.x, currentPosition.y + 1)) &&
-                    costMatrix[currentPosition.x, currentPosition.y + 1] > id)
+                    costMatrix[currentPosition.x, currentPosition.y + 1] > cellValue)
                 {
-                    costMatrix[currentPosition.x, currentPosition.y + 1] = id;
+                    costMatrix[currentPosition.x, currentPosition.y + 1] = cellValue;
                     queue.Enqueue(new Vector2Int(currentPosition.x, currentPosition.y + 1));
                 }
                 // Left
                 if (currentPosition.x - 1 >= 0 && IsAccessible(new Vector2Int(currentPosition.x - 1, currentPosition.y)) &&
-                    costMatrix[currentPosition.x - 1, currentPosition.y] > id)
+                    costMatrix[currentPosition.x - 1, currentPosition.y] > cellValue)
                 {
-                    costMatrix[currentPosition.x - 1, currentPosition.y] = id;
+                    costMatrix[currentPosition.x - 1, currentPosition.y] = cellValue;
                     queue.Enqueue(new Vector2Int(currentPosition.x - 1, currentPosition.y));
                 }
             }
         }
 
-        // To debug only
-        DrawCostMap(costMatrix);
+        _cachedCostMatrix = costMatrix;
 
         return costMatrix;
     }
 
-    private void DrawCostMap(int[,] costMatrix)
+    public void DrawCostMap()
     {
-        StringBuilder costMapString = new StringBuilder();
+        float infiniteValue = (AreaSize.x * AreaSize.y);
+        float maxCostValue = 0;
+
+
+        for (int x = 0; x < AreaSize.x; x++)
+        {
+            for (int y = 0; y < AreaSize.y; y++)
+            {
+                if (_cachedCostMatrix[x, y] != infiniteValue && _cachedCostMatrix[x, y] > maxCostValue)
+                    maxCostValue = _cachedCostMatrix[x, y];
+            }
+        }
 
         for (int y = 0; y < AreaSize.y; y++)
         {
             for (int x = 0; x < AreaSize.x; x++)
             {
-                string c = "_";
-
-                var yDown = (AreaSize.y - 1) - y;
-                if (costMatrix[x, yDown] >= 0 && costMatrix[x, yDown] < 26)
-                    c = char.ConvertFromUtf32(97 + costMatrix[x, yDown]);
-                else if (costMatrix[x, yDown] >= AreaSize.x * AreaSize.y)
-                    c = "X";
-
-                costMapString.Append(c + " ");
+                Image currentCell = _costMap.GetCell(x, (AreaSize.y - 1) - y);
+                float factor = 1f - (_cachedCostMatrix[x, y] * (255f / maxCostValue) / 255f);
+                
+                currentCell.color = new Color(factor, factor, factor, 1f);
             }
-
-            costMapString.Append("\n");
         }
-
-        _costMapText.text = costMapString.ToString();
     }
 
-    public bool IsAccessible(Vector2Int normalizedCellPosition)
+    public bool IsAccessible(Vector2Int cellPosition)
     {
-        return !_map.IsAccessible(normalizedCellPosition);
+        return _map.IsAccessible(cellPosition);
     }
 
     public Vector3 WorldPosition(Vector2Int cellPosition)
@@ -229,7 +231,6 @@ public class AIManager : MonoBehaviour
         return _map.CellToWorld(cellPosition);
     }
 
-    // Actually returns normalized cell position
     public Vector2Int CellPosition(Vector3 worldPosition)
     {
         return _map.WorldToCell(worldPosition);

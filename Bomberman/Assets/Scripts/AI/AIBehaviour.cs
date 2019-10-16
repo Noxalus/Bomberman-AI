@@ -144,6 +144,9 @@ public class AIBehaviour : MonoBehaviour
         var origin = _aiManager.CellPosition(transform.position);
         _currentPath = _aiManager.ComputePath(origin, targetCellPosition);
 
+        // To debug only
+        _aiManager.DrawCostMap();
+
         if (_currentPath.Count == 0)
         {
             Debug.LogWarning("No way to reach the target !");
