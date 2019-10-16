@@ -17,19 +17,57 @@ public class PlayerMovement : MonoBehaviour
 
     private Vector2 _movement = Vector2.zero;
 
-    private void Awake()
+    private void OnEnable()
     {
-        _input.actions.FindAction("Bomb").performed += ctx => _player.AddBomb();
-        _input.actions.FindAction("Move").performed += OnInputMove;
-        _input.actions.FindAction("Move").canceled += ctx => _movement = Vector2.zero;
-
-        _player.OnSpawn.AddListener(player => _input.actions.Enable());
-        _player.OnKill.AddListener(player => _input.actions.Disable());
+        _input.actions.Enable();
     }
 
-    private void OnInputMove(CallbackContext context)
+    private void OnDisable()
+    {
+        _input.actions.Disable();
+    }
+
+    private void Awake()
+    {
+        _input.actions.FindAction("Bomb").performed += OnBombKeyPerformed;
+        _input.actions.FindAction("Move").performed += OnInputMovePerformed;
+        _input.actions.FindAction("Move").canceled += OnInputMoveCanceled;
+
+        _player.OnSpawn.AddListener(OnPlayerSpawn);
+        _player.OnKill.AddListener(OnPlayerKill);
+    }
+
+    private void OnDestroy()
+    {
+        _input.actions.FindAction("Bomb").performed -= OnBombKeyPerformed;
+
+        _player.OnSpawn.RemoveListener(OnPlayerSpawn);
+        _player.OnKill.RemoveListener(OnPlayerKill);
+    }
+
+    private void OnPlayerSpawn(Player player)
+    {
+        _input.actions.Enable();
+    }
+
+    private void OnPlayerKill(Player player)
+    {
+        _input.actions.Disable();
+    }
+
+    private void OnBombKeyPerformed(CallbackContext context)
+    {
+        _player.AddBomb();
+    }
+
+    private void OnInputMovePerformed(CallbackContext context)
     {
         _movement = context.ReadValue<Vector2>();
+    }
+
+    private void OnInputMoveCanceled(CallbackContext context)
+    {
+        _movement = Vector2.zero;
     }
 
     private void Update()
