@@ -1,9 +1,20 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using Random = UnityEngine.Random;
+
+[System.Serializable]
+public class BonusEvent : UnityEvent<Bonus> { }
 
 public class Bonus : MonoBehaviour
 {
+    [Header("Events")]
+
+    public BonusEvent OnExplode;
+    public BonusEvent OnDestroy;
+
+    [Header("Inner references")]
+
     [SerializeField] private EBonusTypeBonusSpriteDictionary _bonusSpritesDictionary = new EBonusTypeBonusSpriteDictionary();
     [SerializeField] private SpriteRenderer _normalSpriteRenderer = null;
     [SerializeField] private SpriteRenderer _highlightedSpriteRenderer = null;
@@ -14,6 +25,7 @@ public class Bonus : MonoBehaviour
 
     private void Destroy()
     {
+        OnDestroy?.Invoke(this);
         Destroy(gameObject);
     }
 
@@ -43,10 +55,16 @@ public class Bonus : MonoBehaviour
         }
         else if (collision.tag == "Explosion")
         {
-            if (!_isInvincible)
-            {
-                _animator.SetBool("InFire", true);
-            }
+            Explode();
+        }
+    }
+
+    public void Explode()
+    {
+        if (!_isInvincible)
+        {
+            _animator.SetBool("InFire", true);
+            OnExplode?.Invoke(this);
         }
     }
 

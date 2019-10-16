@@ -236,6 +236,11 @@ public class GameManager : MonoBehaviour
             _map.DestroyAllDestructibleWalls();
         }
 
+        if (Input.GetKeyDown(KeyCode.B))
+        {
+            _map.DestroyAllBonus();
+        }
+
         if (Input.GetKeyDown(KeyCode.PageUp))
         {
             UnloadCurrentMap();

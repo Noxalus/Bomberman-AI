@@ -49,15 +49,9 @@ public class Map : MonoBehaviour
 
     private void Awake()
     {
-        _playerSpawnCells.Clear();
-
-        foreach (Transform spawnTransform in _playerSpawns)
-        {
-            _playerSpawnCells.Add(WorldToCell(spawnTransform.position));
-        }
-
         ComputeMapSize();
         InitializeEntitiesMap();
+        InitializePlayersSpawn();
     }
 
     public Vector2Int WorldToCell(Vector3 worldPosition)
@@ -135,6 +129,16 @@ public class Map : MonoBehaviour
 
     #region Player spawn
 
+    private void InitializePlayersSpawn()
+    {
+        _playerSpawnCells.Clear();
+
+        foreach (Transform spawnTransform in _playerSpawns)
+        {
+            _playerSpawnCells.Add(WorldToCell(spawnTransform.position));
+        }
+    }
+
     public Vector3 GetSpawnPosition(int index)
     {
         return _playerSpawns[index].position;
@@ -166,6 +170,11 @@ public class Map : MonoBehaviour
 
     public EEntityType GetEntityType(Vector2Int cellPosition)
     {
+        if (IsOutOfBound(cellPosition))
+        {
+            return EEntityType.UnbreakableWall;
+        }
+
         return _entitiesMap[cellPosition.x, cellPosition.y];
     }
 
@@ -210,8 +219,10 @@ public class Map : MonoBehaviour
         {
             for (int x = 0; x < MapSize.x; x++)
             {
-                Vector2Int cellPosition = new Vector2Int(x, y) + _mapOrigin;
-                TileBase tile = GameTilemap.GetTile(new Vector3Int(cellPosition.x, cellPosition.y, 0));
+                Vector2Int cellPosition = new Vector2Int(x, y);
+                TileBase tile = GameTilemap.GetTile(
+                    new Vector3Int(cellPosition.x + _mapOrigin.x, cellPosition.y + _mapOrigin.y, 0)
+                );
 
                 if (tile)
                 {
@@ -248,8 +259,10 @@ public class Map : MonoBehaviour
         {
             for (int x = 0; x < MapSize.x; x++)
             {
-                Vector2Int cellPosition = new Vector2Int(x, y) + _mapOrigin;
-                TileBase tile = GameTilemap.GetTile(new Vector3Int(cellPosition.x, cellPosition.y, 0));
+                Vector2Int cellPosition = new Vector2Int(x, y);
+                TileBase tile = GameTilemap.GetTile(
+                    new Vector3Int(cellPosition.x + _mapOrigin.y, cellPosition.y + _mapOrigin.y, 0)
+                );
 
                 if (tile)
                 {
@@ -278,28 +291,18 @@ public class Map : MonoBehaviour
             transform
         );
 
+        destructibleWall.OnDestroy.AddListener(OnDestructibleWallDestroy);
+
         _destructibleWalls.Add(destructibleWall);
 
-        Vector2Int cellPosition = WorldToCell(worldPosition);
-
-        if (!IsOutOfBound(cellPosition))
-        {
-            _entitiesMap[cellPosition.x, cellPosition.y] = EEntityType.DestructibleWall;
-        }
-
-        destructibleWall.OnDestroy.AddListener(OnDestructibleWallDestroy);
+        SetEntityType(EEntityType.DestructibleWall, destructibleWall.transform.position);
     }
 
     private void OnDestructibleWallDestroy(DestructibleWall destructibleWall)
     {
         destructibleWall.OnDestroy.RemoveListener(OnDestructibleWallDestroy);
-
-        var cellPosition = WorldToCell(destructibleWall.transform.position);
-
-        if (!IsOutOfBound(cellPosition))
-        {
-            _entitiesMap[cellPosition.x, cellPosition.y] = EEntityType.None;
-        }
+        
+        SetEntityType(EEntityType.None, destructibleWall.transform.position);
 
         _destructibleWalls.Remove(destructibleWall);
 
@@ -327,14 +330,38 @@ public class Map : MonoBehaviour
 
     #region Bonus
 
-    void AddBonus(Vector3 position)
+    private void AddBonus(Vector3 position)
     {
         Bonus bonus = Instantiate(_bonusPrefab, position, Quaternion.identity, transform);
         bonus.Initalize(_gameSettings.GetAvailableBonus());
-
-        SetEntityType(EEntityType.Bonus, position);
+        bonus.OnDestroy.AddListener(OnBonusDestroy);
 
         _bonus.Add(bonus);
+        
+        SetEntityType(EEntityType.Bonus, position);
+    }
+
+    private void OnBonusDestroy(Bonus bonus)
+    {
+        bonus.OnDestroy.RemoveListener(OnBonusDestroy);
+
+        SetEntityType(EEntityType.None, bonus.transform.position);
+    }
+
+    public void DestroyAllBonus()
+    {
+        List<Bonus> bonusToDestroy = new List<Bonus>();
+
+        foreach (var bonus in _bonus)
+        {
+            if (bonus)
+                bonusToDestroy.Add(bonus);
+        }
+
+        foreach (Bonus bonus in bonusToDestroy)
+        {
+            bonus.Explode();
+        }
     }
 
     public void ClearBonus()
