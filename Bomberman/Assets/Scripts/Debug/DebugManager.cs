@@ -1,15 +1,12 @@
-﻿using System.Text;
-using TMPro;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class DebugManager : MonoBehaviour
 {
-    [SerializeField] private TextMeshProUGUI _logicalMapText = null;
     [SerializeField] private CanvasGroup _canvasGroup = null;
     [SerializeField] Minimap _costMap = null;
     [SerializeField] EntitiesMinimap _entitiesMap = null;
 
-    private Map _map = null;
+    private GameManager _gameManager = null;
     private bool _isInitialized = false;
 
     private void Awake()
@@ -17,11 +14,11 @@ public class DebugManager : MonoBehaviour
         Show(false);
     }
 
-    public void Initialize(Map map)
+    public void Initialize(GameManager gameManager)
     {
-        _map = map;
-        _costMap.Initialize(map);
-        _entitiesMap.Initialize(map);
+        _gameManager = gameManager;
+        _costMap.Initialize(gameManager.Map);
+        _entitiesMap.Initialize(gameManager);
 
         _isInitialized = true;
     }

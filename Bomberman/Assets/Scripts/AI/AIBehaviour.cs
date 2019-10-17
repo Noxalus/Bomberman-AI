@@ -126,8 +126,6 @@ public class AIBehaviour : MonoBehaviour
                     _movement.y = 1;
             }
 
-            Debug.Log("Movement: " + _movement);
-
             return false;
         }
         else

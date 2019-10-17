@@ -32,11 +32,14 @@ public class GameManager : MonoBehaviour
     private int _deadPlayerCount = 0;
     private TimeSpan _time;
     private int _currentMapIndex = 0;
+    private Dictionary<int, Vector2Int> _playersPreviousCellPosition = new Dictionary<int, Vector2Int>();
 
     private void Start()
     {
         LoadMap(_gameSettings.Maps[_currentMapIndex]);
     }
+
+    #region Map
 
     private void LoadMap(string mapName)
     {
@@ -59,14 +62,6 @@ public class GameManager : MonoBehaviour
         LoadMap(mapName);
     }
 
-    private void ClearPlayers()
-    {
-        foreach (var player in _players)
-            Destroy(player.gameObject);
-
-        _players.Clear();
-    }
-
     IEnumerator LoadMapSceneCoroutine(string mapName)
     {
         AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(mapName, LoadSceneMode.Additive);
@@ -86,7 +81,7 @@ public class GameManager : MonoBehaviour
 
         if (_map != null)
         {
-            _debugManager.Initialize(_map);
+            _debugManager.Initialize(this);
             StartGame(_gameSettings.PlayersCount);
         }
         else
@@ -94,6 +89,8 @@ public class GameManager : MonoBehaviour
             throw new Exception("The loaded map doesn't contain a Map component!");
         }
     }
+
+    #endregion
 
     private void StartGame(int playerCount = 1)
     {
@@ -115,6 +112,7 @@ public class GameManager : MonoBehaviour
             }
 
             player.Initialize(i, _gameSettings.PlayersColor[i]);
+            player.OnMove.AddListener(OnPlayerMove);
             player.OnDeath.AddListener(OnPlayerDeath);
             player.OnPlantBomb.AddListener(AddBomb);
             _players.Add(player);
@@ -129,6 +127,8 @@ public class GameManager : MonoBehaviour
 
         StartRound();
     }
+
+    #region Round
 
     private void ClearRoundData()
     {
@@ -154,9 +154,38 @@ public class GameManager : MonoBehaviour
         foreach (var player in _players)
         {
             player.Spawn(_map.GetSpawnPosition(player.Id));
+            _playersPreviousCellPosition[player.Id] = _map.WorldToCell(player.transform.position);
+            _map.SetEntityType(EEntityType.Player, player.transform.position);
         }
 
         StartCoroutine(UpdateTimer());
+    }
+
+    #endregion
+
+    #region Player
+
+    public Player GetPlayerAt(Vector2Int cellPosition)
+    {
+        foreach (Player player in _players)
+        {
+            if (_map.WorldToCell(player.transform.position) == cellPosition)
+                return player;
+        }
+
+        return null;
+    }
+
+    private void OnPlayerMove(Player player)
+    {
+        Vector2Int cellPosition = _map.WorldToCell(player.transform.position);
+
+        if (_playersPreviousCellPosition[player.Id] != cellPosition)
+        {
+            _map.SetEntityType(EEntityType.None, _map.CellToWorld(_playersPreviousCellPosition[player.Id]));
+            _playersPreviousCellPosition[player.Id] = cellPosition;
+            _map.SetEntityType(EEntityType.Player, player.transform.position);
+        }
     }
 
     private void OnPlayerDeath(Player player)
@@ -168,6 +197,21 @@ public class GameManager : MonoBehaviour
             StartRound();
         }
     }
+
+    private void ClearPlayers()
+    {
+        foreach (var player in _players)
+        {
+            player.OnMove.RemoveListener(OnPlayerMove);
+            Destroy(player.gameObject);
+        }
+
+        _players.Clear();
+    }
+
+    #endregion
+
+    #region Bomb
 
     public void AddBomb(Player player)
     {
@@ -224,6 +268,8 @@ public class GameManager : MonoBehaviour
 
         _explosions.Clear();
     }
+
+    #endregion
 
     private void Update()
     {

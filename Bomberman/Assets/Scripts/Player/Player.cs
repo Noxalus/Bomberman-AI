@@ -33,6 +33,7 @@ public class Player : MonoBehaviour
     public PlayerEvent OnSpawn;
     public PlayerEvent OnKill; // When he just get killed
     public PlayerEvent OnDeath; // When the death animation is finished
+    public PlayerEvent OnMove;
 
     #endregion
 
@@ -62,6 +63,7 @@ public class Player : MonoBehaviour
     private int _speedBonus = 1;
     private bool _isDead = false;
     private bool _isInvincible = false;
+    private Vector3 _previousPosition = Vector3.zero;
 
     #endregion
 
@@ -210,6 +212,14 @@ public class Player : MonoBehaviour
         _animator.SetBool("IsDead", _isDead);
 
         OnKill?.Invoke(this);
+    }
+
+    private void Update()
+    {
+        if (transform.position != _previousPosition)
+            OnMove?.Invoke(this);
+
+        _previousPosition = transform.position;
     }
 
     public void OnDeathAnimationFinish()
