@@ -26,6 +26,11 @@ public class Minimap : MonoBehaviour
         _gridLayout.constraintCount = _map.MapSize.x;
         _gridLayout.cellSize = new Vector2(_size.x / maxSize, _size.y / maxSize);
         _gridLayout.spacing = new Vector2(-_gridLayout.cellSize.x, -_gridLayout.cellSize.y);
+        _gridLayout.padding.left = (int)-_gridLayout.cellSize.x;
+        _gridLayout.padding.right = (int)-_gridLayout.cellSize.x;
+        _gridLayout.padding.top = (int)-_gridLayout.cellSize.y;
+        _gridLayout.padding.bottom = (int)-_gridLayout.cellSize.y;
+
         _gridLayout.cellSize *= 2;
 
         _layoutElement = gameObject.AddComponent<LayoutElement>();
