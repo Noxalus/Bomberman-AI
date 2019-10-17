@@ -31,7 +31,7 @@ MonoBehaviour:
   PlayersCount: 4
   AIPlayersCount: 1
   WallDensity: 0.5
-  BonusProbability: 1
+  BonusProbability: 0.5
   AvailableBonus:
     m_keys: 0100000002000000030000000400000005000000
     m_values: 0101010001

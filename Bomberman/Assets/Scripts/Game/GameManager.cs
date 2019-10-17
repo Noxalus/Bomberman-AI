@@ -182,8 +182,11 @@ public class GameManager : MonoBehaviour
 
         if (_playersPreviousCellPosition[player.Id] != cellPosition)
         {
-            _map.SetEntityType(EEntityType.None, _map.CellToWorld(_playersPreviousCellPosition[player.Id]));
+            if (_map.GetEntityType(_playersPreviousCellPosition[player.Id]) != EEntityType.Bomb)
+                _map.SetEntityType(EEntityType.None, _map.CellToWorld(_playersPreviousCellPosition[player.Id]));
+
             _playersPreviousCellPosition[player.Id] = cellPosition;
+            
             _map.SetEntityType(EEntityType.Player, player.transform.position);
         }
     }
@@ -217,7 +220,7 @@ public class GameManager : MonoBehaviour
     {
         var entity = _map.GetEntityType(player.transform.position);
 
-        if (entity != EEntityType.None)
+        if (entity != EEntityType.None && entity != EEntityType.Player)
             return;
 
         var cellPosition = _map.WorldToCell(player.transform.position);
