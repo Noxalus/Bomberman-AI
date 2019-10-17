@@ -6,7 +6,6 @@ public class UIManager : MonoBehaviour
 {
     [SerializeField] PlayersBoardView _playersBoardView = null;
     [SerializeField] TimerView _timer = null;
-    [SerializeField] Minimap _minimap = null;
 
     private GameManager _gameManager;
 
@@ -15,7 +14,6 @@ public class UIManager : MonoBehaviour
         _gameManager = gameManager;
 
         _playersBoardView.Initialize(gameManager.Players);
-        _minimap.Initialize(gameManager.Map);
     }
 
     public void UpdateTimer(TimeSpan time)
@@ -26,6 +24,5 @@ public class UIManager : MonoBehaviour
     public void Clear()
     {
         _playersBoardView.Clear();
-        _minimap.Clear();
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -65,6 +66,11 @@ public class Minimap : MonoBehaviour
 
     public Image GetCell(int x, int y)
     {
-        return _cellImages[x + y * _map.MapSize.x];
+        if (x + y * _map.MapSize.x > _cellImages.Count)
+        {
+            Debug.LogError("Error");
+        }
+
+            return _cellImages[x + y * _map.MapSize.x];
     }
 }

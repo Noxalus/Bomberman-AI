@@ -54,6 +54,7 @@ public class GameManager : MonoBehaviour
         ClearPlayers();
         _uiManager.Clear();
         _aiManager.Clear();
+        _debugManager.Clear();
 
         LoadMap(mapName);
     }

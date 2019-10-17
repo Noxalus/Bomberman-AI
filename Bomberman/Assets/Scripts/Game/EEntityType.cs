@@ -5,5 +5,6 @@
     DestructibleWall = 2,
     Bomb = 3,
     Explosion = 4,
-    Bonus = 5
+    Bonus = 5,
+    Player = 6
 }
