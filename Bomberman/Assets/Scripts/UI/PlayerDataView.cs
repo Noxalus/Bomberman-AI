@@ -93,6 +93,7 @@ public class PlayerDataView : MonoBehaviour
             {
                 GameObject icon = new GameObject(newInstanceName);
                 icon.transform.SetParent(holder);
+                icon.transform.localScale = Vector3.one;
                 Image iconImage = icon.AddComponent<Image>();
                 iconImage.sprite = itemSprite;
 
