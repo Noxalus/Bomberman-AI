@@ -79,6 +79,12 @@ public class AIBehaviour : MonoBehaviour
 
         if (_isMovingToTarget)
         {
+            if (!_aiManager.IsAccessible(_aiManager.CellPosition(_nextPosition)))
+            {
+                UpdateTarget(_targetPosition);
+                return;
+            }
+
             if (MoveToTarget())
             {
                 if (_currentPath.Count == 0)
@@ -105,9 +111,9 @@ public class AIBehaviour : MonoBehaviour
         float speed = (_gameSettings.PlayerBaseSpeed + (_player.SpeedBonus * _gameSettings.SpeedBonusIncrement)) * _debugSpeedFactor;
 
         var distance = new Vector2(
-               Mathf.Abs(transform.position.x - _nextPosition.x),
-               Mathf.Abs(transform.position.y - _nextPosition.y)
-           );
+            Mathf.Abs(transform.position.x - _nextPosition.x),
+            Mathf.Abs(transform.position.y - _nextPosition.y)
+        );
 
         if (distance.x > speed * Time.fixedDeltaTime || distance.y > speed * Time.fixedDeltaTime)
         {
@@ -151,8 +157,6 @@ public class AIBehaviour : MonoBehaviour
             return;
         }
 
-        _nextPosition = _aiManager.WorldPosition(_currentPath.Pop());
-
         ClearPathDebugSprites();
 
         foreach (var step in _currentPath)
@@ -167,6 +171,8 @@ public class AIBehaviour : MonoBehaviour
 
             _pathDebugSprites.Add(pathStep);
         }
+
+        _nextPosition = _aiManager.WorldPosition(_currentPath.Pop());
 
         _isMovingToTarget = true;
     }
