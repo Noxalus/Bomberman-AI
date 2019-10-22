@@ -1,10 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
 public class AIBehaviour : MonoBehaviour
 {
+    #region Events
+
+    public PlayerEvent OnCostMapChanged;
+    public PlayerEvent OnPathChanged;
+    public PlayerEvent OnTargetReached;
+
+    #endregion
+
+    #region Serialized fields
+
     [Header("Inner references")]
 
     [SerializeField] private Player _player = null;
@@ -15,9 +24,13 @@ public class AIBehaviour : MonoBehaviour
 
     [SerializeField] private GameSettings _gameSettings = null;
 
-    // Debug
+    [Header("Debug")]
+
     [SerializeField] float _debugSpeedFactor = 0.25f;
-    [SerializeField] private Sprite _debugSprite = null;
+
+    #endregion
+
+    #region Private fields
 
     private Vector2 _movement = Vector2.zero;
     private Vector3 _targetPosition = Vector3.zero;
@@ -25,9 +38,15 @@ public class AIBehaviour : MonoBehaviour
     private Stack<Vector2Int> _currentPath = new Stack<Vector2Int>();
     private Vector3 _nextPosition = Vector3.zero;
     private AIManager _aiManager;
+    private float _speed;
 
-    // Debug
-    private List<GameObject> _pathDebugSprites = new List<GameObject>();
+    #endregion
+
+    #region Properties
+
+    public Stack<Vector2Int> CurrentPath => _currentPath;
+
+    #endregion
 
     public void Initialize(AIManager aiManager)
     {
@@ -42,10 +61,6 @@ public class AIBehaviour : MonoBehaviour
 
     public void Clear()
     {
-        foreach (var pathDebugSprite in _pathDebugSprites)
-            Destroy(pathDebugSprite.gameObject);
-
-        _pathDebugSprites.Clear();
     }
 
     private void Update()
@@ -92,8 +107,9 @@ public class AIBehaviour : MonoBehaviour
                     _isMovingToTarget = false;
                     _movement = Vector2Int.zero;
                     Debug.Log("Reached target!");
-                    ClearPathDebugSprites();
                     _rigidbody.position = _targetPosition;
+
+                    OnTargetReached?.Invoke(_player);
                 }
                 else
                 {
@@ -108,14 +124,12 @@ public class AIBehaviour : MonoBehaviour
 
     private bool MoveToTarget()
     {
-        float speed = (_gameSettings.PlayerBaseSpeed + (_player.SpeedBonus * _gameSettings.SpeedBonusIncrement)) * _debugSpeedFactor;
-
         var distance = new Vector2(
             Mathf.Abs(transform.position.x - _nextPosition.x),
             Mathf.Abs(transform.position.y - _nextPosition.y)
         );
 
-        if (distance.x > speed * Time.fixedDeltaTime || distance.y > speed * Time.fixedDeltaTime)
+        if (distance.x > 2 * (_speed * Time.fixedDeltaTime) || distance.y > 2 * (_speed * Time.fixedDeltaTime))
         {
             if (distance.x > distance.y)
             {
@@ -148,8 +162,7 @@ public class AIBehaviour : MonoBehaviour
         var origin = _aiManager.CellPosition(transform.position);
         _currentPath = _aiManager.ComputePath(origin, targetCellPosition);
 
-        // To debug only
-        _aiManager.DrawCostMap();
+        OnCostMapChanged?.Invoke(_player);
 
         if (_currentPath.Count == 0)
         {
@@ -157,39 +170,18 @@ public class AIBehaviour : MonoBehaviour
             return;
         }
 
-        ClearPathDebugSprites();
-
-        foreach (var step in _currentPath)
-        {
-            var pathStep = new GameObject("AIPathStep");
-            pathStep.transform.position = _aiManager.WorldPosition(step);
-            pathStep.transform.localScale *= 5f;
-            var nextPositionDebugSpriteRenderer = pathStep.AddComponent<SpriteRenderer>();
-            nextPositionDebugSpriteRenderer.sprite = _debugSprite;
-            //nextPositionDebugSpriteRenderer.color = Color.yellow;
-            nextPositionDebugSpriteRenderer.sortingLayerName = "Player";
-
-            _pathDebugSprites.Add(pathStep);
-        }
-
         _nextPosition = _aiManager.WorldPosition(_currentPath.Pop());
-
         _isMovingToTarget = true;
-    }
 
-    private void ClearPathDebugSprites()
-    {
-        // Next position debug sprite
-        foreach (var sprite in _pathDebugSprites)
-            Destroy(sprite);
-
-        _pathDebugSprites.Clear();
+        OnPathChanged?.Invoke(_player);
     }
 
     private void UpdateAnimator()
     {
         bool isMoving = _movement.sqrMagnitude > 0;
+        float animationSpeed = _speed / (_gameSettings.PlayerBaseSpeed + (_gameSettings.PlayerBaseSpeedBonus * _gameSettings.SpeedBonusIncrement));
 
+        //_animator.SetFloat("AnimationSpeed", animationSpeed);
         _animator.SetFloat("Horizontal", _movement.x);
         _animator.SetFloat("Vertical", _movement.y);
 
@@ -224,7 +216,7 @@ public class AIBehaviour : MonoBehaviour
 
     private void FixedUpdate()
     {
-        float speed = (_gameSettings.PlayerBaseSpeed + (_player.SpeedBonus * _gameSettings.SpeedBonusIncrement)) * _debugSpeedFactor;
-        _rigidbody.MovePosition(_rigidbody.position + _movement * speed * Time.fixedDeltaTime);
+        _speed = (_gameSettings.PlayerBaseSpeed + (_player.SpeedBonus * _gameSettings.SpeedBonusIncrement)) * _debugSpeedFactor;
+        _rigidbody.MovePosition(_rigidbody.position + _movement * _speed * Time.fixedDeltaTime);
     }
 }

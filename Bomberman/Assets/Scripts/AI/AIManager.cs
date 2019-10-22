@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class AIManager : MonoBehaviour
 {
@@ -10,25 +9,18 @@ public class AIManager : MonoBehaviour
 
     #endregion
 
-    #region Serialized fields
-
-    // Debug
-    [SerializeField] private Minimap _costMap = null;
-
-    #endregion
-
     #region Private fields
 
     private Map _map = null;
     private List<AIPlayer> _aiPlayers = new List<AIPlayer>();
     private Vector2Int _areaSize = Vector2Int.zero;
-    private int[,] _cachedCostMatrix = null;
 
     #endregion
 
     #region Properties
 
     public Vector2Int AreaSize => _areaSize;
+    public List<AIPlayer> AIPlayers => _aiPlayers;
 
     #endregion
 
@@ -187,36 +179,7 @@ public class AIManager : MonoBehaviour
             }
         }
 
-        _cachedCostMatrix = costMatrix;
-
         return costMatrix;
-    }
-
-    public void DrawCostMap()
-    {
-        float infiniteValue = (AreaSize.x * AreaSize.y);
-        float maxCostValue = 0;
-
-
-        for (int x = 0; x < AreaSize.x; x++)
-        {
-            for (int y = 0; y < AreaSize.y; y++)
-            {
-                if (_cachedCostMatrix[x, y] != infiniteValue && _cachedCostMatrix[x, y] > maxCostValue)
-                    maxCostValue = _cachedCostMatrix[x, y];
-            }
-        }
-
-        for (int y = 0; y < AreaSize.y; y++)
-        {
-            for (int x = 0; x < AreaSize.x; x++)
-            {
-                Image currentCell = _costMap.GetCell(x, (AreaSize.y - 1) - y);
-                float factor = 1f - (_cachedCostMatrix[x, y] * (255f / maxCostValue) / 255f);
-                
-                currentCell.color = new Color(factor, factor, factor, 1f);
-            }
-        }
     }
 
     public bool IsAccessible(Vector2Int cellPosition)
@@ -226,11 +189,11 @@ public class AIManager : MonoBehaviour
 
     public Vector3 WorldPosition(Vector2Int cellPosition)
     {
-        return _map.CellToWorld(cellPosition);
+        return _map.WorldPosition(cellPosition);
     }
 
     public Vector2Int CellPosition(Vector3 worldPosition)
     {
-        return _map.WorldToCell(worldPosition);
+        return _map.CellPosition(worldPosition);
     }
 }

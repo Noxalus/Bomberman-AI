@@ -76,6 +76,6 @@ public class Minimap : MonoBehaviour
             Debug.LogError("Error");
         }
 
-            return _cellImages[x + y * _map.MapSize.x];
+        return _cellImages[x + y * _map.MapSize.x];
     }
 }

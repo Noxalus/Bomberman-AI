@@ -63,10 +63,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 318bde506accf074fb80335cbf372621, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _logicalMapText: {fileID: 0}
   _canvasGroup: {fileID: 5351450032469024969}
   _costMap: {fileID: 5351450033446579720}
   _entitiesMap: {fileID: 7041591076883291157}
+  _pathSprite: {fileID: 21300000, guid: 0cd1a40e6f2001141ad63510115fd2e6, type: 3}
 --- !u!225 &5351450032469024969
 CanvasGroup:
   m_ObjectHideFlags: 0

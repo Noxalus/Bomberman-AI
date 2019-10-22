@@ -31,7 +31,7 @@ public class Explosion : MonoBehaviour
         _map = map;
 
         int power = bomb.Power;
-        Vector2Int currentCellPosition = map.WorldToCell(transform.position);
+        Vector2Int currentCellPosition = map.CellPosition(transform.position);
         Vector2Int cellSize = Vector2Int.one;
 
         var centerExplosion = Instantiate(_explosionCenter, transform);

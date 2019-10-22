@@ -25,6 +25,8 @@ public class GameManager : MonoBehaviour
 
     public List<Player> Players => _players;
 
+    public AIManager AIManager => _aiManager;
+
     private Map _map = null;
     private List<Player> _players = new List<Player>();
     private List<Bomb> _bombs = new List<Bomb>();
@@ -81,8 +83,8 @@ public class GameManager : MonoBehaviour
 
         if (_map != null)
         {
-            _debugManager.Initialize(this);
             StartGame(_gameSettings.PlayersCount);
+            _debugManager.Initialize(this);
         }
         else
         {
@@ -154,7 +156,7 @@ public class GameManager : MonoBehaviour
         foreach (var player in _players)
         {
             player.Spawn(_map.GetSpawnPosition(player.Id));
-            _playersPreviousCellPosition[player.Id] = _map.WorldToCell(player.transform.position);
+            _playersPreviousCellPosition[player.Id] = _map.CellPosition(player.transform.position);
             _map.SetEntityType(EEntityType.Player, player.transform.position);
         }
 
@@ -169,7 +171,7 @@ public class GameManager : MonoBehaviour
     {
         foreach (Player player in _players)
         {
-            if (_map.WorldToCell(player.transform.position) == cellPosition)
+            if (_map.CellPosition(player.transform.position) == cellPosition)
                 return player;
         }
 
@@ -178,12 +180,12 @@ public class GameManager : MonoBehaviour
 
     private void OnPlayerMove(Player player)
     {
-        Vector2Int cellPosition = _map.WorldToCell(player.transform.position);
+        Vector2Int cellPosition = _map.CellPosition(player.transform.position);
 
         if (_playersPreviousCellPosition[player.Id] != cellPosition)
         {
             if (_map.GetEntityType(_playersPreviousCellPosition[player.Id]) != EEntityType.Bomb)
-                _map.SetEntityType(EEntityType.None, _map.CellToWorld(_playersPreviousCellPosition[player.Id]));
+                _map.SetEntityType(EEntityType.None, _map.WorldPosition(_playersPreviousCellPosition[player.Id]));
 
             _playersPreviousCellPosition[player.Id] = cellPosition;
             
@@ -223,8 +225,8 @@ public class GameManager : MonoBehaviour
         if (entity != EEntityType.None && entity != EEntityType.Player)
             return;
 
-        var cellPosition = _map.WorldToCell(player.transform.position);
-        var position = _map.CellToWorld(cellPosition);
+        var cellPosition = _map.CellPosition(player.transform.position);
+        var position = _map.WorldPosition(cellPosition);
         var bomb = Instantiate(_bombPrefab, position, Quaternion.identity, _map.transform);
         bomb.Initialize(player);
         bomb.OnExplosion.AddListener(OnBombExplode);
@@ -314,11 +316,11 @@ public class GameManager : MonoBehaviour
         if (Input.GetMouseButton(1))
         {
             Vector3 worldPosition = _camera.ScreenToWorldPoint(Input.mousePosition);
-            Vector2Int cellPosition = _map.WorldToCell(worldPosition);
+            Vector2Int cellPosition = _map.CellPosition(worldPosition);
 
             if (_map.IsAccessible(cellPosition))
             {
-                worldPosition = _map.CellToWorld(cellPosition);
+                worldPosition = _map.WorldPosition(cellPosition);
                 _map.AddDestructibleWall(worldPosition);
             }
             else

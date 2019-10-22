@@ -54,13 +54,13 @@ public class Map : MonoBehaviour
         InitializePlayersSpawn();
     }
 
-    public Vector2Int WorldToCell(Vector3 worldPosition)
+    public Vector2Int CellPosition(Vector3 worldPosition)
     {
         var cellPosition = GameTilemap.WorldToCell(worldPosition);
         return new Vector2Int(cellPosition.x, cellPosition.y) - _mapOrigin;
     }
 
-    public Vector3 CellToWorld(Vector2Int cellPosition)
+    public Vector3 WorldPosition(Vector2Int cellPosition)
     {
         // Update the given normalized cell position to "world" cell position
         cellPosition += _mapOrigin;
@@ -135,7 +135,7 @@ public class Map : MonoBehaviour
 
         foreach (Transform spawnTransform in _playerSpawns)
         {
-            _playerSpawnCells.Add(WorldToCell(spawnTransform.position));
+            _playerSpawnCells.Add(CellPosition(spawnTransform.position));
         }
     }
 
@@ -180,7 +180,7 @@ public class Map : MonoBehaviour
 
     public EEntityType GetEntityType(Vector3 worldPosition)
     {
-        var cellPosition = WorldToCell(worldPosition);
+        var cellPosition = CellPosition(worldPosition);
 
         if (IsOutOfBound(cellPosition))
         {
@@ -192,7 +192,7 @@ public class Map : MonoBehaviour
 
     public void SetEntityType(EEntityType entityType, Vector3 worldPosition)
     {
-        Vector2Int cellPosition = WorldToCell(worldPosition);
+        Vector2Int cellPosition = CellPosition(worldPosition);
         _entitiesMap[cellPosition.x, cellPosition.y] = entityType;
     }
 
@@ -226,7 +226,7 @@ public class Map : MonoBehaviour
 
                 if (tile)
                 {
-                    var worldPosition = CellToWorld(cellPosition);
+                    var worldPosition = WorldPosition(cellPosition);
 
                     if (OverlapUnbreakableWall(worldPosition))
                     {
@@ -266,7 +266,7 @@ public class Map : MonoBehaviour
 
                 if (tile)
                 {
-                    var worldPosition = CellToWorld(cellPosition);
+                    var worldPosition = WorldPosition(cellPosition);
 
                     if (OverlapPlayerSpawn(cellPosition) || OverlapUnbreakableWall(worldPosition))
                     {

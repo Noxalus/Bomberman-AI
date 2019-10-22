@@ -29,8 +29,8 @@ MonoBehaviour:
   - Map8
   - Map9
   PlayersCount: 2
-  AIPlayersCount: 0
-  WallDensity: 0.5
+  AIPlayersCount: 2
+  WallDensity: 0
   BonusProbability: 0.5
   AvailableBonus:
     m_keys: 0100000002000000030000000400000005000000
