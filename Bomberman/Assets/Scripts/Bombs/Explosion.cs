@@ -32,7 +32,6 @@ public class Explosion : MonoBehaviour
 
         int power = bomb.Power;
         Vector2Int currentCellPosition = map.CellPosition(transform.position);
-        Vector2Int cellSize = Vector2Int.one;
 
         var centerExplosion = Instantiate(_explosionCenter, transform);
         centerExplosion.transform.localPosition = Vector2.zero;
@@ -50,25 +49,25 @@ public class Explosion : MonoBehaviour
         {
             if (!stopTop)
             {
-                Vector2Int topPosition = new Vector2Int(0, i * cellSize.y);
+                Vector2Int topPosition = new Vector2Int(0, i);
                 stopTop = InstantiateExplosion(currentCellPosition, topPosition, i == power);
             }
 
             if (!stopBottom)
             {
-                Vector2Int bottomPosition = new Vector2Int(0, -i * cellSize.y);
+                Vector2Int bottomPosition = new Vector2Int(0, -i);
                 stopBottom = InstantiateExplosion(currentCellPosition, bottomPosition, i == power);
             }
 
             if (!stopLeft)
             {
-                Vector2Int leftPosition = new Vector2Int(-i * cellSize.x, 0);
+                Vector2Int leftPosition = new Vector2Int(-i, 0);
                 stopLeft = InstantiateExplosion(currentCellPosition, leftPosition, i == power);
             }
 
             if (!stopRight)
             {
-                Vector2Int rightPosition = new Vector2Int(i * cellSize.x, 0);
+                Vector2Int rightPosition = new Vector2Int(i, 0);
                 stopRight = InstantiateExplosion(currentCellPosition, rightPosition, i == power);
             }
         }

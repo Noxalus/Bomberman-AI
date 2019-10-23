@@ -233,7 +233,8 @@ public class GameManager : MonoBehaviour
 
         player.UpdateCurrentBombCount(-1);
 
-        _map.SetEntityType(EEntityType.Bomb, bomb.transform.position);
+        // Update map
+        _map.BombAdded(bomb);
 
         _bombs.Add(bomb);
     }

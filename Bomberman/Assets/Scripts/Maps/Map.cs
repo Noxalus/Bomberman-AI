@@ -38,6 +38,7 @@ public class Map : MonoBehaviour
 
     private List<Vector2Int> _playerSpawnCells = new List<Vector2Int>();
     private EEntityType[,] _entitiesMap;
+    private short[,] _dangerMap;
 
     private Vector2Int _mapSize = Vector2Int.zero;
     private Vector2Int _mapOrigin = Vector2Int.zero;
@@ -51,6 +52,7 @@ public class Map : MonoBehaviour
     {
         ComputeMapSize();
         InitializeEntitiesMap();
+        InitializeDangerMap();
         InitializePlayersSpawn();
     }
 
@@ -103,6 +105,7 @@ public class Map : MonoBehaviour
     public void Clear()
     {
         ClearEntitiesMap();
+        ClearDangerMap();
         ClearBonus();
         ClearDestructibleWalls();
     }
@@ -204,6 +207,46 @@ public class Map : MonoBehaviour
             {
                 if (_entitiesMap[x, y] != EEntityType.UnbreakableWall)
                     _entitiesMap[x, y] = EEntityType.None;
+            }
+        }
+    }
+
+    #endregion
+
+    #region Danger map
+
+    private void InitializeDangerMap()
+    {
+        _dangerMap = new short[_mapSize.x, _mapSize.y];
+    }
+
+    public bool IsSafe(Vector2Int cellPosition)
+    {
+        return _dangerMap[cellPosition.x, cellPosition.y] == 0;
+    }
+
+    public bool IsSafe(Vector3 worldPosition)
+    {
+        return IsSafe(CellPosition(worldPosition));
+    }
+
+    public short GetDangerLevel(Vector2Int cellPosition)
+    {
+        return _dangerMap[cellPosition.x, cellPosition.y];
+    }
+
+    private void SetDangerLevel(Vector2Int cellPosition, short dangerLevel)
+    {
+        _dangerMap[cellPosition.x, cellPosition.y] = dangerLevel;
+    }
+
+    private void ClearDangerMap()
+    {
+        for (int y = 0; y < _mapSize.y; y++)
+        {
+            for (int x = 0; x < _mapSize.x; x++)
+            {
+                _dangerMap[x, y] = 0;
             }
         }
     }
@@ -375,6 +418,40 @@ public class Map : MonoBehaviour
         }
 
         _bonus.Clear();
+    }
+
+    #endregion
+
+    #region Bombs
+
+    public void BombAdded(Bomb bomb)
+    {
+        SetEntityType(EEntityType.Bomb, bomb.transform.position);
+        UpdateDangerMapFromBomb(bomb);
+
+        bomb.OnExplosion.AddListener(OnBombExplosion);
+    }
+
+    private void OnBombExplosion(Bomb bomb)
+    {
+        bomb.OnExplosion.RemoveListener(OnBombExplosion);
+
+        // TODO
+    }
+
+    private void UpdateDangerMapFromBomb(Bomb bomb)
+    {
+        List<Vector2Int> bombImpactedCells = bomb.FindImpactedCells();
+        short dangerLevel = 1;
+        short bombCenterCurrentDangerLevel = GetDangerLevel(bombImpactedCells[0]);
+
+        if (bombCenterCurrentDangerLevel > 0)
+            dangerLevel = bombCenterCurrentDangerLevel;
+
+        foreach (var impactedCell in bombImpactedCells)
+        {
+            SetDangerLevel(impactedCell, dangerLevel);
+        }
     }
 
     #endregion

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.Events;
 
 [System.Serializable]
@@ -6,49 +7,65 @@ public class BombEvent : UnityEvent<Bomb> { }
 
 public class Bomb : MonoBehaviour
 {
+    #region Events
+
     [Header("Events")]
 
     public BombEvent OnExplosion;
+
+    #endregion
+
+    #region Serialized fields
 
     [Header("Inner references")]
 
     [SerializeField] private Collider2D _collider = null;
 
-    public int Power => _power;
+    #endregion
+
+    #region Private fields
 
     private Player _player;
     private Map _map;
     private float _timer;
     private int _power;
-
     private float _currentTimer;
     private bool _isExploding = false;
 
+    #endregion
+
+    #region Properties
+
     public Player Player => _player;
+    public int Power => _power;
+
+    #endregion
 
     private void Awake()
     {
         _collider.enabled = false;
     }
 
-    public void Initialize(float timer, int power)
+    public void Initialize(float timer, int power, Map map)
     {
         _timer = timer;
         _power = power;
+        _map = map;
 
-        Initialize();
+        InitializeInternal();
     }
 
-    public void Initialize(Player player)
+    public void Initialize(Player player, Map map)
     {
         _player = player;
         _timer = player.BombTimer;
         _power = player.Power;
+        _map = map;
 
-        Initialize();
+        InitializeInternal();
     }
 
-    private void Initialize()
+    private void InitializeInternal()
     {
         _currentTimer = _timer;
         _isExploding = false;
@@ -87,5 +104,80 @@ public class Bomb : MonoBehaviour
         OnExplosion?.Invoke(this);
 
         Destroy(gameObject);
+    }
+
+    public List<Vector2Int> FindImpactedCells()
+    {
+        int power = Power;
+        List<Vector2Int> impactedCells = new List<Vector2Int>();
+        Vector2Int currentCellPosition = _map.CellPosition(transform.position);
+
+        impactedCells.Add(currentCellPosition);
+
+        bool stopTop = false;
+        bool stopRight = false;
+        bool stopBottom = false;
+        bool stopLeft = false;
+
+        for (int i = 1; i <= power; i++)
+        {
+            if (!stopTop)
+            {
+                Vector2Int topPosition = new Vector2Int(0, i);
+
+                if (_map.IsAccessible(topPosition))
+                {
+                    impactedCells.Add(topPosition);
+                }
+                else
+                {
+                    stopTop = true;
+                }
+            }
+
+            if (!stopBottom)
+            {
+                Vector2Int bottomPosition = new Vector2Int(0, -i);
+
+                if (_map.IsAccessible(bottomPosition))
+                {
+                    impactedCells.Add(bottomPosition);
+                }
+                else
+                {
+                    stopBottom = true;
+                }
+            }
+
+            if (!stopLeft)
+            {
+                Vector2Int leftPosition = new Vector2Int(-i, 0);
+
+                if (_map.IsAccessible(leftPosition))
+                {
+                    impactedCells.Add(leftPosition);
+                }
+                else
+                {
+                    stopLeft = true;
+                }
+            }
+
+            if (!stopRight)
+            {
+                Vector2Int rightPosition = new Vector2Int(i, 0);
+
+                if (_map.IsAccessible(rightPosition))
+                {
+                    impactedCells.Add(rightPosition);
+                }
+                else
+                {
+                    stopRight = true;
+                }
+            }
+        }
+
+        return impactedCells;
     }
 }
