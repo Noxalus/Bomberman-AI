@@ -1,9 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
+
+[System.Serializable]
+public class ExplosionEvent : UnityEvent<Explosion> { }
 
 public class Explosion : MonoBehaviour
 {
+    #region Events
+
+    public ExplosionEvent OnExplosionFinished;
+
+    #endregion
+
     #region Constants
 
     // Animator key constants
@@ -19,26 +29,27 @@ public class Explosion : MonoBehaviour
 
     [SerializeField] ExplosionSprite _explosionCenter = null;
 
-    public List<ExplosionSprite> ExplosionSprites => _explosionSprites;
+    public List<Vector2Int> ImpactedCells => _impactedCells;
 
     private Map _map = null;
     private Bomb _bomb = null;
-    private List<ExplosionSprite> _explosionSprites = new List<ExplosionSprite>();
+    private List<Vector2Int> _impactedCells = new List<Vector2Int>();
 
     public void Initialize(Bomb bomb, Map map)
     {
         _bomb = bomb;
         _map = map;
 
+        _impactedCells = new List<Vector2Int>();
+
         int power = bomb.Power;
         Vector2Int currentCellPosition = map.CellPosition(transform.position);
 
         var centerExplosion = Instantiate(_explosionCenter, transform);
         centerExplosion.transform.localPosition = Vector2.zero;
-        centerExplosion.OnExplosionFinished += OnExplosionFinished;
+        centerExplosion.OnExplosionFinished += OnExplosionAnimationFinished;
 
-        _map.SetEntityType(EEntityType.Explosion, centerExplosion.transform.position);
-        _explosionSprites.Add(centerExplosion);
+        _impactedCells.Add(currentCellPosition);
 
         bool stopTop = false;
         bool stopRight = false;
@@ -92,9 +103,7 @@ public class Explosion : MonoBehaviour
             animator.SetBool(ANIMATOR_IS_BOUND_KEY, isBound || stop);
             explosion.transform.localPosition = new Vector3(offset.x, offset.y, 0);
 
-            _map.SetEntityType(EEntityType.Explosion, explosion.transform.position);
-
-            _explosionSprites.Add(explosion);
+            _impactedCells.Add(position + offset);
         }
         else
         {
@@ -126,13 +135,9 @@ public class Explosion : MonoBehaviour
         throw new Exception($"No side for this offset: {offset.ToString()}");
     }
 
-    private void OnExplosionFinished()
+    private void OnExplosionAnimationFinished()
     {
-        foreach (var explosionSprite in _explosionSprites)
-        {
-            if (_map.GetEntityType(explosionSprite.transform.position) != EEntityType.Bonus)
-                _map.SetEntityType(EEntityType.None, explosionSprite.transform.position);
-        }
+        OnExplosionFinished?.Invoke(this);
 
         Destroy(gameObject);
     }

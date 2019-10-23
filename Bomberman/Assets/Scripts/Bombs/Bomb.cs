@@ -12,6 +12,7 @@ public class Bomb : MonoBehaviour
     [Header("Events")]
 
     public BombEvent OnExplosion;
+    public BombEvent OnWillExplodeSoon;
 
     #endregion
 
@@ -31,6 +32,7 @@ public class Bomb : MonoBehaviour
     private int _power;
     private float _currentTimer;
     private bool _isExploding = false;
+    private bool _isExplodingSoon = false;
 
     #endregion
 
@@ -69,6 +71,7 @@ public class Bomb : MonoBehaviour
     {
         _currentTimer = _timer;
         _isExploding = false;
+        _isExplodingSoon = false;
     }
 
     private void OnTriggerExit2D(Collider2D collision)
@@ -84,6 +87,12 @@ public class Bomb : MonoBehaviour
         if (_currentTimer > 0)
         {
             _currentTimer -= Time.deltaTime;
+
+            if (!_isExplodingSoon && _currentTimer < 1f)
+            {
+                _isExplodingSoon = true;
+                OnWillExplodeSoon?.Invoke(this);
+            }
 
             if (_currentTimer <= 0)
             {
@@ -123,7 +132,7 @@ public class Bomb : MonoBehaviour
         {
             if (!stopTop)
             {
-                Vector2Int topPosition = new Vector2Int(0, i);
+                Vector2Int topPosition = currentCellPosition + new Vector2Int(0, i);
 
                 if (_map.IsAccessible(topPosition))
                 {
@@ -137,7 +146,7 @@ public class Bomb : MonoBehaviour
 
             if (!stopBottom)
             {
-                Vector2Int bottomPosition = new Vector2Int(0, -i);
+                Vector2Int bottomPosition = currentCellPosition + new Vector2Int(0, -i);
 
                 if (_map.IsAccessible(bottomPosition))
                 {
@@ -151,7 +160,7 @@ public class Bomb : MonoBehaviour
 
             if (!stopLeft)
             {
-                Vector2Int leftPosition = new Vector2Int(-i, 0);
+                Vector2Int leftPosition = currentCellPosition + new Vector2Int(-i, 0);
 
                 if (_map.IsAccessible(leftPosition))
                 {
@@ -165,7 +174,7 @@ public class Bomb : MonoBehaviour
 
             if (!stopRight)
             {
-                Vector2Int rightPosition = new Vector2Int(i, 0);
+                Vector2Int rightPosition = currentCellPosition + new Vector2Int(i, 0);
 
                 if (_map.IsAccessible(rightPosition))
                 {

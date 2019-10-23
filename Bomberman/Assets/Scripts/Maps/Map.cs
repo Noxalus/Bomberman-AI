@@ -193,6 +193,11 @@ public class Map : MonoBehaviour
         return _entitiesMap[cellPosition.x, cellPosition.y];
     }
 
+    public void SetEntityType(EEntityType entityType, Vector2Int cellPosition)
+    {
+        _entitiesMap[cellPosition.x, cellPosition.y] = entityType;
+    }
+
     public void SetEntityType(EEntityType entityType, Vector3 worldPosition)
     {
         Vector2Int cellPosition = CellPosition(worldPosition);
@@ -424,33 +429,60 @@ public class Map : MonoBehaviour
 
     #region Bombs
 
-    public void BombAdded(Bomb bomb)
+    public void OnBombAdded(Bomb bomb)
     {
         SetEntityType(EEntityType.Bomb, bomb.transform.position);
-        UpdateDangerMapFromBomb(bomb);
+        UpdateDangerMap(bomb.FindImpactedCells(), 1);
 
-        bomb.OnExplosion.AddListener(OnBombExplosion);
+        bomb.OnWillExplodeSoon.AddListener(OnBombWillExplodeSoon);
     }
 
-    private void OnBombExplosion(Bomb bomb)
+    private void OnBombWillExplodeSoon(Bomb bomb)
     {
-        bomb.OnExplosion.RemoveListener(OnBombExplosion);
-
-        // TODO
+        bomb.OnWillExplodeSoon.RemoveListener(OnBombWillExplodeSoon);
+        UpdateDangerMap(bomb.FindImpactedCells(), 2);
     }
 
-    private void UpdateDangerMapFromBomb(Bomb bomb)
+    #endregion
+
+    #region Explosions
+
+    public void OnExplosionAdded(Explosion explosion)
     {
-        List<Vector2Int> bombImpactedCells = bomb.FindImpactedCells();
-        short dangerLevel = 1;
-        short bombCenterCurrentDangerLevel = GetDangerLevel(bombImpactedCells[0]);
+        SetEntityType(EEntityType.Explosion, explosion.transform.position);
 
-        if (bombCenterCurrentDangerLevel > 0)
-            dangerLevel = bombCenterCurrentDangerLevel;
+        explosion.OnExplosionFinished.AddListener(OnExplosionFinished);
 
-        foreach (var impactedCell in bombImpactedCells)
+        foreach (var cell in explosion.ImpactedCells)
+            SetEntityType(EEntityType.Explosion, cell);
+
+        UpdateDangerMap(explosion.ImpactedCells, 3);
+    }
+
+    public void OnExplosionFinished(Explosion explosion)
+    {
+        explosion.OnExplosionFinished.RemoveListener(OnExplosionFinished);
+      
+        foreach (var cellPosition in explosion.ImpactedCells)
         {
-            SetDangerLevel(impactedCell, dangerLevel);
+            if (GetEntityType(cellPosition) != EEntityType.Bonus)
+                SetEntityType(EEntityType.None, cellPosition);
+        }
+
+        UpdateDangerMap(explosion.ImpactedCells, 0, true);
+    }
+
+    // Warning: the first cells element should be the center position
+    public void UpdateDangerMap(List<Vector2Int> cells, short dangerLevel, bool force = false)
+    {
+        short currentDangerLevel = GetDangerLevel(cells[0]);
+
+        if (!force && currentDangerLevel > dangerLevel)
+            dangerLevel = currentDangerLevel;
+
+        foreach (var cell in cells)
+        {
+            SetDangerLevel(cell, dangerLevel);
         }
     }
 

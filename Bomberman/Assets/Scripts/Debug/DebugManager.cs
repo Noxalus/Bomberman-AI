@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -6,6 +7,7 @@ public class DebugManager : MonoBehaviour
 {
     [SerializeField] private CanvasGroup _canvasGroup = null;
     [SerializeField] Minimap _costMap = null;
+    [SerializeField] Minimap _dangerMap = null;
     [SerializeField] Minimap _goalMap = null;
     [SerializeField] EntitiesMinimap _entitiesMap = null;
     [SerializeField] private Sprite _pathSprite = null;
@@ -24,6 +26,7 @@ public class DebugManager : MonoBehaviour
     {
         _gameManager = gameManager;
         _costMap.Initialize(gameManager.Map);
+        _dangerMap.Initialize(gameManager.Map);
         _goalMap.Initialize(gameManager.Map);
         _entitiesMap.Initialize(gameManager);
 
@@ -39,6 +42,7 @@ public class DebugManager : MonoBehaviour
     public void Clear()
     {
         _costMap.Clear();
+        _dangerMap.Clear();
         _goalMap.Clear();
         _entitiesMap.Clear();
 
@@ -78,6 +82,7 @@ public class DebugManager : MonoBehaviour
         if (_isInitialized)
         {
             DrawCostMap();
+            DrawDangerMap();
             DrawGoalMap();
             _entitiesMap.UpdateMinimap();
         }
@@ -140,6 +145,22 @@ public class DebugManager : MonoBehaviour
                 float factor = 1f - (costMatrix[x, y] * (255f / maxCostValue) / 255f);
 
                 currentCell.color = new Color(factor, factor, factor, 1f);
+            }
+        }
+    }
+
+    private void DrawDangerMap()
+    {
+        float maxCostValue = 3;
+
+        for (int y = 0; y < _gameManager.Map.MapSize.y; y++)
+        {
+            for (int x = 0; x < _gameManager.Map.MapSize.x; x++)
+            {
+                Image currentCell = _dangerMap.GetCell(x, (_gameManager.Map.MapSize.y - 1) - y);
+                float factor = (_gameManager.Map.GetDangerLevel(new Vector2Int(x, y)) * (255f / maxCostValue) / 255f);
+
+                currentCell.color = (factor > 0) ? new Color(factor, 0f, 0f, 1f) : Color.white;
             }
         }
     }

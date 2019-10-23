@@ -228,13 +228,13 @@ public class GameManager : MonoBehaviour
         var cellPosition = _map.CellPosition(player.transform.position);
         var position = _map.WorldPosition(cellPosition);
         var bomb = Instantiate(_bombPrefab, position, Quaternion.identity, _map.transform);
-        bomb.Initialize(player);
+        bomb.Initialize(player, _map);
         bomb.OnExplosion.AddListener(OnBombExplode);
 
         player.UpdateCurrentBombCount(-1);
 
         // Update map
-        _map.BombAdded(bomb);
+        _map.OnBombAdded(bomb);
 
         _bombs.Add(bomb);
     }
@@ -248,7 +248,7 @@ public class GameManager : MonoBehaviour
         Explosion explosion = Instantiate(_explosionPrefab, bomb.transform.position, Quaternion.identity);
         explosion.Initialize(bomb, _map);
 
-        _map.SetEntityType(EEntityType.Explosion, explosion.transform.position);
+        _map.OnExplosionAdded(explosion);
 
         _explosions.Add(explosion);
     }
