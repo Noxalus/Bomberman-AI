@@ -120,6 +120,13 @@ public class AIBehaviour : MonoBehaviour
                 }
             }
         }
+        else
+        {
+            var newTarget = _aiManager.GetBestGoalPosition(_aiManager.CellPosition(transform.position));
+
+            if (newTarget.HasValue)
+                UpdateTarget(_aiManager.WorldPosition(newTarget.Value));
+        }
     }
 
     private bool MoveToTarget()

@@ -6,6 +6,7 @@ public class DebugManager : MonoBehaviour
 {
     [SerializeField] private CanvasGroup _canvasGroup = null;
     [SerializeField] Minimap _costMap = null;
+    [SerializeField] Minimap _goalMap = null;
     [SerializeField] EntitiesMinimap _entitiesMap = null;
     [SerializeField] private Sprite _pathSprite = null;
 
@@ -23,6 +24,7 @@ public class DebugManager : MonoBehaviour
     {
         _gameManager = gameManager;
         _costMap.Initialize(gameManager.Map);
+        _goalMap.Initialize(gameManager.Map);
         _entitiesMap.Initialize(gameManager);
 
         _isInitialized = true;
@@ -37,6 +39,7 @@ public class DebugManager : MonoBehaviour
     public void Clear()
     {
         _costMap.Clear();
+        _goalMap.Clear();
         _entitiesMap.Clear();
 
         foreach (var aiPlayer in _gameManager.AIManager.AIPlayers)
@@ -51,6 +54,8 @@ public class DebugManager : MonoBehaviour
         }
 
         _pathSprites.Clear();
+
+        _isInitialized = false;
     }
 
     private void ClearPathSprites(int playerId)
@@ -73,6 +78,7 @@ public class DebugManager : MonoBehaviour
         if (_isInitialized)
         {
             DrawCostMap();
+            DrawGoalMap();
             _entitiesMap.UpdateMinimap();
         }
     }
@@ -107,6 +113,9 @@ public class DebugManager : MonoBehaviour
 
     private void DrawCostMap()
     {
+        if (_currentAIPlayerIndex >= _gameManager.AIManager.AIPlayers.Count)
+            return;
+
         var currentAIPlayer = _gameManager.AIManager.AIPlayers[_currentAIPlayerIndex];
         var playerCellPosition = _gameManager.AIManager.CellPosition(currentAIPlayer.transform.position);
         var costMatrix = _gameManager.AIManager.ComputeCostMap(playerCellPosition);
@@ -129,6 +138,39 @@ public class DebugManager : MonoBehaviour
             {
                 Image currentCell = _costMap.GetCell(x, (_gameManager.AIManager.AreaSize.y - 1) - y);
                 float factor = 1f - (costMatrix[x, y] * (255f / maxCostValue) / 255f);
+
+                currentCell.color = new Color(factor, factor, factor, 1f);
+            }
+        }
+    }
+
+    private void DrawGoalMap()
+    {
+        if (_currentAIPlayerIndex >= _gameManager.AIManager.AIPlayers.Count)
+            return;
+
+        var currentAIPlayer = _gameManager.AIManager.AIPlayers[_currentAIPlayerIndex];
+        var playerCellPosition = _gameManager.AIManager.CellPosition(currentAIPlayer.transform.position);
+        var goalMatrix = _gameManager.AIManager.ComputeGoalMap(playerCellPosition);
+
+        float infiniteValue = (_gameManager.AIManager.AreaSize.x * _gameManager.AIManager.AreaSize.y);
+        float maxCostValue = 0;
+
+        for (int x = 0; x < _gameManager.AIManager.AreaSize.x; x++)
+        {
+            for (int y = 0; y < _gameManager.AIManager.AreaSize.y; y++)
+            {
+                if (goalMatrix[x, y] != infiniteValue && goalMatrix[x, y] > maxCostValue)
+                    maxCostValue = goalMatrix[x, y];
+            }
+        }
+
+        for (int y = 0; y < _gameManager.AIManager.AreaSize.y; y++)
+        {
+            for (int x = 0; x < _gameManager.AIManager.AreaSize.x; x++)
+            {
+                Image currentCell = _goalMap.GetCell(x, (_gameManager.AIManager.AreaSize.y - 1) - y);
+                float factor = (goalMatrix[x, y] * (255f / maxCostValue) / 255f);
 
                 currentCell.color = new Color(factor, factor, factor, 1f);
             }

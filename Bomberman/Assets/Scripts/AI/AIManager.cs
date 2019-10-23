@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class AIManager : MonoBehaviour
@@ -103,24 +104,25 @@ public class AIManager : MonoBehaviour
         return motion;
     }
 
-    private Dictionary<EDirection, Vector2Int> GetNeighbours(Vector2Int position)
+    private Dictionary<EDirection, Vector2Int> GetNeighbours(Vector2Int position, bool onlyAccessible = false)
     {
         var neighbours = new Dictionary<EDirection, Vector2Int>();
 
         var topPosition = new Vector2Int(position.x, position.y - 1);
-        if (!_map.IsOutOfBound(topPosition))
+        var bottomPosition = new Vector2Int(position.x, position.y + 1);
+        var rightPosition = new Vector2Int(position.x + 1, position.y);
+        var leftPosition = new Vector2Int(position.x - 1, position.y);
+
+        if (!_map.IsOutOfBound(topPosition) && (!onlyAccessible || (onlyAccessible && _map.IsAccessible(topPosition))))
             neighbours.Add(EDirection.Up, topPosition);
 
-        var bottomPosition = new Vector2Int(position.x, position.y + 1);
-        if (!_map.IsOutOfBound(bottomPosition))
+        if (!_map.IsOutOfBound(bottomPosition) && (!onlyAccessible || (onlyAccessible && _map.IsAccessible(bottomPosition))))
             neighbours.Add(EDirection.Down, bottomPosition);
 
-        var rightPosition = new Vector2Int(position.x + 1, position.y);
-        if (!_map.IsOutOfBound(rightPosition))
+        if (!_map.IsOutOfBound(rightPosition) && (!onlyAccessible || (onlyAccessible && _map.IsAccessible(rightPosition))))
             neighbours.Add(EDirection.Right, rightPosition);
 
-        var leftPosition = new Vector2Int(position.x - 1, position.y);
-        if (!_map.IsOutOfBound(leftPosition))
+        if (!_map.IsOutOfBound(leftPosition) && (!onlyAccessible || (onlyAccessible && _map.IsAccessible(leftPosition))))
             neighbours.Add(EDirection.Left, leftPosition);
 
         return neighbours;
@@ -149,37 +151,127 @@ public class AIManager : MonoBehaviour
             {
                 var currentPosition = queue.Dequeue();
 
-                // Top
-                if (currentPosition.y - 1 >= 0 && IsAccessible(new Vector2Int(currentPosition.x, currentPosition.y - 1)) &&
-                    costMatrix[currentPosition.x, currentPosition.y - 1] > cellValue)
+                Dictionary<EDirection, Vector2Int> neighbours = GetNeighbours(currentPosition, true);
+
+                foreach (var neighbour in neighbours)
                 {
-                    costMatrix[currentPosition.x, currentPosition.y - 1] = cellValue;
-                    queue.Enqueue(new Vector2Int(currentPosition.x, currentPosition.y - 1));
-                }
-                // Right
-                if (currentPosition.x + 1 < AreaSize.x && IsAccessible(new Vector2Int(currentPosition.x + 1, currentPosition.y)) &&
-                    costMatrix[currentPosition.x + 1, currentPosition.y] > cellValue)
-                {
-                    costMatrix[currentPosition.x + 1, currentPosition.y] = cellValue;
-                    queue.Enqueue(new Vector2Int(currentPosition.x + 1, currentPosition.y));
-                }
-                if (currentPosition.y + 1 < AreaSize.y && IsAccessible(new Vector2Int(currentPosition.x, currentPosition.y + 1)) &&
-                    costMatrix[currentPosition.x, currentPosition.y + 1] > cellValue)
-                {
-                    costMatrix[currentPosition.x, currentPosition.y + 1] = cellValue;
-                    queue.Enqueue(new Vector2Int(currentPosition.x, currentPosition.y + 1));
-                }
-                // Left
-                if (currentPosition.x - 1 >= 0 && IsAccessible(new Vector2Int(currentPosition.x - 1, currentPosition.y)) &&
-                    costMatrix[currentPosition.x - 1, currentPosition.y] > cellValue)
-                {
-                    costMatrix[currentPosition.x - 1, currentPosition.y] = cellValue;
-                    queue.Enqueue(new Vector2Int(currentPosition.x - 1, currentPosition.y));
+                    var cellPosition = neighbour.Value;
+                    if (costMatrix[cellPosition.x, cellPosition.y] > cellValue)
+                    {
+                        costMatrix[cellPosition.x, cellPosition.y] = cellValue;
+                        queue.Enqueue(cellPosition);
+                    }
                 }
             }
         }
 
         return costMatrix;
+    }
+
+    public int[,] ComputeGoalMap(Vector2Int origin)
+    {
+        var goalMatrix = new int[AreaSize.x, AreaSize.y];
+        var queue = new Queue<Vector2Int>();
+        int goalValue = 0;
+
+        goalMatrix[origin.x, origin.y] = -1;
+        queue.Enqueue(origin);
+
+        while (queue.Count > 0)
+        {
+            int counter = queue.Count;
+
+            for (int i = 0; i < counter; i++)
+            {
+                var currentPosition = queue.Dequeue();
+
+                Dictionary<EDirection, Vector2Int> neighbours = GetNeighbours(currentPosition, true);
+
+                foreach (var neighbour in neighbours)
+                {
+                    var cellPosition = neighbour.Value;
+                    if (goalMatrix[cellPosition.x, cellPosition.y] == 0)
+                    {
+                        goalMatrix[cellPosition.x, cellPosition.y] = ComputeGoalValue(cellPosition, goalValue);
+                        queue.Enqueue(cellPosition);
+                    }
+                }
+
+                goalValue++;
+            }
+        }
+
+        return goalMatrix;
+    }
+
+    private int ComputeGoalValue(Vector2Int cellPosition, int currentGoalValue)
+    {
+        int goalValue = 0;
+
+        if (_map.GetEntityType(cellPosition) == EEntityType.None)
+        {
+            int wallsCount = GetAroundWallsCount(cellPosition);
+
+            if (wallsCount > 0)
+            {
+                goalValue = (int)Mathf.Clamp(
+                    ((AreaSize.x * AreaSize.y) / 2) - currentGoalValue + wallsCount,
+                    wallsCount,
+                    (AreaSize.x * AreaSize.y) / 2 + 4);
+            }
+            else
+            {
+                goalValue = (int)Mathf.Clamp(currentGoalValue, 1f, (AreaSize.x * AreaSize.y) - currentGoalValue - 10 - 1);
+            }
+        }
+        else if (_map.GetEntityType(cellPosition) == EEntityType.Bonus)
+        {
+            goalValue = (AreaSize.x * AreaSize.y) - currentGoalValue;
+        }
+        else if (_map.GetEntityType(cellPosition) == EEntityType.Player)
+        {
+            goalValue = (AreaSize.x * AreaSize.y) - currentGoalValue - 10;
+        }
+
+        return goalValue;
+    }
+
+    public Vector2Int? GetBestGoalPosition(Vector2Int origin)
+    {
+        int[,] goalMatrix = ComputeGoalMap(origin);
+
+        Vector2Int? cellPosition = null;
+        int max = 0;
+
+        for (int x = 0; x < goalMatrix.GetLength(0); x++)
+        {
+            for (int y = 0; y < goalMatrix.GetLength(1); y++)
+            {
+                if (goalMatrix[x, y] > max)
+                {
+                    max = goalMatrix[x, y];
+
+                    cellPosition = new Vector2Int(x, y);
+                }
+            }
+        }
+
+        return cellPosition;
+    }
+
+
+    private int GetAroundWallsCount(Vector2Int cellPosition)
+    {
+        int wallsCount = 0;
+        Dictionary<EDirection, Vector2Int> neighbours = GetNeighbours(cellPosition, true);
+
+        foreach (var neighbour in neighbours)
+        {
+            if (_map.GetEntityType(neighbour.Value) == EEntityType.DestructibleWall)
+                wallsCount++;
+        }
+
+        return wallsCount;
     }
 
     public bool IsAccessible(Vector2Int cellPosition)
