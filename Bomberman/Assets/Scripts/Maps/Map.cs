@@ -435,7 +435,7 @@ public class Map : MonoBehaviour
     public void OnBombAdded(Bomb bomb)
     {
         SetEntityType(EEntityType.Bomb, bomb.transform.position);
-        UpdateDangerMap(bomb.FindImpactedCells(), 1);
+        UpdateDangerMap(bomb.FindImpactedCells(), bomb.DangerLevel);
 
         bomb.OnWillExplodeSoon.AddListener(OnBombWillExplodeSoon);
         bomb.OnExplosion.AddListener(OnBombExplosion);
@@ -446,7 +446,7 @@ public class Map : MonoBehaviour
     private void OnBombWillExplodeSoon(Bomb bomb)
     {
         bomb.OnWillExplodeSoon.RemoveListener(OnBombWillExplodeSoon);
-        UpdateDangerMap(bomb.FindImpactedCells(), 2);
+        UpdateDangerMap(bomb.FindImpactedCells(), bomb.DangerLevel);
     }
 
     private void OnBombExplosion(Bomb bomb)
@@ -494,7 +494,7 @@ public class Map : MonoBehaviour
 
         foreach (var cell in cells)
         {
-            if (GetDangerLevel(cell) == dangerLevel)
+            if (!force && GetDangerLevel(cell) > dangerLevel)
                 continue;
 
             if (cell != cells[0])
@@ -508,6 +508,12 @@ public class Map : MonoBehaviour
             }
 
             SetDangerLevel(cell, dangerLevel);
+        }
+
+        if (force)
+        {
+            foreach(var bomb in _bombs)
+                UpdateDangerMap(bomb.FindImpactedCells(), bomb.DangerLevel);
         }
     }
 

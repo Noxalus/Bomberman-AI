@@ -32,7 +32,8 @@ public class Bomb : MonoBehaviour
     private int _power;
     private float _currentTimer;
     private bool _isExploding = false;
-    private bool _isExplodingSoon = false;
+    // 0 = no danger, 1 = bomb planted, 2 = bomb will explode soon
+    private short _dangerLevel = 0;
 
     #endregion
 
@@ -40,6 +41,7 @@ public class Bomb : MonoBehaviour
 
     public Player Player => _player;
     public int Power => _power;
+    public short DangerLevel => _dangerLevel;
 
     #endregion
 
@@ -71,7 +73,7 @@ public class Bomb : MonoBehaviour
     {
         _currentTimer = _timer;
         _isExploding = false;
-        _isExplodingSoon = false;
+        _dangerLevel = 1;
     }
 
     private void OnTriggerExit2D(Collider2D collision)
@@ -88,9 +90,9 @@ public class Bomb : MonoBehaviour
         {
             _currentTimer -= Time.deltaTime;
 
-            if (!_isExplodingSoon && _currentTimer < 5f)
+            if (_dangerLevel < 2 && _currentTimer < 1f)
             {
-                _isExplodingSoon = true;
+                _dangerLevel = 2;
                 OnWillExplodeSoon?.Invoke(this);
             }
 

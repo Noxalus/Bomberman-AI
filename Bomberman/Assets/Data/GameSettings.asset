@@ -20,7 +20,7 @@ MonoBehaviour:
   SpeedBonusIncrement: 0.25
   PlayerSpawnInvincibleTimer: 2.5
   PlayerBaseSpeed: 2.5
-  PlayerBombBaseTimer: 10
+  PlayerBombBaseTimer: 2.5
   Maps:
   - Map0
   - Map1
