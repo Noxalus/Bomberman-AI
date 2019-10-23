@@ -45,6 +45,7 @@ public class Map : MonoBehaviour
 
     private List<DestructibleWall> _destructibleWalls = new List<DestructibleWall>();
     private List<Bonus> _bonus = new List<Bonus>();
+    private List<Bomb> _bombs = new List<Bomb>();
 
     #endregion
 
@@ -108,6 +109,8 @@ public class Map : MonoBehaviour
         ClearDangerMap();
         ClearBonus();
         ClearDestructibleWalls();
+
+        _bombs.Clear();
     }
 
     public bool OverlapUnbreakableWall(Vector3 worldPosition)
@@ -435,12 +438,21 @@ public class Map : MonoBehaviour
         UpdateDangerMap(bomb.FindImpactedCells(), 1);
 
         bomb.OnWillExplodeSoon.AddListener(OnBombWillExplodeSoon);
+        bomb.OnExplosion.AddListener(OnBombExplosion);
+
+        _bombs.Add(bomb);
     }
 
     private void OnBombWillExplodeSoon(Bomb bomb)
     {
         bomb.OnWillExplodeSoon.RemoveListener(OnBombWillExplodeSoon);
         UpdateDangerMap(bomb.FindImpactedCells(), 2);
+    }
+
+    private void OnBombExplosion(Bomb bomb)
+    {
+        bomb.OnExplosion.RemoveListener(OnBombExplosion);
+        _bombs.Remove(bomb);
     }
 
     #endregion
@@ -482,6 +494,19 @@ public class Map : MonoBehaviour
 
         foreach (var cell in cells)
         {
+            if (GetDangerLevel(cell) == dangerLevel)
+                continue;
+
+            if (cell != cells[0])
+            {
+                var foundBomb = _bombs.Find(b => Equals(CellPosition(b.transform.position), cell));
+
+                if (foundBomb != null)
+                {
+                    UpdateDangerMap(foundBomb.FindImpactedCells(), dangerLevel);
+                }
+            }
+
             SetDangerLevel(cell, dangerLevel);
         }
     }

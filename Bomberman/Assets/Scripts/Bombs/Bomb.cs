@@ -88,7 +88,7 @@ public class Bomb : MonoBehaviour
         {
             _currentTimer -= Time.deltaTime;
 
-            if (!_isExplodingSoon && _currentTimer < 1f)
+            if (!_isExplodingSoon && _currentTimer < 5f)
             {
                 _isExplodingSoon = true;
                 OnWillExplodeSoon?.Invoke(this);
@@ -134,7 +134,7 @@ public class Bomb : MonoBehaviour
             {
                 Vector2Int topPosition = currentCellPosition + new Vector2Int(0, i);
 
-                if (_map.IsAccessible(topPosition))
+                if (_map.IsAccessible(topPosition) || _map.GetEntityType(topPosition) == EEntityType.Bomb)
                 {
                     impactedCells.Add(topPosition);
                 }
@@ -148,7 +148,7 @@ public class Bomb : MonoBehaviour
             {
                 Vector2Int bottomPosition = currentCellPosition + new Vector2Int(0, -i);
 
-                if (_map.IsAccessible(bottomPosition))
+                if (_map.IsAccessible(bottomPosition) || _map.GetEntityType(bottomPosition) == EEntityType.Bomb)
                 {
                     impactedCells.Add(bottomPosition);
                 }
@@ -162,7 +162,7 @@ public class Bomb : MonoBehaviour
             {
                 Vector2Int leftPosition = currentCellPosition + new Vector2Int(-i, 0);
 
-                if (_map.IsAccessible(leftPosition))
+                if (_map.IsAccessible(leftPosition) || _map.GetEntityType(leftPosition) == EEntityType.Bomb)
                 {
                     impactedCells.Add(leftPosition);
                 }
@@ -176,7 +176,7 @@ public class Bomb : MonoBehaviour
             {
                 Vector2Int rightPosition = currentCellPosition + new Vector2Int(i, 0);
 
-                if (_map.IsAccessible(rightPosition))
+                if (_map.IsAccessible(rightPosition) || _map.GetEntityType(rightPosition) == EEntityType.Bomb)
                 {
                     impactedCells.Add(rightPosition);
                 }

@@ -102,6 +102,7 @@ public class Player : MonoBehaviour
         UpdatePower(_gameSettings.PlayerBaseBombPower, true);
         UpdateMaxBombCount(_gameSettings.PlayerBaseBombCount, true);
         UpdateSpeedBonus(_gameSettings.PlayerBaseSpeedBonus, true);
+        _bombTimer = _gameSettings.PlayerBombBaseTimer;
 
         SetIsInvicible(true);
 

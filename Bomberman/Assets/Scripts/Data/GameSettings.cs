@@ -14,6 +14,7 @@ public class GameSettings : ScriptableObject
     public float SpeedBonusIncrement = 0.25f;
     public float PlayerSpawnInvincibleTimer = 2.5f; // in seconds
     public float PlayerBaseSpeed = 1f;
+    public float PlayerBombBaseTimer = 2f; // in seconds
 
     [Header("Map configuration")]
 

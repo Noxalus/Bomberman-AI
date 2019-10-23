@@ -20,6 +20,7 @@ MonoBehaviour:
   SpeedBonusIncrement: 0.25
   PlayerSpawnInvincibleTimer: 2.5
   PlayerBaseSpeed: 2.5
+  PlayerBombBaseTimer: 10
   Maps:
   - Map0
   - Map1
@@ -30,11 +31,11 @@ MonoBehaviour:
   - Map9
   PlayersCount: 1
   AIPlayersCount: 0
-  WallDensity: 0.5
+  WallDensity: 0
   BonusProbability: 0.5
   AvailableBonus:
     m_keys: 0100000002000000030000000400000005000000
-    m_values: 0101010001
-  PlayerBaseBombCount: 1
-  PlayerBaseSpeedBonus: 1
-  PlayerBaseBombPower: 1
+    m_values: 0101010000
+  PlayerBaseBombCount: 5
+  PlayerBaseSpeedBonus: 5
+  PlayerBaseBombPower: 5
