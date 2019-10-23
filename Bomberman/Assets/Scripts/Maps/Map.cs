@@ -494,7 +494,7 @@ public class Map : MonoBehaviour
 
         foreach (var cell in cells)
         {
-            if (!force && GetDangerLevel(cell) > dangerLevel)
+            if (!force && GetDangerLevel(cell) >= dangerLevel)
                 continue;
 
             if (cell != cells[0])
