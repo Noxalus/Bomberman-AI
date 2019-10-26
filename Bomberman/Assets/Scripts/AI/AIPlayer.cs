@@ -12,4 +12,16 @@ public class AIPlayer : Player
     {
         _behaviour.Clear();
     }
+
+    public override void Kill(Player killer)
+    {
+        base.Kill(killer);
+        Behaviour.Enable(false);
+    }
+
+    public override void Spawn(Vector3 position)
+    {
+        base.Spawn(position);
+        Behaviour.Enable();
+    }
 }

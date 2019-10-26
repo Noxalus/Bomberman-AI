@@ -39,6 +39,7 @@ public class AIBehaviour : MonoBehaviour
     private Vector3 _nextPosition = Vector3.zero;
     private AIManager _aiManager;
     private float _speed;
+    private bool _isEnabled = true;
 
     #endregion
 
@@ -48,23 +49,34 @@ public class AIBehaviour : MonoBehaviour
 
     #endregion
 
+    public void Enable(bool enable = true)
+    {
+        _isEnabled = enable;
+        Clear();
+    }
+
     public void Initialize(AIManager aiManager)
     {
-        _aiManager = aiManager;
+        Clear();
 
-        _movement = Vector2.zero;
-        _targetPosition = Vector3.zero;
-        _isMovingToTarget = false;
-        _currentPath = new Stack<Vector2Int>();
-        _nextPosition = Vector3.zero;
+        _aiManager = aiManager;
+        _isEnabled = true;
     }
 
     public void Clear()
     {
+        _movement = Vector2.zero;
+        _targetPosition = Vector3.zero;
+        _isMovingToTarget = false;
+        _nextPosition = Vector3.zero;
+        _currentPath.Clear();
     }
 
     private void Update()
     {
+        if (!_isEnabled)
+            return;
+
         // Debug: Place a target position for the AI
         if (Input.GetMouseButtonDown(0))
         {
@@ -114,6 +126,7 @@ public class AIBehaviour : MonoBehaviour
                 else
                 {
                     Debug.Log("Reached next position");
+                    CanPlantBomb();
                     _rigidbody.position = _nextPosition;
                     _nextPosition = _aiManager.WorldPosition(_currentPath.Pop());
                     MoveToTarget();
@@ -221,8 +234,19 @@ public class AIBehaviour : MonoBehaviour
         return _aiManager.WorldPosition(randomNormalizedCellPosition);
     }
 
+    private void CanPlantBomb()
+    {
+        if (_player.BombCount > 0)
+        {
+            _player.OnPlantBomb.Invoke(_player);
+        }
+    }
+
     private void FixedUpdate()
     {
+        if (!_isEnabled)
+            return;
+
         _speed = (_gameSettings.PlayerBaseSpeed + (_player.SpeedBonus * _gameSettings.SpeedBonusIncrement)) * _debugSpeedFactor;
         _rigidbody.MovePosition(_rigidbody.position + _movement * _speed * Time.fixedDeltaTime);
     }

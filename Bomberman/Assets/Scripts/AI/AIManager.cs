@@ -33,7 +33,9 @@ public class AIManager : MonoBehaviour
         _areaSize = _map.MapSize;
 
         foreach (var aiPlayer in aiPlayers)
+        {
             aiPlayer.Behaviour.Initialize(this);
+        }
     }
 
     public void Clear()
@@ -174,7 +176,6 @@ public class AIManager : MonoBehaviour
         var queue = new Queue<Vector2Int>();
         int goalValue = 0;
 
-        goalMatrix[origin.x, origin.y] = -1;
         queue.Enqueue(origin);
 
         while (queue.Count > 0)
@@ -201,6 +202,8 @@ public class AIManager : MonoBehaviour
             }
         }
 
+        goalMatrix[origin.x, origin.y] = -1;
+
         return goalMatrix;
     }
 
@@ -214,7 +217,7 @@ public class AIManager : MonoBehaviour
 
             if (wallsCount > 0)
             {
-                goalValue = (int)Mathf.Clamp(
+                goalValue = Mathf.Clamp(
                     ((AreaSize.x * AreaSize.y) / 2) - currentGoalValue + wallsCount,
                     wallsCount,
                     (AreaSize.x * AreaSize.y) / 2 + 4);
@@ -222,6 +225,7 @@ public class AIManager : MonoBehaviour
             else
             {
                 goalValue = (int)Mathf.Clamp(currentGoalValue, 1f, (AreaSize.x * AreaSize.y) - currentGoalValue - 10 - 1);
+                //goalValue = 1;
             }
         }
         else if (_map.GetEntityType(cellPosition) == EEntityType.Bonus)
@@ -263,7 +267,7 @@ public class AIManager : MonoBehaviour
     private int GetAroundWallsCount(Vector2Int cellPosition)
     {
         int wallsCount = 0;
-        Dictionary<EDirection, Vector2Int> neighbours = GetNeighbours(cellPosition, true);
+        Dictionary<EDirection, Vector2Int> neighbours = GetNeighbours(cellPosition);
 
         foreach (var neighbour in neighbours)
         {

@@ -88,7 +88,7 @@ public class Player : MonoBehaviour
         _spriteRenderer.color = color;
     }
 
-    public void Spawn(Vector3 position)
+    public virtual void Spawn(Vector3 position)
     {
         _isDead = false;
         _animator.SetBool(ANIMATOR_IS_DEAD_KEY, _isDead);
@@ -192,7 +192,7 @@ public class Player : MonoBehaviour
         UpdateCurrentBombCount(1);
     }
 
-    public void Kill(Player killer)
+    public virtual void Kill(Player killer)
     {
         if (_isDead)
             return;
