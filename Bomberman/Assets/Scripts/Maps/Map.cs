@@ -230,6 +230,9 @@ public class Map : MonoBehaviour
 
     public bool IsSafe(Vector2Int cellPosition)
     {
+        if (IsOutOfBound(cellPosition))
+            return false;
+
         return _dangerMap[cellPosition.x, cellPosition.y] == 0;
     }
 
@@ -485,7 +488,7 @@ public class Map : MonoBehaviour
     }
 
     // Warning: the first cells element should be the center position
-    public void UpdateDangerMap(List<Vector2Int> cells, short dangerLevel, bool force = false)
+    private void UpdateDangerMap(List<Vector2Int> cells, short dangerLevel, bool force = false)
     {
         short currentDangerLevel = GetDangerLevel(cells[0]);
 

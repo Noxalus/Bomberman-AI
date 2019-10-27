@@ -125,17 +125,8 @@ public class DebugManager : MonoBehaviour
         var playerCellPosition = _gameManager.AIManager.CellPosition(currentAIPlayer.transform.position);
         var costMatrix = _gameManager.AIManager.ComputeCostMap(playerCellPosition);
 
-        float infiniteValue = (_gameManager.AIManager.AreaSize.x * _gameManager.AIManager.AreaSize.y);
-        float maxCostValue = 0;
-
-        for (int x = 0; x < _gameManager.AIManager.AreaSize.x; x++)
-        {
-            for (int y = 0; y < _gameManager.AIManager.AreaSize.y; y++)
-            {
-                if (costMatrix[x, y] != infiniteValue && costMatrix[x, y] > maxCostValue)
-                    maxCostValue = costMatrix[x, y];
-            }
-        }
+        int infiniteValue = (_gameManager.AIManager.AreaSize.x * _gameManager.AIManager.AreaSize.y);
+        int maxCostValue = GetMatrixMaxValue(costMatrix, infiniteValue);
 
         for (int y = 0; y < _gameManager.AIManager.AreaSize.y; y++)
         {
@@ -174,17 +165,8 @@ public class DebugManager : MonoBehaviour
         var playerCellPosition = _gameManager.AIManager.CellPosition(currentAIPlayer.transform.position);
         var goalMatrix = _gameManager.AIManager.ComputeGoalMap(playerCellPosition);
 
-        float infiniteValue = (_gameManager.AIManager.AreaSize.x * _gameManager.AIManager.AreaSize.y);
-        float maxCostValue = 0;
-
-        for (int x = 0; x < _gameManager.AIManager.AreaSize.x; x++)
-        {
-            for (int y = 0; y < _gameManager.AIManager.AreaSize.y; y++)
-            {
-                if (goalMatrix[x, y] != infiniteValue && goalMatrix[x, y] > maxCostValue)
-                    maxCostValue = goalMatrix[x, y];
-            }
-        }
+        int infiniteValue = (_gameManager.AIManager.AreaSize.x * _gameManager.AIManager.AreaSize.y);
+        int maxCostValue = GetMatrixMaxValue(goalMatrix, infiniteValue);
 
         for (int y = 0; y < _gameManager.AIManager.AreaSize.y; y++)
         {
@@ -196,6 +178,21 @@ public class DebugManager : MonoBehaviour
                 currentCell.color = new Color(factor, factor, factor, 1f);
             }
         }
+    }
+
+    public int GetMatrixMaxValue(int[,] matrix, int infiniteValue = -1)
+    {
+        int max = 0;
+        for (int x = 0; x < _gameManager.AIManager.AreaSize.x; x++)
+        {
+            for (int y = 0; y < _gameManager.AIManager.AreaSize.y; y++)
+            {
+                if (matrix[x, y] != infiniteValue && matrix[x, y] > max)
+                    max = matrix[x, y];
+            }
+        }
+
+        return max;
     }
 
     public void Show(bool show = true)

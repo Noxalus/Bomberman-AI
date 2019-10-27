@@ -119,6 +119,10 @@ public class AIBehaviour : MonoBehaviour
                     _isMovingToTarget = false;
                     _movement = Vector2Int.zero;
                     Debug.Log("Reached target!");
+                    
+                    if (CanPlantBomb())
+                        _player.OnPlantBomb.Invoke(_player);
+                    
                     _rigidbody.position = _targetPosition;
 
                     OnTargetReached?.Invoke(_player);
@@ -126,7 +130,10 @@ public class AIBehaviour : MonoBehaviour
                 else
                 {
                     Debug.Log("Reached next position");
-                    CanPlantBomb();
+
+                    if (CanPlantBomb())
+                        _player.OnPlantBomb.Invoke(_player);
+
                     _rigidbody.position = _nextPosition;
                     _nextPosition = _aiManager.WorldPosition(_currentPath.Pop());
                     MoveToTarget();
@@ -138,7 +145,13 @@ public class AIBehaviour : MonoBehaviour
             var newTarget = _aiManager.GetBestGoalPosition(_aiManager.CellPosition(transform.position));
 
             if (newTarget.HasValue)
+            {
                 UpdateTarget(_aiManager.WorldPosition(newTarget.Value));
+            }
+            else
+            {
+                Debug.LogWarning("No interesting goal for the AI!");
+            }
         }
     }
 
@@ -234,12 +247,14 @@ public class AIBehaviour : MonoBehaviour
         return _aiManager.WorldPosition(randomNormalizedCellPosition);
     }
 
-    private void CanPlantBomb()
+    private bool CanPlantBomb()
     {
         if (_player.BombCount > 0)
         {
-            _player.OnPlantBomb.Invoke(_player);
+            return true;
         }
+
+        return false;
     }
 
     private void FixedUpdate()
