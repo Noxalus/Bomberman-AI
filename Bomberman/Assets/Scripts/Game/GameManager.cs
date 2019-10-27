@@ -59,7 +59,6 @@ public class GameManager : MonoBehaviour
         ClearPlayers();
         _uiManager.Clear();
         _aiManager.Clear();
-        _debugManager.Clear();
 
         LoadMap(mapName);
     }
@@ -84,7 +83,6 @@ public class GameManager : MonoBehaviour
         if (_map != null)
         {
             StartGame(_gameSettings.PlayersCount);
-            _debugManager.Initialize(this);
         }
         else
         {
@@ -134,6 +132,7 @@ public class GameManager : MonoBehaviour
 
     private void ClearRoundData()
     {
+        _debugManager.Clear();
         _map.Clear();
         ClearBombs();
         ClearExplosions();
@@ -161,6 +160,8 @@ public class GameManager : MonoBehaviour
         }
 
         StartCoroutine(UpdateTimer());
+
+        _debugManager.Initialize(this);
     }
 
     #endregion
@@ -218,6 +219,22 @@ public class GameManager : MonoBehaviour
 
     #region Bomb
 
+    public void AddBomb(Vector2Int cellPosition, float timer, int power)
+    {
+        var entity = _map.GetEntityType(cellPosition);
+
+        if (entity != EEntityType.None && entity != EEntityType.Player)
+            return;
+
+        var position = _map.WorldPosition(cellPosition);
+        var bomb = Instantiate(_bombPrefab, position, Quaternion.identity, _map.transform);
+        bomb.Initialize(timer, power, _map);
+        bomb.OnExplosion.AddListener(OnBombExplode);
+
+        _map.OnBombAdded(bomb);
+        _bombs.Add(bomb);
+    }
+
     public void AddBomb(Player player)
     {
         var entity = _map.GetEntityType(player.transform.position);
@@ -243,7 +260,8 @@ public class GameManager : MonoBehaviour
     {
         bomb.OnExplosion.RemoveListener(OnBombExplode);
 
-        bomb.Player.UpdateCurrentBombCount(1);
+        if (bomb.Player != null)
+            bomb.Player.UpdateCurrentBombCount(1);
 
         Explosion explosion = Instantiate(_explosionPrefab, bomb.transform.position, Quaternion.identity);
         explosion.Initialize(bomb, _map);
@@ -331,6 +349,7 @@ public class GameManager : MonoBehaviour
         }
         else if (Input.GetMouseButtonDown(2))
         {
+            var position = _camera.ScreenToWorldPoint(Input.mousePosition);
             RaycastHit2D hit = Physics2D.Raycast(_camera.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);
 
             if (hit.collider != null)
@@ -343,6 +362,10 @@ public class GameManager : MonoBehaviour
                     destructibleWall.Explode();
                 else
                     Debug.LogWarning("No destructible wall found here!");
+            }
+            else
+            {
+                AddBomb(_map.CellPosition(position), 2f, 5);
             }
         }
     }

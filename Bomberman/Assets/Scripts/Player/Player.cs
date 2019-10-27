@@ -200,13 +200,16 @@ public class Player : MonoBehaviour
         _isDead = true;
 
         // Suicide?
-        if (killer.Id == Id)
+        if (killer != null)
         {
-            Debug.Log($"Player just suicide himself...");
-            UpdateScore(-2);
+            if (killer.Id == Id)
+            {
+                Debug.Log($"Player just suicide himself...");
+                UpdateScore(-2);
+            }
+            else
+                Debug.Log($"Player killed by {killer.Id}");
         }
-        else
-            Debug.Log($"Player killed by {killer.Id}");
 
         SoundManager.Instance.PlaySound("PlayerDeath");
 

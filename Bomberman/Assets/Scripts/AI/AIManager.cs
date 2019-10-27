@@ -55,10 +55,9 @@ public class AIManager : MonoBehaviour
         path.Push(target);
 
         var direction = EDirection.None;
+        var min = _map.MapSize.x * _map.MapSize.y;
         while (origin != target && path.Count < MAX_PATH_LENGTH)
         {
-            var min = _map.MapSize.x * _map.MapSize.y;
-
             var neighbours = GetNeighbours(target, true, false);
 
             //if (neighbours.Count == 0)
@@ -72,7 +71,7 @@ public class AIManager : MonoBehaviour
                     direction = neighbourPair.Key;
                 }
             }
-
+            
             target += DirectionToMotion(direction);
 
             // No way to reach the target
@@ -93,10 +92,10 @@ public class AIManager : MonoBehaviour
         switch (direction)
         {
             case EDirection.Up:
-                motion.y--;
+                motion.y++;
                 break;
             case EDirection.Down:
-                motion.y++;
+                motion.y--;
                 break;
             case EDirection.Right:
                 motion.x++;
@@ -116,18 +115,18 @@ public class AIManager : MonoBehaviour
     {
         var neighbours = new Dictionary<EDirection, Vector2Int>();
 
-        var topPosition = new Vector2Int(position.x, position.y - 1);
-        var bottomPosition = new Vector2Int(position.x, position.y + 1);
+        var topPosition = new Vector2Int(position.x, position.y + 1);
+        var bottomPosition = new Vector2Int(position.x, position.y - 1);
         var rightPosition = new Vector2Int(position.x + 1, position.y);
         var leftPosition = new Vector2Int(position.x - 1, position.y);
 
-        var topIsAccessible = !onlyAccessible || (onlyAccessible && _map.IsAccessible(topPosition));
+        var topIsAccessible = !onlyAccessible || (onlyAccessible && _map.IsAccessible(topPosition, false));
         var topIsSafe = !onlySafe || (onlySafe && _map.IsSafe(topPosition));
-        var bottomIsAccessible = !onlyAccessible || (onlyAccessible && _map.IsAccessible(bottomPosition));
+        var bottomIsAccessible = !onlyAccessible || (onlyAccessible && _map.IsAccessible(bottomPosition, false));
         var bottomIsSafe = !onlySafe || (onlySafe && _map.IsSafe(bottomPosition));
-        var rightIsAccessible = !onlyAccessible || (onlyAccessible && _map.IsAccessible(rightPosition));
+        var rightIsAccessible = !onlyAccessible || (onlyAccessible && _map.IsAccessible(rightPosition, false));
         var rightIsSafe = !onlySafe || (onlySafe && _map.IsSafe(rightPosition));
-        var leftIsAccessible = !onlyAccessible || (onlyAccessible && _map.IsAccessible(leftPosition));
+        var leftIsAccessible = !onlyAccessible || (onlyAccessible && _map.IsAccessible(leftPosition, false));
         var leftIsSafe = !onlySafe || (onlySafe && _map.IsSafe(leftPosition));
 
         if (!_map.IsOutOfBound(topPosition) && topIsAccessible && topIsSafe)
@@ -275,7 +274,6 @@ public class AIManager : MonoBehaviour
         return cellPosition;
     }
 
-
     private int GetAroundWallsCount(Vector2Int cellPosition)
     {
         int wallsCount = 0;
@@ -288,6 +286,41 @@ public class AIManager : MonoBehaviour
         }
 
         return wallsCount;
+    }
+
+    public Vector2Int? FindNearestSafeCell(Vector2Int origin)
+    {
+        var queue = new Queue<Vector2Int>();
+        queue.Enqueue(origin);
+
+        while (queue.Count > 0)
+        {
+            int counter = queue.Count;
+
+            for (int i = 0; i < counter; i++)
+            {
+                var currentPosition = queue.Dequeue();
+
+                Dictionary<EDirection, Vector2Int> neighbours = GetNeighbours(currentPosition, true, false);
+
+                foreach (var neighbour in neighbours)
+                {
+                    var cellPosition = neighbour.Value;
+
+                    if (_map.GetDangerLevel(cellPosition) == 0)
+                        return cellPosition;
+
+                    queue.Enqueue(cellPosition);
+                }
+            }
+        }
+
+        return null;
+    }
+
+    public bool IsSafe(Vector2Int cellPosition)
+    {
+        return _map.IsSafe(cellPosition);
     }
 
     public bool IsAccessible(Vector2Int cellPosition)

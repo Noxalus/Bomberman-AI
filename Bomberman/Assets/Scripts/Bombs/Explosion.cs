@@ -152,8 +152,10 @@ public class Explosion : MonoBehaviour
             {
                 var killer = _bomb.Player;
 
+                if (killer != null)
+                    killer.UpdateScore(1);
+
                 player.Kill(killer);
-                killer.UpdateScore(1);
             }
         }
         else if (collision.tag == "DestructibleWall")

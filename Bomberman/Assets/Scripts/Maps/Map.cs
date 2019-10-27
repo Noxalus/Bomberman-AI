@@ -124,13 +124,13 @@ public class Map : MonoBehaviour
                cellPosition.y < 0 || cellPosition.y > _mapSize.y - 1;
     }
 
-    public bool IsAccessible(Vector2Int cellPosition)
+    public bool IsAccessible(Vector2Int cellPosition, bool checkBomb = true)
     {
         return !IsOutOfBound(cellPosition) &&
                 GetEntityType(cellPosition) != EEntityType.UnbreakableWall &&
                 GetEntityType(cellPosition) != EEntityType.DestructibleWall &&
                 GetEntityType(cellPosition) != EEntityType.Explosion &&
-                GetEntityType(cellPosition) != EEntityType.Bomb;
+                ((checkBomb && GetEntityType(cellPosition) != EEntityType.Bomb) || !checkBomb);
     }
 
     #region Player spawn

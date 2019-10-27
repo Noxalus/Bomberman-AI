@@ -35,6 +35,7 @@ public class AIBehaviour : MonoBehaviour
     private Vector2 _movement = Vector2.zero;
     private Vector3 _targetPosition = Vector3.zero;
     private bool _isMovingToTarget = false;
+    private bool _isEscapingDanger = false;
     private Stack<Vector2Int> _currentPath = new Stack<Vector2Int>();
     private Vector3 _nextPosition = Vector3.zero;
     private AIManager _aiManager;
@@ -68,8 +69,14 @@ public class AIBehaviour : MonoBehaviour
         _movement = Vector2.zero;
         _targetPosition = Vector3.zero;
         _isMovingToTarget = false;
+        _isEscapingDanger = false;
         _nextPosition = Vector3.zero;
         _currentPath.Clear();
+    }
+
+    private Vector2Int CellPosition()
+    {
+        return _aiManager.CellPosition(transform.position);
     }
 
     private void Update()
@@ -104,6 +111,21 @@ public class AIBehaviour : MonoBehaviour
     {
         _movement = Vector2Int.zero;
 
+        if (!_isEscapingDanger && IsInDanger())
+        {
+            Vector2Int? safePosition = _aiManager.FindNearestSafeCell(CellPosition());
+
+            if (safePosition.HasValue)
+            {
+                UpdateTarget(_aiManager.WorldPosition(safePosition.Value));
+                _isEscapingDanger = true;
+            }
+            else
+                Debug.Log("AI is doomed, just waiting to die...");
+
+            return;
+        }
+
         if (_isMovingToTarget)
         {
             if (!_aiManager.IsAccessible(_aiManager.CellPosition(_nextPosition)))
@@ -119,7 +141,10 @@ public class AIBehaviour : MonoBehaviour
                     _isMovingToTarget = false;
                     _movement = Vector2Int.zero;
                     Debug.Log("Reached target!");
-                    
+
+                    if (_isEscapingDanger)
+                        _isEscapingDanger = false;
+
                     if (CanPlantBomb())
                         _player.OnPlantBomb.Invoke(_player);
                     
@@ -245,6 +270,11 @@ public class AIBehaviour : MonoBehaviour
 
         var randomNormalizedCellPosition = availablePositions[Random.Range(0, availablePositions.Count)];
         return _aiManager.WorldPosition(randomNormalizedCellPosition);
+    }
+
+    private bool IsInDanger()
+    {
+        return !_aiManager.IsSafe(CellPosition());
     }
 
     private bool CanPlantBomb()

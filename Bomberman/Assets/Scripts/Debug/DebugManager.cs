@@ -25,7 +25,10 @@ public class DebugManager : MonoBehaviour
     public void Initialize(GameManager gameManager)
     {
         _gameManager = gameManager;
-        _costMap.Initialize(gameManager.Map);
+
+        if (_costMap.isActiveAndEnabled)
+            _costMap.Initialize(gameManager.Map);
+
         _dangerMap.Initialize(gameManager.Map);
         _goalMap.Initialize(gameManager.Map);
         _entitiesMap.Initialize(gameManager);
@@ -41,13 +44,21 @@ public class DebugManager : MonoBehaviour
 
     public void Clear()
     {
-        _costMap.Clear();
+        if (!_isInitialized)
+            return;
+
+        if (_costMap.isActiveAndEnabled)
+            _costMap.Clear();
+        
         _dangerMap.Clear();
         _goalMap.Clear();
         _entitiesMap.Clear();
 
         foreach (var aiPlayer in _gameManager.AIManager.AIPlayers)
+        {
             aiPlayer.Behaviour.OnPathChanged.RemoveListener(OnPlayerPathChanged);
+            aiPlayer.Behaviour.OnTargetReached.RemoveListener(OnPlayerTargetReached);
+        }
 
         foreach (var keyValuePair in _pathSprites)
         {
@@ -81,10 +92,17 @@ public class DebugManager : MonoBehaviour
 
         if (_isInitialized)
         {
-            DrawCostMap();
-            DrawDangerMap();
-            DrawGoalMap();
-            _entitiesMap.UpdateMinimap();
+            if (_costMap.isActiveAndEnabled)
+                DrawCostMap();
+
+            if (_dangerMap.isActiveAndEnabled)
+                DrawDangerMap();
+
+            if (_goalMap.isActiveAndEnabled)
+                DrawGoalMap();
+
+            if (_entitiesMap.isActiveAndEnabled)
+                _entitiesMap.UpdateMinimap();
         }
     }
 
