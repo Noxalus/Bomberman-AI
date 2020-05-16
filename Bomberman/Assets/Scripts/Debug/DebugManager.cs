@@ -26,9 +26,7 @@ public class DebugManager : MonoBehaviour
     {
         _gameManager = gameManager;
 
-        if (_costMap.isActiveAndEnabled)
-            _costMap.Initialize(gameManager.Map);
-
+        _costMap.Initialize(gameManager.Map);
         _dangerMap.Initialize(gameManager.Map);
         _goalMap.Initialize(gameManager.Map);
         _entitiesMap.Initialize(gameManager);
@@ -47,9 +45,7 @@ public class DebugManager : MonoBehaviour
         if (!_isInitialized)
             return;
 
-        if (_costMap.isActiveAndEnabled)
-            _costMap.Clear();
-        
+        _costMap.Clear();
         _dangerMap.Clear();
         _goalMap.Clear();
         _entitiesMap.Clear();

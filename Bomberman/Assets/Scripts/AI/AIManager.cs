@@ -58,7 +58,7 @@ public class AIManager : MonoBehaviour
         var min = _map.MapSize.x * _map.MapSize.y;
         while (origin != target && path.Count < MAX_PATH_LENGTH)
         {
-            var neighbours = GetNeighbours(target, true, false);
+            var neighbours = GetNeighbours(target, true);
 
             //if (neighbours.Count == 0)
             //    neighbours = GetNeighbours(target, true, false);
@@ -110,8 +110,7 @@ public class AIManager : MonoBehaviour
 
     private Dictionary<EDirection, Vector2Int> GetNeighbours(
         Vector2Int position, 
-        bool onlyAccessible = false, 
-        bool onlySafe = false)
+        bool onlyAccessible = false)
     {
         var neighbours = new Dictionary<EDirection, Vector2Int>();
 
@@ -121,24 +120,20 @@ public class AIManager : MonoBehaviour
         var leftPosition = new Vector2Int(position.x - 1, position.y);
 
         var topIsAccessible = !onlyAccessible || (onlyAccessible && _map.IsAccessible(topPosition, false));
-        var topIsSafe = !onlySafe || (onlySafe && _map.IsSafe(topPosition));
         var bottomIsAccessible = !onlyAccessible || (onlyAccessible && _map.IsAccessible(bottomPosition, false));
-        var bottomIsSafe = !onlySafe || (onlySafe && _map.IsSafe(bottomPosition));
         var rightIsAccessible = !onlyAccessible || (onlyAccessible && _map.IsAccessible(rightPosition, false));
-        var rightIsSafe = !onlySafe || (onlySafe && _map.IsSafe(rightPosition));
         var leftIsAccessible = !onlyAccessible || (onlyAccessible && _map.IsAccessible(leftPosition, false));
-        var leftIsSafe = !onlySafe || (onlySafe && _map.IsSafe(leftPosition));
 
-        if (!_map.IsOutOfBound(topPosition) && topIsAccessible && topIsSafe)
+        if (!_map.IsOutOfBound(topPosition) && topIsAccessible)
             neighbours.Add(EDirection.Up, topPosition);
 
-        if (!_map.IsOutOfBound(bottomPosition) && bottomIsAccessible && bottomIsSafe)
+        if (!_map.IsOutOfBound(bottomPosition) && bottomIsAccessible)
             neighbours.Add(EDirection.Down, bottomPosition);
 
-        if (!_map.IsOutOfBound(rightPosition) && rightIsAccessible && rightIsSafe)
+        if (!_map.IsOutOfBound(rightPosition) && rightIsAccessible)
             neighbours.Add(EDirection.Right, rightPosition);
 
-        if (!_map.IsOutOfBound(leftPosition) && leftIsAccessible && leftIsSafe)
+        if (!_map.IsOutOfBound(leftPosition) && leftIsAccessible)
             neighbours.Add(EDirection.Left, leftPosition);
 
         return neighbours;
@@ -172,7 +167,7 @@ public class AIManager : MonoBehaviour
                 foreach (var neighbour in neighbours)
                 {
                     var cellPosition = neighbour.Value;
-                    if (costMatrix[cellPosition.x, cellPosition.y] > cellValue)
+                    if (costMatrix[cellPosition.x, cellPosition.y] > cellValue && _map.GetDangerLevel(cellPosition) <= 1)
                     {
                         costMatrix[cellPosition.x, cellPosition.y] = cellValue;
                         queue.Enqueue(cellPosition);
@@ -274,6 +269,11 @@ public class AIManager : MonoBehaviour
         return cellPosition;
     }
 
+    public short GetDangerLevel(Vector2Int cellPosition)
+    {
+        return _map.GetDangerLevel(cellPosition);
+    }
+
     private int GetAroundWallsCount(Vector2Int cellPosition)
     {
         int wallsCount = 0;
@@ -288,12 +288,19 @@ public class AIManager : MonoBehaviour
         return wallsCount;
     }
 
-    public Vector2Int? FindNearestSafeCell(Vector2Int origin)
+    public Vector2Int? FindNearestSafeCell(Vector2Int origin, short[,] dangerMap = null)
     {
+        if (dangerMap == null)
+        {
+            dangerMap = _map.DangerMap;
+        }
+
         var queue = new Queue<Vector2Int>();
         queue.Enqueue(origin);
+        var iterationCounter = 0;
+        var processedCells = new List<Vector2Int>();
 
-        while (queue.Count > 0)
+        while (queue.Count > 0 && iterationCounter < 1000)
         {
             int counter = queue.Count;
 
@@ -301,21 +308,33 @@ public class AIManager : MonoBehaviour
             {
                 var currentPosition = queue.Dequeue();
 
-                Dictionary<EDirection, Vector2Int> neighbours = GetNeighbours(currentPosition, true, false);
+                Dictionary<EDirection, Vector2Int> neighbours = GetNeighbours(currentPosition, true);
 
                 foreach (var neighbour in neighbours)
                 {
                     var cellPosition = neighbour.Value;
 
-                    if (_map.GetDangerLevel(cellPosition) == 0)
+                    if (dangerMap[cellPosition.x, cellPosition.y] == 0)
                         return cellPosition;
 
-                    queue.Enqueue(cellPosition);
+                    if (!processedCells.Contains(cellPosition))
+                    {
+                        queue.Enqueue(cellPosition);
+                        processedCells.Add(cellPosition);
+                    }
                 }
             }
+
+            iterationCounter++;
         }
 
         return null;
+    }
+
+    // Return a new danger map
+    public short[,] SimulateBombPlanting(Vector2Int bombPosition, int power)
+    {
+        return _map.SimulateBombPlanting(bombPosition, power);
     }
 
     public bool IsSafe(Vector2Int cellPosition)

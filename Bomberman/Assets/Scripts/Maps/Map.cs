@@ -32,6 +32,8 @@ public class Map : MonoBehaviour
     public AudioClip Music => _music;
     public Vector2Int MapSize => _mapSize;
 
+    public short[,] DangerMap => _dangerMap;
+
     #endregion
 
     #region Private fields
@@ -246,11 +248,6 @@ public class Map : MonoBehaviour
         return _dangerMap[cellPosition.x, cellPosition.y];
     }
 
-    private void SetDangerLevel(Vector2Int cellPosition, short dangerLevel)
-    {
-        _dangerMap[cellPosition.x, cellPosition.y] = dangerLevel;
-    }
-
     private void ClearDangerMap()
     {
         for (int y = 0; y < _mapSize.y; y++)
@@ -438,7 +435,8 @@ public class Map : MonoBehaviour
     public void OnBombAdded(Bomb bomb)
     {
         SetEntityType(EEntityType.Bomb, bomb.transform.position);
-        UpdateDangerMap(bomb.FindImpactedCells(), bomb.DangerLevel);
+        var impactedCells = Bomb.FindImpactedCells(this, CellPosition(bomb.transform.position), bomb.Power);
+        UpdateDangerMap(_dangerMap, impactedCells, bomb.DangerLevel);
 
         bomb.OnWillExplodeSoon.AddListener(OnBombWillExplodeSoon);
         bomb.OnExplosion.AddListener(OnBombExplosion);
@@ -449,13 +447,24 @@ public class Map : MonoBehaviour
     private void OnBombWillExplodeSoon(Bomb bomb)
     {
         bomb.OnWillExplodeSoon.RemoveListener(OnBombWillExplodeSoon);
-        UpdateDangerMap(bomb.FindImpactedCells(), bomb.DangerLevel);
+        var impactedCells = Bomb.FindImpactedCells(this, CellPosition(bomb.transform.position), bomb.Power);
+        UpdateDangerMap(_dangerMap, impactedCells, bomb.DangerLevel);
     }
 
     private void OnBombExplosion(Bomb bomb)
     {
         bomb.OnExplosion.RemoveListener(OnBombExplosion);
         _bombs.Remove(bomb);
+    }
+
+    public short[,] SimulateBombPlanting(Vector2Int bombPosition, int power)
+    {
+        short[,] dangerMap = new short[MapSize.x, MapSize.y];
+        Array.Copy(_dangerMap, dangerMap, _dangerMap.Length);
+        
+        var impactedCells = Bomb.FindImpactedCells(this, bombPosition, power);
+
+        return UpdateDangerMap(dangerMap, impactedCells, 1);
     }
 
     #endregion
@@ -471,7 +480,7 @@ public class Map : MonoBehaviour
         foreach (var cell in explosion.ImpactedCells)
             SetEntityType(EEntityType.Explosion, cell);
 
-        UpdateDangerMap(explosion.ImpactedCells, 3);
+        UpdateDangerMap(_dangerMap, explosion.ImpactedCells, 3);
     }
 
     public void OnExplosionFinished(Explosion explosion)
@@ -484,20 +493,20 @@ public class Map : MonoBehaviour
                 SetEntityType(EEntityType.None, cellPosition);
         }
 
-        UpdateDangerMap(explosion.ImpactedCells, 0, true);
+        UpdateDangerMap(_dangerMap, explosion.ImpactedCells, 0, true);
     }
 
     // Warning: the first cells element should be the center position
-    private void UpdateDangerMap(List<Vector2Int> cells, short dangerLevel, bool force = false)
+    private short[,] UpdateDangerMap(short[,] dangerMap, List<Vector2Int> cells, short dangerLevel, bool force = false)
     {
-        short currentDangerLevel = GetDangerLevel(cells[0]);
+        short currentDangerLevel = dangerMap[cells[0].x, cells[0].y];
 
         if (!force && currentDangerLevel > dangerLevel)
             dangerLevel = currentDangerLevel;
 
         foreach (var cell in cells)
         {
-            if (!force && GetDangerLevel(cell) >= dangerLevel)
+            if (!force && dangerMap[cell.x, cell.y] >= dangerLevel)
                 continue;
 
             if (cell != cells[0])
@@ -506,18 +515,24 @@ public class Map : MonoBehaviour
 
                 if (foundBomb != null)
                 {
-                    UpdateDangerMap(foundBomb.FindImpactedCells(), dangerLevel);
+                    var impactedCells = Bomb.FindImpactedCells(this, CellPosition(foundBomb.transform.position), foundBomb.Power);
+                    UpdateDangerMap(dangerMap, impactedCells, dangerLevel);
                 }
             }
 
-            SetDangerLevel(cell, dangerLevel);
+            dangerMap[cell.x, cell.y] = dangerLevel;
         }
 
         if (force)
         {
-            foreach(var bomb in _bombs)
-                UpdateDangerMap(bomb.FindImpactedCells(), bomb.DangerLevel);
+            foreach (var bomb in _bombs)
+            {
+                var impactedCells = Bomb.FindImpactedCells(this, CellPosition(bomb.transform.position), bomb.Power);
+                UpdateDangerMap(dangerMap, impactedCells, bomb.DangerLevel);
+            }
         }
+
+        return dangerMap;
     }
 
     #endregion

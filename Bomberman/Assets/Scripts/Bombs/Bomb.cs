@@ -117,13 +117,11 @@ public class Bomb : MonoBehaviour
         Destroy(gameObject);
     }
 
-    public List<Vector2Int> FindImpactedCells()
+    public static List<Vector2Int> FindImpactedCells(Map map, Vector2Int position, int power)
     {
-        int power = Power;
         List<Vector2Int> impactedCells = new List<Vector2Int>();
-        Vector2Int currentCellPosition = _map.CellPosition(transform.position);
 
-        impactedCells.Add(currentCellPosition);
+        impactedCells.Add(position);
 
         bool stopTop = false;
         bool stopRight = false;
@@ -134,9 +132,9 @@ public class Bomb : MonoBehaviour
         {
             if (!stopTop)
             {
-                Vector2Int topPosition = currentCellPosition + new Vector2Int(0, i);
+                Vector2Int topPosition = position + new Vector2Int(0, i);
 
-                if (_map.IsAccessible(topPosition) || _map.GetEntityType(topPosition) == EEntityType.Bomb)
+                if (map.IsAccessible(topPosition) || map.GetEntityType(topPosition) == EEntityType.Bomb)
                 {
                     impactedCells.Add(topPosition);
                 }
@@ -148,9 +146,9 @@ public class Bomb : MonoBehaviour
 
             if (!stopBottom)
             {
-                Vector2Int bottomPosition = currentCellPosition + new Vector2Int(0, -i);
+                Vector2Int bottomPosition = position + new Vector2Int(0, -i);
 
-                if (_map.IsAccessible(bottomPosition) || _map.GetEntityType(bottomPosition) == EEntityType.Bomb)
+                if (map.IsAccessible(bottomPosition) || map.GetEntityType(bottomPosition) == EEntityType.Bomb)
                 {
                     impactedCells.Add(bottomPosition);
                 }
@@ -162,9 +160,9 @@ public class Bomb : MonoBehaviour
 
             if (!stopLeft)
             {
-                Vector2Int leftPosition = currentCellPosition + new Vector2Int(-i, 0);
+                Vector2Int leftPosition = position + new Vector2Int(-i, 0);
 
-                if (_map.IsAccessible(leftPosition) || _map.GetEntityType(leftPosition) == EEntityType.Bomb)
+                if (map.IsAccessible(leftPosition) || map.GetEntityType(leftPosition) == EEntityType.Bomb)
                 {
                     impactedCells.Add(leftPosition);
                 }
@@ -176,9 +174,9 @@ public class Bomb : MonoBehaviour
 
             if (!stopRight)
             {
-                Vector2Int rightPosition = currentCellPosition + new Vector2Int(i, 0);
+                Vector2Int rightPosition = position + new Vector2Int(i, 0);
 
-                if (_map.IsAccessible(rightPosition) || _map.GetEntityType(rightPosition) == EEntityType.Bomb)
+                if (map.IsAccessible(rightPosition) || map.GetEntityType(rightPosition) == EEntityType.Bomb)
                 {
                     impactedCells.Add(rightPosition);
                 }

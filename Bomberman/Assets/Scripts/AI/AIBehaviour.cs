@@ -156,8 +156,8 @@ public class AIBehaviour : MonoBehaviour
                 {
                     Debug.Log("Reached next position");
 
-                    if (CanPlantBomb())
-                        _player.OnPlantBomb.Invoke(_player);
+                    //if (CanPlantBomb())
+                    //    _player.OnPlantBomb.Invoke(_player);
 
                     _rigidbody.position = _nextPosition;
                     _nextPosition = _aiManager.WorldPosition(_currentPath.Pop());
@@ -274,14 +274,18 @@ public class AIBehaviour : MonoBehaviour
 
     private bool IsInDanger()
     {
-        return !_aiManager.IsSafe(CellPosition());
+        return _aiManager.GetDangerLevel(CellPosition()) > 0;
     }
 
     private bool CanPlantBomb()
     {
         if (_player.BombCount > 0)
         {
-            return true;
+            // Can escape a potential bomb planting?
+            short[,] dangerMatrix = _aiManager.SimulateBombPlanting(CellPosition(), _player.Power);
+            Vector2Int? safePosition = _aiManager.FindNearestSafeCell(CellPosition(), dangerMatrix);
+
+            return safePosition.HasValue;
         }
 
         return false;
