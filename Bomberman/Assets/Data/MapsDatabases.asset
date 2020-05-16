@@ -12,3 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d9b6df42f362ca340b21116dfa7d0584, type: 3}
   m_Name: MapsDatabases
   m_EditorClassIdentifier: 
+  _maps:
+  - {fileID: 11400000, guid: 939811e04405398408a245ed6d7a964a, type: 2}

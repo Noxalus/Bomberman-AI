@@ -35,7 +35,7 @@ MonoBehaviour:
   BonusProbability: 0.5
   AvailableBonus:
     m_keys: 0100000002000000030000000400000005000000
-    m_values: 0001000000
-  PlayerBaseBombCount: 2
+    m_values: 0101000000
+  PlayerBaseBombCount: 1
   PlayerBaseSpeedBonus: 1
   PlayerBaseBombPower: 1
