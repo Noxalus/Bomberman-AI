@@ -30,7 +30,8 @@ MonoBehaviour:
   - Map8
   - Map9
   PlayersCount: 1
-  AIPlayersCount: 1
+  AIPlayersCount: 0
+  MLAIPlayersCount: 1
   WallDensity: 1
   BonusProbability: 0.5
   AvailableBonus:

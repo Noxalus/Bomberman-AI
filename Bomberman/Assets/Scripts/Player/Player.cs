@@ -85,7 +85,7 @@ public class Player : MonoBehaviour
     {
         _id = id;
         _color = color;
-        _spriteRenderer.color = color;
+        //_spriteRenderer.color = color;
     }
 
     public virtual void Spawn(Vector3 position)

@@ -19,19 +19,28 @@ public class PlayerMovement : MonoBehaviour
 
     private void OnEnable()
     {
-        _input.actions.Enable();
+        if (_input)
+        {
+            _input.actions.Enable();
+        }
     }
 
     private void OnDisable()
     {
-        _input.actions.Disable();
+        if (_input)
+        {
+            _input.actions.Disable();
+        }
     }
 
     private void Awake()
     {
-        _input.actions.FindAction("Bomb").performed += OnBombKeyPerformed;
-        _input.actions.FindAction("Move").performed += OnInputMovePerformed;
-        _input.actions.FindAction("Move").canceled += OnInputMoveCanceled;
+        if (_input)
+        {
+            _input.actions.FindAction("Bomb").performed += OnBombKeyPerformed;
+            _input.actions.FindAction("Move").performed += OnInputMovePerformed;
+            _input.actions.FindAction("Move").canceled += OnInputMoveCanceled;
+        }
 
         _player.OnSpawn.AddListener(OnPlayerSpawn);
         _player.OnKill.AddListener(OnPlayerKill);
@@ -39,7 +48,10 @@ public class PlayerMovement : MonoBehaviour
 
     private void OnDestroy()
     {
-        _input.actions.FindAction("Bomb").performed -= OnBombKeyPerformed;
+        if (_input)
+        {
+            _input.actions.FindAction("Bomb").performed -= OnBombKeyPerformed;
+        }
 
         _player.OnSpawn.RemoveListener(OnPlayerSpawn);
         _player.OnKill.RemoveListener(OnPlayerKill);
@@ -47,13 +59,33 @@ public class PlayerMovement : MonoBehaviour
 
     private void OnPlayerSpawn(Player player)
     {
-        _input.actions.Enable();
+        if (_input)
+        {
+            _input.actions.Enable();
+        }
     }
 
     private void OnPlayerKill(Player player)
     {
-        _input.actions.Disable();
+        if (_input)
+        {
+            _input.actions.Disable();
+        }
     }
+
+    #region Used for ML agents
+
+    public void PlantBomb()
+    {
+        _player.AddBomb();
+    }
+
+    public void Move(Vector2 movement)
+    {
+        _movement = movement;
+    }
+
+    #endregion
 
     private void OnBombKeyPerformed(CallbackContext context)
     {

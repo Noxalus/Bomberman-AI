@@ -21,6 +21,7 @@ public class GameSettings : ScriptableObject
     public List<string> Maps = new List<string>{ "Map1", "Map2", "Map3" };
     public int PlayersCount = 4;
     public int AIPlayersCount = 2;
+    public int MLAIPlayersCount = 1;
     public float WallDensity = 0.75f;
     public float BonusProbability = 1f;
     public EBonusTypeBoolDictionary AvailableBonus = new EBonusTypeBoolDictionary();

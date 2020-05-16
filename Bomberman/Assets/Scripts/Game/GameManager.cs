@@ -18,6 +18,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameSettings _gameSettings = null;
     [SerializeField] private Player _playerPrefab = null;
     [SerializeField] private AIPlayer _aiPlayerPrefab = null;
+    [SerializeField] private MLAIPlayer _mlAIPlayerPrefab = null;
     [SerializeField] private Bomb _bombPrefab = null;
     [SerializeField] private Explosion _explosionPrefab = null;
 
@@ -100,7 +101,12 @@ public class GameManager : MonoBehaviour
         {
             Player player;
 
-            if (i < _gameSettings.AIPlayersCount)
+            if (i < _gameSettings.MLAIPlayersCount)
+            {
+                MLAIPlayer mlAIPlayer = Instantiate(_mlAIPlayerPrefab);
+                player = mlAIPlayer.Player;
+            }
+            else if (i < _gameSettings.AIPlayersCount)
             {
                 AIPlayer aiPlayer = Instantiate(_aiPlayerPrefab);
                 aiPlayers.Add(aiPlayer);
