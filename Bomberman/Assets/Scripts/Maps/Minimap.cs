@@ -9,7 +9,7 @@ public class Minimap : MonoBehaviour
 
     protected Map _map;
 
-    List<Image> _cellImages = new List<Image>();
+    private List<Image> _cellImages = new List<Image>();
     private GridLayoutGroup _gridLayout = null;
     private LayoutElement _layoutElement = null;
 
@@ -19,7 +19,11 @@ public class Minimap : MonoBehaviour
 
         int maxSize = Mathf.Max(_map.MapSize.x, _map.MapSize.y);
 
-        _gridLayout = gameObject.AddComponent<GridLayoutGroup>();
+        if (_gridLayout == null)
+        {
+            _gridLayout = gameObject.AddComponent<GridLayoutGroup>();
+        }
+
         _gridLayout.childAlignment = TextAnchor.MiddleCenter;
         _gridLayout.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
         _gridLayout.constraintCount = _map.MapSize.x;
@@ -32,7 +36,11 @@ public class Minimap : MonoBehaviour
 
         _gridLayout.cellSize *= 2;
 
-        _layoutElement = gameObject.AddComponent<LayoutElement>();
+        if (_layoutElement == null)
+        {
+            _layoutElement = gameObject.AddComponent<LayoutElement>();
+        }
+
         _layoutElement.preferredWidth = _size.x;
         _layoutElement.preferredHeight = _size.y;
 
@@ -45,12 +53,6 @@ public class Minimap : MonoBehaviour
             Destroy(cellImage.gameObject);
 
         _cellImages.Clear();
-
-        Destroy(_gridLayout);
-        _gridLayout = null;
-
-        Destroy(_layoutElement);
-        _layoutElement = null;
     }
 
     public void InstantiateCells()
