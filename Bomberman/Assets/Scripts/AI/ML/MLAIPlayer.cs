@@ -32,8 +32,22 @@ public class MLAIPlayer : Agent
 
         _player.OnDeath.AddListener((player) => AddReward(-1f));
         _player.OnWallDestroy.AddListener((player) => AddReward(0.75f));
-        _player.OnBonusDestroy.AddListener((player) => AddReward(-0.5f));
         _player.OnPlantBomb.AddListener((player) => AddReward(0.1f));
+
+        _player.OnBonusDestroy.AddListener(
+            (player, bonusType) =>
+            {
+                if (bonusType == EBonusType.Bad)
+                {
+                    AddReward(0.5f);
+                }
+                else
+                {
+                    AddReward(-0.5f);
+                }
+            }
+        );
+
         _player.OnPickUpBonus.AddListener(
             (player, bonusType) =>
             {

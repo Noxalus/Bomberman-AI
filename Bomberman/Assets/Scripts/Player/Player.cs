@@ -30,17 +30,18 @@ public class Player : MonoBehaviour
 
     public PlayerEvent OnPlantBomb;
     public PlayerEvent OnScoreChange;
-    public PlayerBonusEvent OnPickUpBonus;
     public PlayerEvent OnPowerChange;
     public PlayerEvent OnBombCountChange;
     public PlayerEvent OnSpeedChange;
     public PlayerEvent OnSpawn;
     public PlayerEvent OnWallDestroy;
-    public PlayerEvent OnBonusDestroy;
     public PlayerEvent OnKill; // When he just kills another player
     public PlayerEvent OnDeath; // When he just gets killed
     public PlayerEvent OnDestroyed; // When the death animation is finished
     public PlayerEvent OnMove;
+
+    public PlayerBonusEvent OnPickUpBonus;
+    public PlayerBonusEvent OnBonusDestroy;
 
     #endregion
 
