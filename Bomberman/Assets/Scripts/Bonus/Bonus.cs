@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using Random = UnityEngine.Random;
@@ -49,9 +50,17 @@ public class Bonus : MonoBehaviour
         if (collision.tag == "Player")
         {
             Player player = collision.gameObject.GetComponent<Player>();
-            SoundManager.Instance.PlaySound("BonusPickup");
-            ApplyEffect(player);
-            Destroy();
+
+            if (player)
+            {
+                SoundManager.Instance.PlaySound("BonusPickup");
+                ApplyEffect(player);
+                Destroy();
+            }
+            else
+            {
+                throw new Exception("Missing Player component on this entity.");
+            }
         }
         else if (collision.tag == "Explosion")
         {
@@ -70,29 +79,6 @@ public class Bonus : MonoBehaviour
 
     private void ApplyEffect(Player player)
     {
-        switch (_type)
-        {
-            case EBonusType.None:
-                Debug.LogError("This bonus has no type.");
-                break;
-            case EBonusType.Power:
-                player.UpdatePower(1);
-                break;
-            case EBonusType.Bomb:
-                player.UpdateMaxBombCount(1);
-                break;
-            case EBonusType.Speed:
-                player.UpdateSpeedBonus(1);
-                break;
-            case EBonusType.Bad:
-                // TODO
-                break;
-            case EBonusType.Score:
-                player.UpdateScore(1);
-                break;
-            default:
-                Debug.LogError("Unknow bonus type.");
-                break;
-        }
+        player.PickUpBonus(_type);
     }
 }

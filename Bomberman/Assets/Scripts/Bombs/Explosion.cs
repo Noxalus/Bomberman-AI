@@ -153,14 +153,24 @@ public class Explosion : MonoBehaviour
                 var killer = _bomb.Player;
 
                 if (killer != null)
-                    killer.UpdateScore(1);
+                {
+                    killer.OnKilledPlayer(player);
+                }
 
                 player.Kill(killer);
             }
         }
         else if (collision.tag == "DestructibleWall")
         {
-            collision.GetComponent<DestructibleWall>().Explode();
+            var wall = collision.GetComponent<DestructibleWall>();
+            var killer = _bomb.Player;
+
+            if (killer != null)
+            {
+                killer.OnDestroyedWall(wall);
+            }
+
+            wall.Explode();
         }
         else if (collision.tag == "Bomb")
         {

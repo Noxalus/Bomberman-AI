@@ -1,9 +1,12 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
 
 [System.Serializable]
 public class PlayerEvent : UnityEvent<Player> {}
+[System.Serializable]
+public class PlayerBonusEvent : UnityEvent<Player, EBonusType> { }
 
 public class Player : MonoBehaviour
 {
@@ -27,12 +30,15 @@ public class Player : MonoBehaviour
 
     public PlayerEvent OnPlantBomb;
     public PlayerEvent OnScoreChange;
+    public PlayerBonusEvent OnPickUpBonus;
     public PlayerEvent OnPowerChange;
     public PlayerEvent OnBombCountChange;
     public PlayerEvent OnSpeedChange;
     public PlayerEvent OnSpawn;
-    public PlayerEvent OnKill; // When he just get killed
-    public PlayerEvent OnDeath; // When the death animation is finished
+    public PlayerEvent OnWallDestroy;
+    public PlayerEvent OnKill; // When he just kills another player
+    public PlayerEvent OnDeath; // When he just gets killed
+    public PlayerEvent OnDestroyed; // When the death animation is finished
     public PlayerEvent OnMove;
 
     #endregion
@@ -132,11 +138,41 @@ public class Player : MonoBehaviour
 
     public void AddBomb()
     {
-        if (_currentBombCount > 0)
+        if (!_isDead && _currentBombCount > 0)
         {
             OnPlantBomb?.Invoke(this);
             OnBombCountChange?.Invoke(this);
         }
+    }
+
+    public void PickUpBonus(EBonusType type)
+    {
+        switch (type)
+        {
+            case EBonusType.None:
+                Debug.LogError("This bonus has no type.");
+                break;
+            case EBonusType.Power:
+                UpdatePower(1);
+                break;
+            case EBonusType.Bomb:
+                UpdateMaxBombCount(1);
+                break;
+            case EBonusType.Speed:
+                UpdateSpeedBonus(1);
+                break;
+            case EBonusType.Bad:
+                // TODO
+                break;
+            case EBonusType.Score:
+                UpdateScore(1);
+                break;
+            default:
+                Debug.LogError("Unknow bonus type.");
+                break;
+        }
+
+        OnPickUpBonus?.Invoke(this, type);
     }
 
     public void UpdateCurrentBombCount(int amount)
@@ -192,6 +228,17 @@ public class Player : MonoBehaviour
         UpdateCurrentBombCount(1);
     }
 
+    public void OnKilledPlayer(Player player)
+    {
+        UpdateScore(1);
+        OnKill?.Invoke(this);
+    }
+
+    public void OnDestroyedWall(DestructibleWall wall)
+    {
+        OnWallDestroy?.Invoke(this);
+    }
+
     public virtual void Kill(Player killer)
     {
         if (_isDead)
@@ -208,14 +255,16 @@ public class Player : MonoBehaviour
                 UpdateScore(-2);
             }
             else
+            {
                 Debug.Log($"Player killed by {killer.Id}");
+            }
         }
 
         SoundManager.Instance.PlaySound("PlayerDeath");
 
         _animator.SetBool("IsDead", _isDead);
 
-        OnKill?.Invoke(this);
+        OnDeath?.Invoke(this);
     }
 
     private void Update()
@@ -229,6 +278,6 @@ public class Player : MonoBehaviour
     public void OnDeathAnimationFinish()
     {
         _rigidbody.simulated = false;
-        OnDeath?.Invoke(this);
+        OnDestroyed?.Invoke(this);
     }
 }

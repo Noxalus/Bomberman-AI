@@ -43,7 +43,7 @@ public class PlayerMovement : MonoBehaviour
         }
 
         _player.OnSpawn.AddListener(OnPlayerSpawn);
-        _player.OnKill.AddListener(OnPlayerKill);
+        _player.OnDeath.AddListener(OnPlayerKill);
     }
 
     private void OnDestroy()
@@ -54,7 +54,7 @@ public class PlayerMovement : MonoBehaviour
         }
 
         _player.OnSpawn.RemoveListener(OnPlayerSpawn);
-        _player.OnKill.RemoveListener(OnPlayerKill);
+        _player.OnDeath.RemoveListener(OnPlayerKill);
     }
 
     private void OnPlayerSpawn(Player player)
@@ -107,7 +107,7 @@ public class PlayerMovement : MonoBehaviour
         _animator.SetFloat("Horizontal", _movement.x);
         _animator.SetFloat("Vertical", _movement.y);
 
-        bool isMoving = _movement.sqrMagnitude > 0;
+        bool isMoving = _movement.sqrMagnitude > 0 && !_player.IsDead;
 
         if (isMoving)
         {
@@ -120,6 +120,11 @@ public class PlayerMovement : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (_player.IsDead)
+        {
+            return;
+        }
+
         float speed = _gameSettings.PlayerBaseSpeed + (_player.SpeedBonus * _gameSettings.SpeedBonusIncrement);
         _rigidbody.MovePosition(_rigidbody.position + _movement * speed * Time.fixedDeltaTime);
     }

@@ -119,7 +119,7 @@ public class GameManager : MonoBehaviour
 
             player.Initialize(i, _gameSettings.PlayersColor[i]);
             player.OnMove.AddListener(OnPlayerMove);
-            player.OnDeath.AddListener(OnPlayerDeath);
+            player.OnDestroyed.AddListener(OnPlayerDeath);
             player.OnPlantBomb.AddListener(AddBomb);
             _players.Add(player);
         }
