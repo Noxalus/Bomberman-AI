@@ -31,6 +31,8 @@ public class MLAIPlayer : Agent
         _environmentParameters = Academy.Instance.EnvironmentParameters;
 
         _player.OnDeath.AddListener((player) => AddReward(-1f));
+        _player.OnWallDestroy.AddListener((player) => AddReward(0.75f));
+        _player.OnPlantBomb.AddListener((player) => AddReward(0.1f));
         _player.OnPickUpBonus.AddListener(
             (player, bonusType) =>
             {
@@ -44,8 +46,6 @@ public class MLAIPlayer : Agent
                 }
             }
         );
-        _player.OnPlantBomb.AddListener((player) => AddReward(0.1f));
-        _player.OnWallDestroy.AddListener((player) => AddReward(0.75f));
     }
 
     //public override void CollectObservations(VectorSensor sensor)
@@ -57,30 +57,11 @@ public class MLAIPlayer : Agent
 
     public override void CollectDiscreteActionMasks(DiscreteActionMasker actionMasker)
     {
-        // Prevents the agent from picking an action that would make it collide with a wall
-        //var positionX = (int)transform.position.x;
-        //var positionZ = (int)transform.position.z;
-        //var maxPosition = (int)_environmentParameters.GetWithDefault("gridSize", 5f) - 1;
-
-        //if (positionX == 0)
-        //{
-        //    actionMasker.SetMask(0, new[] { PossibleAction.Left });
-        //}
-
-        //if (positionX == maxPosition)
-        //{
-        //    actionMasker.SetMask(0, new[] { PossibleAction.Right });
-        //}
-
-        //if (positionZ == 0)
-        //{
-        //    actionMasker.SetMask(0, new[] { PossibleAction.Down });
-        //}
-
-        //if (positionZ == maxPosition)
-        //{
-        //    actionMasker.SetMask(0, new[] { PossibleAction.Up });
-        //}
+        // Prevents the agent from planting a bomb if he can't
+        if (_player.BombCount == 0)
+        {
+            //actionMasker.SetMask(0, new[] { (int)PossibleAction.Bomb });
+        }
     }
 
     public override void Heuristic(float[] actionsOut)
@@ -104,7 +85,7 @@ public class MLAIPlayer : Agent
         }
         if (Input.GetKey(KeyCode.Space))
         {
-             actionsOut[0] = (int)PossibleAction.Bomb;
+            actionsOut[0] = (int)PossibleAction.Bomb;
         }
     }
 
