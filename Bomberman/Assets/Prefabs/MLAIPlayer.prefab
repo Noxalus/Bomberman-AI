@@ -218,7 +218,7 @@ MonoBehaviour:
   agentParameters:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
-  MaxStep: 5000
+  MaxStep: 0
   _player: {fileID: 358366345659725961}
   _playerMovement: {fileID: 8864400996584202918}
 --- !u!114 &358366345659725961
@@ -237,9 +237,6 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   OnScoreChange:
-    m_PersistentCalls:
-      m_Calls: []
-  OnPickUpBonus:
     m_PersistentCalls:
       m_Calls: []
   OnPowerChange:
@@ -267,6 +264,12 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   OnMove:
+    m_PersistentCalls:
+      m_Calls: []
+  OnPickUpBonus:
+    m_PersistentCalls:
+      m_Calls: []
+  OnBonusDestroy:
     m_PersistentCalls:
       m_Calls: []
   _spriteRenderer: {fileID: 4876474262529466195}

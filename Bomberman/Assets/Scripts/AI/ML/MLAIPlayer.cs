@@ -1,6 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
 using Unity.MLAgents;
-using Unity.MLAgents.Sensors;
 using UnityEngine;
 
 public class MLAIPlayer : Agent
@@ -11,10 +11,9 @@ public class MLAIPlayer : Agent
     [SerializeField]
     private PlayerMovement _playerMovement = null;
 
-
     public Player Player => _player;
 
-    public enum PossibleAction
+    public enum AgentAction
     {
         Nothing,
         Up,
@@ -25,13 +24,38 @@ public class MLAIPlayer : Agent
     }
 
     private EnvironmentParameters _environmentParameters;
+    private Vector3 _previousPosition;
+    private AgentAction _previousAction;
+    private List<Vector2Int> _visitedCells = new List<Vector2Int>();
+    private Vector2Int _currentCell;
+
+    private Map _map;
+
+    public void SetMap(Map map)
+    {
+        _map = map;
+    }
 
     public override void Initialize()
     {
         _environmentParameters = Academy.Instance.EnvironmentParameters;
 
-        _player.OnDeath.AddListener((player) => AddReward(-1f));
-        _player.OnWallDestroy.AddListener((player) => AddReward(0.75f));
+        _player.OnDeath.AddListener(
+            (player) =>
+            {
+                Debug.Log("DEATH: -0.5");
+                AddReward(-0.5f);
+                Debug.Log($"Cumulative reward: {GetCumulativeReward()}");
+                EndEpisode();
+            }
+        );
+
+        _player.OnWallDestroy.AddListener(
+            (player) =>
+            {
+                AddReward(0.05f);
+            }
+        );
         _player.OnPlantBomb.AddListener((player) => AddReward(0.1f));
 
         _player.OnBonusDestroy.AddListener(
@@ -39,11 +63,11 @@ public class MLAIPlayer : Agent
             {
                 if (bonusType == EBonusType.Bad)
                 {
-                    AddReward(0.5f);
+                    AddReward(0.1f);
                 }
                 else
                 {
-                    AddReward(-0.5f);
+                    AddReward(-0.1f);
                 }
             }
         );
@@ -53,84 +77,121 @@ public class MLAIPlayer : Agent
             {
                 if (bonusType == EBonusType.Bad)
                 {
-                    AddReward(-0.5f);
+                    AddReward(-0.05f);
                 }
                 else
                 {
-                    AddReward(0.5f);
+                    AddReward(0.05f);
                 }
             }
         );
     }
 
-    //public override void CollectObservations(VectorSensor sensor)
-    //{
-    //    base.CollectObservations(sensor);
-
-    //    //sensor.AddObservation(_player.)
-    //}
+    public override void OnEpisodeBegin()
+    {
+        _currentCell = Vector2Int.zero;
+        _previousPosition = Vector2.zero;
+        _previousAction = AgentAction.Nothing;
+        _visitedCells.Clear();
+    }
 
     public override void CollectDiscreteActionMasks(DiscreteActionMasker actionMasker)
     {
         // Prevents the agent from planting a bomb if he can't
-        if (_player.BombCount == 0)
+        if (_player.IsInvincible || _player.IsDead || _player.BombCount == 0)
         {
-            actionMasker.SetMask(0, new[] { (int)PossibleAction.Bomb });
+            actionMasker.SetMask(0, new[] { (int)AgentAction.Bomb });
         }
     }
 
     public override void Heuristic(float[] actionsOut)
     {
-        actionsOut[0] = (int)PossibleAction.Nothing;
+        actionsOut[0] = (int)AgentAction.Nothing;
         if (Input.GetKey(KeyCode.RightArrow))
         {
-            actionsOut[0] = (int)PossibleAction.Right;
+            actionsOut[0] = (int)AgentAction.Right;
         }
         if (Input.GetKey(KeyCode.UpArrow))
         {
-            actionsOut[0] = (int)PossibleAction.Up;
+            actionsOut[0] = (int)AgentAction.Up;
         }
         if (Input.GetKey(KeyCode.LeftArrow))
         {
-            actionsOut[0] = (int)PossibleAction.Left;
+            actionsOut[0] = (int)AgentAction.Left;
         }
         if (Input.GetKey(KeyCode.DownArrow))
         {
-            actionsOut[0] = (int)PossibleAction.Down;
+            actionsOut[0] = (int)AgentAction.Down;
         }
         if (Input.GetKey(KeyCode.Space))
         {
-            actionsOut[0] = (int)PossibleAction.Bomb;
+            actionsOut[0] = (int)AgentAction.Bomb;
         }
-    }
-
-    public override void OnEpisodeBegin()
-    {
     }
 
     public override void OnActionReceived(float[] vectorAction)
     {
+        bool wantedToMove = (int)_previousAction > 0 && (int)_previousAction < 5;
+
+        // Reward for new visited cells
+        var cellPosition = _map.CellPosition(_player.transform.position);
+        bool hasChangedCell = !_currentCell.Equals(cellPosition);
+        if (hasChangedCell && !_visitedCells.Contains(cellPosition))
+        {
+            AddReward(0.01f);
+            _visitedCells.Add(cellPosition);
+        }
+
+        // Check danger
+        var dangerLevel = _map.GetDangerLevel(cellPosition);
+        if (hasChangedCell && dangerLevel > 0)
+        {
+            var rewardValue = -((dangerLevel / 3f) * 0.05f);
+            Debug.Log($"DANGER: {rewardValue}");
+
+            AddReward(rewardValue);
+        }
+
         var movement = Vector2.zero;
-        var action = (PossibleAction)Mathf.FloorToInt(vectorAction[0]);
+        var action = (AgentAction)Mathf.FloorToInt(vectorAction[0]);
+        
+        if (wantedToMove)
+        {
+            // If the agent wanted to move but didn't move => negative reward
+            if (transform.position.Equals(_previousPosition))
+            {
+                //Debug.Log($"DIDN'T MOVE: -0.05");
+                AddReward(-0.001f);
+            }
+            // Reward continuous movement
+            else if (action == _previousAction)
+            {
+                AddReward(0.01f);
+            }
+        }
+
+        _previousAction = action;
+        _previousPosition = transform.position;
+        _currentCell = cellPosition;
 
         switch (action)
         {
-            case PossibleAction.Nothing:
-                // do nothing
+            case AgentAction.Nothing:
+                // Do nothing
                 break;
-            case PossibleAction.Right:
+            case AgentAction.Right:
                 movement.x = 1;
                 break;
-            case PossibleAction.Left:
+            case AgentAction.Left:
                 movement.x = -1;
                 break;
-            case PossibleAction.Up:
+            case AgentAction.Up:
                 movement.y = 1;
                 break;
-            case PossibleAction.Down:
+            case AgentAction.Down:
                 movement.y = -1;
                 break;
-            case PossibleAction.Bomb:
+            case AgentAction.Bomb:
                 _playerMovement.PlantBomb();
                 break;
             default:

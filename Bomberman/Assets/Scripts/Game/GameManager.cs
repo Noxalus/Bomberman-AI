@@ -104,6 +104,7 @@ public class GameManager : MonoBehaviour
             if (i < _gameSettings.MLAIPlayersCount)
             {
                 MLAIPlayer mlAIPlayer = Instantiate(_mlAIPlayerPrefab);
+                mlAIPlayer.SetMap(_map);
                 player = mlAIPlayer.Player;
             }
             else if (i < _gameSettings.AIPlayersCount)

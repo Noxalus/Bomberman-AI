@@ -24,6 +24,8 @@ public class Bonus : MonoBehaviour
     private EBonusType _type = EBonusType.None;
     private bool _isInvincible = true;
 
+    public EBonusType Type => _type;
+
     private void Destroy()
     {
         OnDestroy?.Invoke(this);

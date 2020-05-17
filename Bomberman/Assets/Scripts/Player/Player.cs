@@ -93,7 +93,7 @@ public class Player : MonoBehaviour
     {
         _id = id;
         _color = color;
-        //_spriteRenderer.color = color;
+        _spriteRenderer.color = color;
     }
 
     public virtual void Spawn(Vector3 position)
@@ -243,7 +243,7 @@ public class Player : MonoBehaviour
 
     public void OnDestroyedBonus(Bonus bonus)
     {
-        OnBonusDestroy?.Invoke(this);
+        OnBonusDestroy?.Invoke(this, bonus.Type);
     }
 
     public virtual void Kill(Player killer)
@@ -258,7 +258,7 @@ public class Player : MonoBehaviour
         {
             if (killer.Id == Id)
             {
-                Debug.Log($"Player just suicide himself...");
+                //Debug.Log($"Player just suicide himself...");
                 UpdateScore(-2);
             }
             else
