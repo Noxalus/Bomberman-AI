@@ -62,10 +62,6 @@ public class Bonus : MonoBehaviour
                 throw new Exception("Missing Player component on this entity.");
             }
         }
-        else if (collision.tag == "Explosion")
-        {
-            Explode();
-        }
     }
 
     public void Explode()

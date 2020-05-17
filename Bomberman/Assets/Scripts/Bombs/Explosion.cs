@@ -144,14 +144,14 @@ public class Explosion : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
+        var killer = _bomb.Player;
+
         if (collision.tag == "Player")
         {
             var player = collision.GetComponent<Player>();
 
             if (!player.IsInvincible && !player.IsDead)
             {
-                var killer = _bomb.Player;
-
                 if (killer != null)
                 {
                     killer.OnKilledPlayer(player);
@@ -163,7 +163,6 @@ public class Explosion : MonoBehaviour
         else if (collision.tag == "DestructibleWall")
         {
             var wall = collision.GetComponent<DestructibleWall>();
-            var killer = _bomb.Player;
 
             if (killer != null)
             {
@@ -171,6 +170,17 @@ public class Explosion : MonoBehaviour
             }
 
             wall.Explode();
+        }
+        else if (collision.tag == "Bonus")
+        {
+            var bonus = collision.GetComponent<Bonus>();
+
+            if (killer != null)
+            {
+                killer.OnDestroyedBonus(bonus);
+            }
+            
+            bonus.Explode();
         }
         else if (collision.tag == "Bomb")
         {

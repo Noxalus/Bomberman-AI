@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 4427710297562399780}
   m_Layer: 0
   m_Name: Bonus
-  m_TagString: Untagged
+  m_TagString: Bonus
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -69,6 +69,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dab330e89921a984b954658c2e4fedf5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  OnExplode:
+    m_PersistentCalls:
+      m_Calls: []
+  OnDestroy:
+    m_PersistentCalls:
+      m_Calls: []
   _bonusSpritesDictionary:
     m_keys: 0100000002000000030000000400000005000000
     m_values:

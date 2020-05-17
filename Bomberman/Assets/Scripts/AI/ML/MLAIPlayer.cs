@@ -32,6 +32,7 @@ public class MLAIPlayer : Agent
 
         _player.OnDeath.AddListener((player) => AddReward(-1f));
         _player.OnWallDestroy.AddListener((player) => AddReward(0.75f));
+        _player.OnBonusDestroy.AddListener((player) => AddReward(-0.5f));
         _player.OnPlantBomb.AddListener((player) => AddReward(0.1f));
         _player.OnPickUpBonus.AddListener(
             (player, bonusType) =>
@@ -60,7 +61,7 @@ public class MLAIPlayer : Agent
         // Prevents the agent from planting a bomb if he can't
         if (_player.BombCount == 0)
         {
-            //actionMasker.SetMask(0, new[] { (int)PossibleAction.Bomb });
+            actionMasker.SetMask(0, new[] { (int)PossibleAction.Bomb });
         }
     }
 

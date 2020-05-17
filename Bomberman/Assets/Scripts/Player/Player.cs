@@ -36,6 +36,7 @@ public class Player : MonoBehaviour
     public PlayerEvent OnSpeedChange;
     public PlayerEvent OnSpawn;
     public PlayerEvent OnWallDestroy;
+    public PlayerEvent OnBonusDestroy;
     public PlayerEvent OnKill; // When he just kills another player
     public PlayerEvent OnDeath; // When he just gets killed
     public PlayerEvent OnDestroyed; // When the death animation is finished
@@ -237,6 +238,11 @@ public class Player : MonoBehaviour
     public void OnDestroyedWall(DestructibleWall wall)
     {
         OnWallDestroy?.Invoke(this);
+    }
+
+    public void OnDestroyedBonus(Bonus bonus)
+    {
+        OnBonusDestroy?.Invoke(this);
     }
 
     public virtual void Kill(Player killer)
