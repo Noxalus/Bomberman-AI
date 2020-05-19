@@ -12,6 +12,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private UIManager _uiManager = null;
     [SerializeField] private DebugManager _debugManager = null;
     [SerializeField] private AIManager _aiManager = null;
+    [SerializeField] private Map _map = null;
 
     [Header("Assets reference")]
 
@@ -28,7 +29,6 @@ public class GameManager : MonoBehaviour
 
     public AIManager AIManager => _aiManager;
 
-    private Map _map = null;
     private List<Player> _players = new List<Player>();
     private List<Bomb> _bombs = new List<Bomb>();
     private List<Explosion> _explosions = new List<Explosion>();
@@ -46,7 +46,14 @@ public class GameManager : MonoBehaviour
 
     private void LoadMap(string mapName)
     {
-        StartCoroutine(LoadMapSceneCoroutine(_gameSettings.Maps[_currentMapIndex]));
+        if (_map == null)
+        {
+            StartCoroutine(LoadMapSceneCoroutine(_gameSettings.Maps[_currentMapIndex]));
+        }
+        else
+        {
+            OnSceneLoaded();
+        }
     }
 
     private void UnloadCurrentMap()
@@ -79,7 +86,10 @@ public class GameManager : MonoBehaviour
 
     private void OnSceneLoaded()
     {
-        _map = FindObjectOfType<Map>();
+        if (_map == null)
+        {
+            _map = FindObjectOfType<Map>();
+        }
 
         if (_map != null)
         {

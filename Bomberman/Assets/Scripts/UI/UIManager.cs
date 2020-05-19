@@ -13,7 +13,7 @@ public class UIManager : MonoBehaviour
     {
         _gameManager = gameManager;
 
-        _playersBoardView.Initialize(gameManager.Players);
+        //_playersBoardView.Initialize(gameManager.Players);
     }
 
     public void UpdateTimer(TimeSpan time)

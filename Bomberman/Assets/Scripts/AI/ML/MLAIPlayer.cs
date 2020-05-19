@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using TMPro;
 using Unity.MLAgents;
 using UnityEngine;
 
@@ -10,6 +11,9 @@ public class MLAIPlayer : Agent
 
     [SerializeField]
     private PlayerMovement _playerMovement = null;
+
+    [SerializeField]
+    private TMP_Text _rewardText = null;
 
     public Player Player => _player;
 
@@ -43,7 +47,7 @@ public class MLAIPlayer : Agent
         _player.OnDeath.AddListener(
             (player) =>
             {
-                Debug.Log("DEATH: -0.5");
+                //Debug.Log("DEATH: -0.5");
                 AddReward(-0.5f);
                 Debug.Log($"Cumulative reward: {GetCumulativeReward()}");
                 EndEpisode();
@@ -53,38 +57,38 @@ public class MLAIPlayer : Agent
         _player.OnWallDestroy.AddListener(
             (player) =>
             {
-                AddReward(0.05f);
+                AddReward(0.1f);
             }
         );
-        _player.OnPlantBomb.AddListener((player) => AddReward(0.1f));
+        _player.OnPlantBomb.AddListener((player) => AddReward(0.05f));
 
-        _player.OnBonusDestroy.AddListener(
-            (player, bonusType) =>
-            {
-                if (bonusType == EBonusType.Bad)
-                {
-                    AddReward(0.1f);
-                }
-                else
-                {
-                    AddReward(-0.1f);
-                }
-            }
-        );
+        //_player.OnBonusDestroy.AddListener(
+        //    (player, bonusType) =>
+        //    {
+        //        if (bonusType == EBonusType.Bad)
+        //        {
+        //            AddReward(0.1f);
+        //        }
+        //        else
+        //        {
+        //            AddReward(-0.1f);
+        //        }
+        //    }
+        //);
 
-        _player.OnPickUpBonus.AddListener(
-            (player, bonusType) =>
-            {
-                if (bonusType == EBonusType.Bad)
-                {
-                    AddReward(-0.05f);
-                }
-                else
-                {
-                    AddReward(0.05f);
-                }
-            }
-        );
+        //_player.OnPickUpBonus.AddListener(
+        //    (player, bonusType) =>
+        //    {
+        //        if (bonusType == EBonusType.Bad)
+        //        {
+        //            AddReward(-0.05f);
+        //        }
+        //        else
+        //        {
+        //            AddReward(0.05f);
+        //        }
+        //    }
+        //);
     }
 
     public override void OnEpisodeBegin()
@@ -97,8 +101,18 @@ public class MLAIPlayer : Agent
 
     public override void CollectDiscreteActionMasks(DiscreteActionMasker actionMasker)
     {
+        if (_player.IsDead)
+        {
+            actionMasker.SetMask(0, new[] { 
+                (int)AgentAction.Up, 
+                (int)AgentAction.Right, 
+                (int)AgentAction.Down, 
+                (int)AgentAction.Left,
+                (int)AgentAction.Bomb
+            });
+        }
         // Prevents the agent from planting a bomb if he can't
-        if (_player.IsInvincible || _player.IsDead || _player.BombCount == 0)
+        else if (_player.IsInvincible || _player.BombCount == 0)
         {
             actionMasker.SetMask(0, new[] { (int)AgentAction.Bomb });
         }
@@ -132,43 +146,53 @@ public class MLAIPlayer : Agent
     public override void OnActionReceived(float[] vectorAction)
     {
         bool wantedToMove = (int)_previousAction > 0 && (int)_previousAction < 5;
-
-        // Reward for new visited cells
         var cellPosition = _map.CellPosition(_player.transform.position);
         bool hasChangedCell = !_currentCell.Equals(cellPosition);
-        if (hasChangedCell && !_visitedCells.Contains(cellPosition))
-        {
-            AddReward(0.01f);
-            _visitedCells.Add(cellPosition);
-        }
+
+        // Reward for new visited cells
+        //if (hasChangedCell && !_visitedCells.Contains(cellPosition))
+        //{
+        //    AddReward(0.01f);
+        //    _visitedCells.Add(cellPosition);
+        //}
 
         // Check danger
         var dangerLevel = _map.GetDangerLevel(cellPosition);
-        if (hasChangedCell && dangerLevel > 0)
+        if (dangerLevel > 0)
         {
-            var rewardValue = -((dangerLevel / 3f) * 0.05f);
+            var rewardValue = -((dangerLevel / 3f) * 0.005f);
             Debug.Log($"DANGER: {rewardValue}");
 
             AddReward(rewardValue);
+        }
+        else if (dangerLevel == 0)
+        {
+            AddReward(0.001f);
         }
 
         var movement = Vector2.zero;
         var action = (AgentAction)Mathf.FloorToInt(vectorAction[0]);
         
-        if (wantedToMove)
-        {
-            // If the agent wanted to move but didn't move => negative reward
-            if (transform.position.Equals(_previousPosition))
-            {
-                //Debug.Log($"DIDN'T MOVE: -0.05");
-                AddReward(-0.001f);
-            }
-            // Reward continuous movement
-            else if (action == _previousAction)
-            {
-                AddReward(0.01f);
-            }
-        }
+        // Malus if no action
+        //if (action == AgentAction.Nothing && _player.BombCount == _player.MaxBombCount)
+        //{
+        //    AddReward(-0.01f);
+        //}
+
+        //if (wantedToMove)
+        //{
+        //    // If the agent wanted to move but didn't move => negative reward
+        //    if (transform.position.Equals(_previousPosition))
+        //    {
+        //        //Debug.Log($"DIDN'T MOVE: -0.05");
+        //        AddReward(-0.001f);
+        //    }
+        //    // Reward continuous movement
+        //    else if (action == _previousAction)
+        //    {
+        //        AddReward(0.01f);
+        //    }
+        //}
 
         _previousAction = action;
         _previousPosition = transform.position;
@@ -199,5 +223,12 @@ public class MLAIPlayer : Agent
         }
 
         _playerMovement.Move(movement);
+    }
+
+    private void Update()
+    {
+        float reward = GetCumulativeReward();
+
+        _rewardText.text = reward.ToString();
     }
 }

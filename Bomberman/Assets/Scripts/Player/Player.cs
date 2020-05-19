@@ -83,6 +83,7 @@ public class Player : MonoBehaviour
     public int Power => _bombPower;
     public  float BombTimer => _bombTimer;
     public int BombCount => _currentBombCount;
+    public int MaxBombCount => _maxBombCount;
     public int SpeedBonus => _speedBonus;
     public bool IsDead => _isDead;
     public bool IsInvincible => _isInvincible;
