@@ -60,7 +60,7 @@ public class MLAIPlayer : Agent
                 AddReward(0.1f);
             }
         );
-        _player.OnPlantBomb.AddListener((player) => AddReward(0.05f));
+        _player.OnPlantBomb.AddListener((player) => AddReward(0.01f));
 
         //_player.OnBonusDestroy.AddListener(
         //    (player, bonusType) =>
@@ -157,18 +157,18 @@ public class MLAIPlayer : Agent
         //}
 
         // Check danger
-        var dangerLevel = _map.GetDangerLevel(cellPosition);
-        if (dangerLevel > 0)
-        {
-            var rewardValue = -((dangerLevel / 3f) * 0.005f);
-            Debug.Log($"DANGER: {rewardValue}");
+        //var dangerLevel = _map.GetDangerLevel(cellPosition);
+        //if (dangerLevel > 0)
+        //{
+        //    var rewardValue = -((dangerLevel / 3f) * 0.005f);
+        //    //Debug.Log($"DANGER: {rewardValue}");
 
-            AddReward(rewardValue);
-        }
-        else if (dangerLevel == 0)
-        {
-            AddReward(0.001f);
-        }
+        //    AddReward(rewardValue);
+        //}
+        //else if (dangerLevel == 0)
+        //{
+        //    AddReward(0.001f);
+        //}
 
         var movement = Vector2.zero;
         var action = (AgentAction)Mathf.FloorToInt(vectorAction[0]);
