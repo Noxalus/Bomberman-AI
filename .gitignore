@@ -35,6 +35,6 @@ sysinfo.txt
 *.apk
 *.unitypackage
 
-#Bomberman/Assets/ML-Agents/models**
-#Bomberman/Assets/ML-Agents/summaries**
+Bomberman/Assets/ML-Agents/models**
+Bomberman/Assets/ML-Agents/summaries**
 Bomberman/Assets/ML-Agents/Timers**
