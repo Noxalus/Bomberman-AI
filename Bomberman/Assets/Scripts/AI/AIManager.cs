@@ -112,31 +112,7 @@ public class AIManager : MonoBehaviour
         Vector2Int position, 
         bool onlyAccessible = false)
     {
-        var neighbours = new Dictionary<EDirection, Vector2Int>();
-
-        var topPosition = new Vector2Int(position.x, position.y + 1);
-        var bottomPosition = new Vector2Int(position.x, position.y - 1);
-        var rightPosition = new Vector2Int(position.x + 1, position.y);
-        var leftPosition = new Vector2Int(position.x - 1, position.y);
-
-        var topIsAccessible = !onlyAccessible || (onlyAccessible && _map.IsAccessible(topPosition, false));
-        var bottomIsAccessible = !onlyAccessible || (onlyAccessible && _map.IsAccessible(bottomPosition, false));
-        var rightIsAccessible = !onlyAccessible || (onlyAccessible && _map.IsAccessible(rightPosition, false));
-        var leftIsAccessible = !onlyAccessible || (onlyAccessible && _map.IsAccessible(leftPosition, false));
-
-        if (!_map.IsOutOfBound(topPosition) && topIsAccessible)
-            neighbours.Add(EDirection.Up, topPosition);
-
-        if (!_map.IsOutOfBound(bottomPosition) && bottomIsAccessible)
-            neighbours.Add(EDirection.Down, bottomPosition);
-
-        if (!_map.IsOutOfBound(rightPosition) && rightIsAccessible)
-            neighbours.Add(EDirection.Right, rightPosition);
-
-        if (!_map.IsOutOfBound(leftPosition) && leftIsAccessible)
-            neighbours.Add(EDirection.Left, leftPosition);
-
-        return neighbours;
+        return AIUtils.GetNeighbours(position, _map, onlyAccessible);
     }
 
     public int[,] ComputeCostMap(Vector2Int targetPosition)

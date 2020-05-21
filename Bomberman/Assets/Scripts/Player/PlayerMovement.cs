@@ -16,6 +16,9 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private GameSettings _gameSettings = null;
 
     private Vector2 _movement = Vector2.zero;
+    private float _speed = 0f;
+
+    public float Speed => _speed;
 
     private void OnEnable()
     {
@@ -125,7 +128,7 @@ public class PlayerMovement : MonoBehaviour
             return;
         }
 
-        float speed = _gameSettings.PlayerBaseSpeed + (_player.SpeedBonus * _gameSettings.SpeedBonusIncrement);
-        _rigidbody.MovePosition(_rigidbody.position + _movement * speed * Time.fixedDeltaTime);
+        _speed = _gameSettings.PlayerBaseSpeed + (_player.SpeedBonus * _gameSettings.SpeedBonusIncrement);
+        _rigidbody.MovePosition(_rigidbody.position + _movement * _speed * Time.fixedDeltaTime);
     }
 }

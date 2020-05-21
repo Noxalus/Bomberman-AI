@@ -30,6 +30,8 @@ public class MLAIPlayer : Agent
     private EnvironmentParameters _environmentParameters;
     private Vector3 _previousPosition;
     private AgentAction _previousAction;
+    private Vector3 _targetPosition;
+    private bool _isMoving = false;
     private List<Vector2Int> _visitedCells = new List<Vector2Int>();
     private Vector2Int _currentCell;
 
@@ -96,26 +98,73 @@ public class MLAIPlayer : Agent
         _currentCell = Vector2Int.zero;
         _previousPosition = Vector2.zero;
         _previousAction = AgentAction.Nothing;
+        _targetPosition = Vector3.zero;
+        _isMoving = false;
         _visitedCells.Clear();
     }
 
     public override void CollectDiscreteActionMasks(DiscreteActionMasker actionMasker)
     {
-        if (_player.IsDead)
+        List<AgentAction> disableActions = new List<AgentAction>()
         {
-            actionMasker.SetMask(0, new[] { 
-                (int)AgentAction.Up, 
-                (int)AgentAction.Right, 
-                (int)AgentAction.Down, 
-                (int)AgentAction.Left,
-                (int)AgentAction.Bomb
-            });
-        }
-        // Prevents the agent from planting a bomb if he can't
-        else if (_player.IsInvincible || _player.BombCount == 0)
+            AgentAction.Up,
+            AgentAction.Right,
+            AgentAction.Down,
+            AgentAction.Left,
+            AgentAction.Bomb
+        };
+
+        if (!_player.IsDead)
         {
-            actionMasker.SetMask(0, new[] { (int)AgentAction.Bomb });
+            if (_isMoving)
+            {
+                // We only allow the same action (so direction) than the previous one
+                disableActions.Remove(_previousAction);
+                disableActions.Add(AgentAction.Nothing);
+            }
+            else
+            {
+                // Check accessible cells around
+                var cellPosition = _map.CellPosition(transform.position);
+                var neighbours = AIUtils.GetNeighbours(cellPosition, _map, true, true);
+                
+                foreach (var neighbourDirection in neighbours.Keys)
+                {
+                    switch (neighbourDirection)
+                    {
+                        case EDirection.None:
+                            break;
+                        case EDirection.Up:
+                            disableActions.Remove(AgentAction.Up);
+                            break;
+                        case EDirection.Right:
+                            disableActions.Remove(AgentAction.Right);
+                            break;
+                        case EDirection.Down:
+                            disableActions.Remove(AgentAction.Down);
+                            break;
+                        case EDirection.Left:
+                            disableActions.Remove(AgentAction.Left);
+                            break;
+                    }
+                }
+
+                // Only allow the agent to plant a bomb if he can
+                if (_player.BombCount > 0)
+                {
+                    disableActions.Remove(AgentAction.Bomb);
+                }
+            }
         }
+
+        int[] actionsMask = new int[disableActions.Count];
+
+        for (int i = 0; i < disableActions.Count; i++)
+        {
+            actionsMask[i] = (int)disableActions[i];
+        }
+
+        actionMasker.SetMask(0, actionsMask);
     }
 
     public override void Heuristic(float[] actionsOut)
@@ -170,9 +219,9 @@ public class MLAIPlayer : Agent
         //    AddReward(0.001f);
         //}
 
-        var movement = Vector2.zero;
+        var movement = Vector2Int.zero;
         var action = (AgentAction)Mathf.FloorToInt(vectorAction[0]);
-        
+
         // Malus if no action
         //if (action == AgentAction.Nothing && _player.BombCount == _player.MaxBombCount)
         //{
@@ -222,7 +271,33 @@ public class MLAIPlayer : Agent
                 throw new ArgumentException("Invalid action value");
         }
 
+        if (!_isMoving && movement != Vector2Int.zero)
+        {
+            _targetPosition = _map.WorldPosition(cellPosition + movement);
+            _isMoving = true;
+        }
+
         _playerMovement.Move(movement);
+
+        if (HasReachedTarget())
+        {
+            _isMoving = false;
+        }
+    }
+
+    private bool HasReachedTarget()
+    {
+        if (!_isMoving)
+        {
+            return false;
+        }
+
+        var distance = new Vector2(
+            Mathf.Abs(transform.position.x - _targetPosition.x),
+            Mathf.Abs(transform.position.y - _targetPosition.y)
+        );
+
+        return distance.x < 2 * (_playerMovement.Speed * Time.fixedDeltaTime) && distance.y < 2 * (_playerMovement.Speed * Time.fixedDeltaTime);
     }
 
     private void Update()
