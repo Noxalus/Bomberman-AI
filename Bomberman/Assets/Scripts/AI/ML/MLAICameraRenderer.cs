@@ -6,15 +6,21 @@ public class MLAICameraRenderer : MonoBehaviour
     private Map _map = null;
 
     [SerializeField]
-    private RenderTexture _renderTexture = null;
+    private Camera _camera = null;
+
+    [SerializeField]
+    private int _renderTexturePixelSize = 4; 
 
     [SerializeField]
     public Renderer _renderer = null; // renderer in which you will apply changed texture
 
     private Texture2D _texture;
+    private RenderTexture _renderTexture = null;
 
     void Start()
     {
+        _renderTexture = new RenderTexture(_map.MapSize.x * _renderTexturePixelSize, _map.MapSize.y * _renderTexturePixelSize, 0);
+
         _texture = new Texture2D(_renderTexture.width, _renderTexture.height, TextureFormat.RGB24, false);
         _texture.filterMode = FilterMode.Point;
 
@@ -22,6 +28,8 @@ public class MLAICameraRenderer : MonoBehaviour
         //make texture2D because you want to "edit" it. 
         //however this is not a way to apply any post rendering effects because
         //this way, you are reading it through CPU(slow).
+
+        _camera.targetTexture = _renderTexture;
     }
 
     void Update()
