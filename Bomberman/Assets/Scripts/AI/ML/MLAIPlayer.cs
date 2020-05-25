@@ -35,7 +35,15 @@ public class MLAIPlayer : Agent
     private List<Vector2Int> _visitedCells = new List<Vector2Int>();
     private Vector2Int _currentCell;
 
+    private List<AgentAction> _actionsHistory = new List<AgentAction>();
+
+    private GameManager _gameManager;
     private Map _map;
+
+    public void SetGameManager(GameManager gameManager)
+    {
+        _gameManager = gameManager;
+    }
 
     public void SetMap(Map map)
     {
@@ -62,35 +70,36 @@ public class MLAIPlayer : Agent
                 AddReward(0.1f);
             }
         );
+
         _player.OnPlantBomb.AddListener((player) => AddReward(0.01f));
 
-        //_player.OnBonusDestroy.AddListener(
-        //    (player, bonusType) =>
-        //    {
-        //        if (bonusType == EBonusType.Bad)
-        //        {
-        //            AddReward(0.1f);
-        //        }
-        //        else
-        //        {
-        //            AddReward(-0.1f);
-        //        }
-        //    }
-        //);
+        _player.OnBonusDestroy.AddListener(
+            (player, bonusType) =>
+            {
+                if (bonusType == EBonusType.Bad)
+                {
+                    AddReward(0.1f);
+                }
+                else
+                {
+                    AddReward(-0.1f);
+                }
+            }
+        );
 
-        //_player.OnPickUpBonus.AddListener(
-        //    (player, bonusType) =>
-        //    {
-        //        if (bonusType == EBonusType.Bad)
-        //        {
-        //            AddReward(-0.05f);
-        //        }
-        //        else
-        //        {
-        //            AddReward(0.05f);
-        //        }
-        //    }
-        //);
+        _player.OnPickUpBonus.AddListener(
+            (player, bonusType) =>
+            {
+                if (bonusType == EBonusType.Bad)
+                {
+                    AddReward(-0.05f);
+                }
+                else
+                {
+                    AddReward(0.05f);
+                }
+            }
+        );
     }
 
     public override void OnEpisodeBegin()
@@ -101,6 +110,9 @@ public class MLAIPlayer : Agent
         _targetPosition = Vector3.zero;
         _isMoving = false;
         _visitedCells.Clear();
+        _actionsHistory.Clear();
+
+        _gameManager.StartRound();
     }
 
     public override void CollectDiscreteActionMasks(DiscreteActionMasker actionMasker)
@@ -126,7 +138,7 @@ public class MLAIPlayer : Agent
             {
                 // Check accessible cells around
                 var cellPosition = _map.CellPosition(transform.position);
-                var neighbours = AIUtils.GetNeighbours(cellPosition, _map, true, true);
+                var neighbours = AIUtils.GetNeighbours(cellPosition, _map, true, true, false);
                 
                 foreach (var neighbourDirection in neighbours.Keys)
                 {
@@ -194,7 +206,6 @@ public class MLAIPlayer : Agent
 
     public override void OnActionReceived(float[] vectorAction)
     {
-        bool wantedToMove = (int)_previousAction > 0 && (int)_previousAction < 5;
         var cellPosition = _map.CellPosition(_player.transform.position);
         bool hasChangedCell = !_currentCell.Equals(cellPosition);
 
@@ -206,18 +217,18 @@ public class MLAIPlayer : Agent
         //}
 
         // Check danger
-        //var dangerLevel = _map.GetDangerLevel(cellPosition);
-        //if (dangerLevel > 0)
-        //{
-        //    var rewardValue = -((dangerLevel / 3f) * 0.005f);
-        //    //Debug.Log($"DANGER: {rewardValue}");
+        var dangerLevel = _map.GetDangerLevel(cellPosition);
+        if (dangerLevel > 0)
+        {
+            var rewardValue = -((dangerLevel / 3f) * 0.005f);
+            //Debug.Log($"DANGER: {rewardValue}");
 
-        //    AddReward(rewardValue);
-        //}
-        //else if (dangerLevel == 0)
-        //{
-        //    AddReward(0.001f);
-        //}
+            AddReward(rewardValue);
+        }
+        else if (dangerLevel == 0)
+        {
+            //AddReward(0.001f);
+        }
 
         var movement = Vector2Int.zero;
         var action = (AgentAction)Mathf.FloorToInt(vectorAction[0]);
@@ -228,20 +239,10 @@ public class MLAIPlayer : Agent
         //    AddReward(-0.01f);
         //}
 
-        //if (wantedToMove)
-        //{
-        //    // If the agent wanted to move but didn't move => negative reward
-        //    if (transform.position.Equals(_previousPosition))
-        //    {
-        //        //Debug.Log($"DIDN'T MOVE: -0.05");
-        //        AddReward(-0.001f);
-        //    }
-        //    // Reward continuous movement
-        //    else if (action == _previousAction)
-        //    {
-        //        AddReward(0.01f);
-        //    }
-        //}
+        if (_previousAction != action)
+        {
+            _actionsHistory.Add(action);
+        }
 
         _previousAction = action;
         _previousPosition = transform.position;
@@ -297,13 +298,13 @@ public class MLAIPlayer : Agent
             Mathf.Abs(transform.position.y - _targetPosition.y)
         );
 
-        return distance.x < 2 * (_playerMovement.Speed * Time.fixedDeltaTime) && distance.y < 2 * (_playerMovement.Speed * Time.fixedDeltaTime);
+        return distance.x < (_playerMovement.Speed * Time.fixedDeltaTime) && distance.y < (_playerMovement.Speed * Time.fixedDeltaTime);
     }
 
     private void Update()
     {
         float reward = GetCumulativeReward();
 
-        _rewardText.text = reward.ToString();
+        _rewardText.text = reward.ToString("#.##");
     }
 }

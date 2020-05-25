@@ -6,6 +6,10 @@ using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
+    [Header("Configuration")]
+
+    [SerializeField] private bool _mlAgentTraining = false;
+
     [Header("Scene reference")]
 
     [SerializeField] private Camera _camera = null;
@@ -114,6 +118,7 @@ public class GameManager : MonoBehaviour
             if (i < _gameSettings.MLAIPlayersCount)
             {
                 MLAIPlayer mlAIPlayer = Instantiate(_mlAIPlayerPrefab);
+                mlAIPlayer.SetGameManager(this);
                 mlAIPlayer.SetMap(_map);
                 player = mlAIPlayer.Player;
             }
@@ -142,7 +147,10 @@ public class GameManager : MonoBehaviour
 
         _uiManager.Initialize(this);
 
-        StartRound();
+        if (!_mlAgentTraining)
+        {
+            StartRound();
+        }
     }
 
     #region Round
@@ -155,7 +163,7 @@ public class GameManager : MonoBehaviour
         ClearExplosions();
     }
 
-    private void StartRound()
+    public void StartRound()
     {
         ClearRoundData();
 
@@ -215,7 +223,7 @@ public class GameManager : MonoBehaviour
     {
         _deadPlayerCount++;
 
-        if (_deadPlayerCount >= _players.Count - 1)
+        if (_deadPlayerCount >= _players.Count - 1 && !_mlAgentTraining)
         {
             StartRound();
         }

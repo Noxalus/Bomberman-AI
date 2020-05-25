@@ -6965,6 +6965,11 @@ PrefabInstance:
       propertyPath: _map
       value: 
       objectReference: {fileID: 1168836239}
+    - target: {fileID: 4452486539012634409, guid: 6a41c744c91ee49488fb615176849f28,
+        type: 3}
+      propertyPath: _mlAgentTraining
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4452486539012634410, guid: 6a41c744c91ee49488fb615176849f28,
         type: 3}
       propertyPath: m_LocalPosition.x
