@@ -149,6 +149,7 @@ public class Map : MonoBehaviour
 
     public Vector3 GetSpawnPosition(int index)
     {
+        //return _playerSpawns[Random.Range(0, _playerSpawns.Count)].position;
         return _playerSpawns[index].position;
     }
 

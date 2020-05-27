@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using Unity.MLAgents;
+using Unity.MLAgents.Sensors;
 using UnityEngine;
 
 public class MLAIPlayer : Agent
@@ -11,6 +13,12 @@ public class MLAIPlayer : Agent
 
     [SerializeField]
     private PlayerMovement _playerMovement = null;
+
+    [SerializeField]
+    private RenderTextureSensorComponent _renderTextureSensor = null;
+
+    [SerializeField, Tooltip("Seconds to wait before to take a decision")]
+    private float _requestDecisionFrequency = 1f;
 
     [SerializeField]
     private TMP_Text _rewardText = null;
@@ -40,9 +48,13 @@ public class MLAIPlayer : Agent
     private GameManager _gameManager;
     private Map _map;
 
+    private bool _canTakeDecision;
+    private Coroutine _requestDecisionCoroutine;
+
     public void SetGameManager(GameManager gameManager)
     {
         _gameManager = gameManager;
+        _renderTextureSensor.RenderTexture = _gameManager.MLAIRenderTexture;
     }
 
     public void SetMap(Map map)
@@ -58,7 +70,7 @@ public class MLAIPlayer : Agent
             (player) =>
             {
                 //Debug.Log("DEATH: -0.5");
-                AddReward(-0.5f);
+                CustomAddReward(-0.5f);
                 Debug.Log($"Cumulative reward: {GetCumulativeReward()}");
                 EndEpisode();
             }
@@ -67,22 +79,22 @@ public class MLAIPlayer : Agent
         _player.OnWallDestroy.AddListener(
             (player) =>
             {
-                AddReward(0.1f);
+                CustomAddReward(0.1f);
             }
         );
 
-        _player.OnPlantBomb.AddListener((player) => AddReward(0.01f));
+        _player.OnPlantBomb.AddListener((player) => CustomAddReward(0.1f));
 
         _player.OnBonusDestroy.AddListener(
             (player, bonusType) =>
             {
                 if (bonusType == EBonusType.Bad)
                 {
-                    AddReward(0.1f);
+                    CustomAddReward(0.1f);
                 }
                 else
                 {
-                    AddReward(-0.1f);
+                    CustomAddReward(-0.1f);
                 }
             }
         );
@@ -92,11 +104,11 @@ public class MLAIPlayer : Agent
             {
                 if (bonusType == EBonusType.Bad)
                 {
-                    AddReward(-0.05f);
+                    CustomAddReward(-0.05f);
                 }
                 else
                 {
-                    AddReward(0.05f);
+                    CustomAddReward(0.05f);
                 }
             }
         );
@@ -111,13 +123,23 @@ public class MLAIPlayer : Agent
         _isMoving = false;
         _visitedCells.Clear();
         _actionsHistory.Clear();
+        _canTakeDecision = true;
+
+        if (_requestDecisionCoroutine != null)
+        {
+            StopCoroutine(_requestDecisionCoroutine);
+        }
+
+        _requestDecisionCoroutine = StartCoroutine(RequestDecisionCoroutine(_requestDecisionFrequency));
 
         _gameManager.StartRound();
+
+        UpdateUI();
     }
 
     public override void CollectDiscreteActionMasks(DiscreteActionMasker actionMasker)
     {
-        List<AgentAction> disableActions = new List<AgentAction>()
+        List <AgentAction> disableActions = new List<AgentAction>()
         {
             AgentAction.Up,
             AgentAction.Right,
@@ -134,12 +156,12 @@ public class MLAIPlayer : Agent
                 disableActions.Remove(_previousAction);
                 disableActions.Add(AgentAction.Nothing);
             }
-            else
+            else if (_canTakeDecision)
             {
                 // Check accessible cells around
                 var cellPosition = _map.CellPosition(transform.position);
                 var neighbours = AIUtils.GetNeighbours(cellPosition, _map, true, true, false);
-                
+
                 foreach (var neighbourDirection in neighbours.Keys)
                 {
                     switch (neighbourDirection)
@@ -212,7 +234,7 @@ public class MLAIPlayer : Agent
         // Reward for new visited cells
         //if (hasChangedCell && !_visitedCells.Contains(cellPosition))
         //{
-        //    AddReward(0.01f);
+        //    CustomAddReward(0.01f);
         //    _visitedCells.Add(cellPosition);
         //}
 
@@ -223,21 +245,26 @@ public class MLAIPlayer : Agent
             var rewardValue = -((dangerLevel / 3f) * 0.005f);
             //Debug.Log($"DANGER: {rewardValue}");
 
-            AddReward(rewardValue);
+            CustomAddReward(rewardValue);
         }
         else if (dangerLevel == 0)
         {
-            //AddReward(0.001f);
+            //CustomAddReward(0.001f);
         }
 
         var movement = Vector2Int.zero;
         var action = (AgentAction)Mathf.FloorToInt(vectorAction[0]);
 
+        //Debug.Log($"Action: {action}");
+
         // Malus if no action
         //if (action == AgentAction.Nothing && _player.BombCount == _player.MaxBombCount)
         //{
-        //    AddReward(-0.01f);
+        //    CustomAddReward(-0.01f);
         //}
+
+        // I don't like lazy agents
+        CustomAddReward(-0.0001f);
 
         if (_previousAction != action)
         {
@@ -272,18 +299,33 @@ public class MLAIPlayer : Agent
                 throw new ArgumentException("Invalid action value");
         }
 
+        //if (hasChangedCell)
+        //{
+        //    Debug.Log($"Changed cell => Current cell position: {_currentCell}");
+        //    Debug.Log($"Changed cell => Current position: {transform.position}");
+        //}
+
         if (!_isMoving && movement != Vector2Int.zero)
         {
-            _targetPosition = _map.WorldPosition(cellPosition + movement);
-            _isMoving = true;
+            Vector2Int targetCell = cellPosition + movement;
+
+            if (_map.IsAccessible(targetCell, true, false))
+            {
+                _targetPosition = _map.WorldPosition(targetCell);
+                _isMoving = true;
+
+                //Debug.Log($"Current cell position: {_currentCell}");
+                //Debug.Log($"Current position: {transform.position}");
+                //Debug.Log($"Target cell position: {targetCell}");
+                //Debug.Log($"Target position: {_targetPosition}");
+            }
+            else
+            {
+                Debug.LogError($"Target cell is not accessible: {targetCell.ToString()}");
+            }
         }
 
         _playerMovement.Move(movement);
-
-        if (HasReachedTarget())
-        {
-            _isMoving = false;
-        }
     }
 
     private bool HasReachedTarget()
@@ -298,13 +340,49 @@ public class MLAIPlayer : Agent
             Mathf.Abs(transform.position.y - _targetPosition.y)
         );
 
-        return distance.x < (_playerMovement.Speed * Time.fixedDeltaTime) && distance.y < (_playerMovement.Speed * Time.fixedDeltaTime);
+        //Debug.Log($"Distance: {distance}");
+
+        return distance.x < _playerMovement.Speed * Time.fixedDeltaTime && distance.y < _playerMovement.Speed * Time.fixedDeltaTime;
     }
 
-    private void Update()
+    private IEnumerator RequestDecisionCoroutine(float seconds)
     {
-        float reward = GetCumulativeReward();
+        var waitSecondsCoroutine = new WaitForSeconds(seconds);
+        var waitFixedUpdateCoroutine = new WaitForFixedUpdate();
 
-        _rewardText.text = reward.ToString("#.##");
+        while (true)
+        {
+            if (_gameManager == null)
+                yield return null;
+
+            yield return waitFixedUpdateCoroutine;
+
+            _gameManager.MLAICamera.Render();
+            RequestDecision();
+
+            yield return waitSecondsCoroutine;
+        }
+    }
+
+    private void FixedUpdate()
+    {
+        if (_isMoving && HasReachedTarget())
+        {
+            //Debug.Log("Has reached target");
+            transform.position = _targetPosition;
+            _isMoving = false;
+            _playerMovement.Move(Vector2.zero);
+        }
+    }
+
+    private void CustomAddReward(float reward)
+    {
+        AddReward(reward);
+        UpdateUI();
+    }
+
+    private void UpdateUI()
+    {
+        _rewardText.text = GetCumulativeReward().ToString("#.##");
     }
 }

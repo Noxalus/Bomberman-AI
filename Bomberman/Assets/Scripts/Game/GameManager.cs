@@ -18,6 +18,9 @@ public class GameManager : MonoBehaviour
     [SerializeField] private AIManager _aiManager = null;
     [SerializeField] private Map _map = null;
 
+    // Machine Learning
+    [SerializeField] private MLAICameraRenderer _mlAICameraRenderer = null;
+
     [Header("Assets reference")]
 
     [SerializeField] private GameSettings _gameSettings = null;
@@ -32,6 +35,9 @@ public class GameManager : MonoBehaviour
     public List<Player> Players => _players;
 
     public AIManager AIManager => _aiManager;
+
+    public MLAICameraRenderer MLAICamera => _mlAICameraRenderer;
+    public RenderTexture MLAIRenderTexture => _mlAICameraRenderer.RenderTexture;
 
     private List<Player> _players = new List<Player>();
     private List<Bomb> _bombs = new List<Bomb>();

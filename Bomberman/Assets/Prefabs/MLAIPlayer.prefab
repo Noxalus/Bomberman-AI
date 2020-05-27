@@ -197,8 +197,7 @@ GameObject:
   - component: {fileID: 9027718597847414175}
   - component: {fileID: 358366345659725961}
   - component: {fileID: 8864400996584202918}
-  - component: {fileID: 3483955369079233739}
-  - component: {fileID: 4670737329410628951}
+  - component: {fileID: 5281682692171627582}
   m_Layer: 0
   m_Name: MLAIPlayer
   m_TagString: Player
@@ -318,9 +317,11 @@ MonoBehaviour:
   agentParameters:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
-  MaxStep: 0
+  MaxStep: 5000
   _player: {fileID: 358366345659725961}
   _playerMovement: {fileID: 8864400996584202918}
+  _renderTextureSensor: {fileID: 5281682692171627582}
+  _requestDecisionFrequency: 0.1
   _rewardText: {fileID: 5011741365096205498}
 --- !u!114 &358366345659725961
 MonoBehaviour:
@@ -394,7 +395,7 @@ MonoBehaviour:
   _animator: {fileID: 7903295033436883380}
   _input: {fileID: 0}
   _gameSettings: {fileID: 11400000, guid: e6857ad653acb384db35baec132fd935, type: 2}
---- !u!114 &3483955369079233739
+--- !u!114 &5281682692171627582
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -406,24 +407,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 132e1194facb64429b007ea1edf562d0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_RenderTexture: {fileID: 8400000, guid: 77c8d3db78ac79b4fa6fb1a376af49d7, type: 2}
+  m_RenderTexture: {fileID: 8400000, guid: 7d64751a021460141b7f603dc8dbb03c, type: 2}
   m_SensorName: RenderTextureSensor
   m_Grayscale: 0
   m_Compression: 1
---- !u!114 &4670737329410628951
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4876474262725627210}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3a5c9d521e5ef4759a8246a07d52221e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  DecisionPeriod: 1
-  TakeActionsBetweenDecisions: 1
 --- !u!1 &5714434584144988963
 GameObject:
   m_ObjectHideFlags: 0
