@@ -292,7 +292,10 @@ public class GameManager : MonoBehaviour
         bomb.OnExplosion.RemoveListener(OnBombExplode);
 
         if (bomb.Player != null)
+        {
+            bomb.Player.OnBombExplosion(bomb);
             bomb.Player.UpdateCurrentBombCount(1);
+        }
 
         Explosion explosion = Instantiate(_explosionPrefab, bomb.transform.position, Quaternion.identity);
         explosion.Initialize(bomb, _map);

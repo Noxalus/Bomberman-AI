@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -34,6 +35,8 @@ public class Bomb : MonoBehaviour
     private bool _isExploding = false;
     // 0 = no danger, 1 = bomb planted, 2 = bomb will explode soon
     private short _dangerLevel = 0;
+
+    private List<Vector2Int> _impactedCells = new List<Vector2Int>();
 
     #endregion
 
@@ -117,7 +120,7 @@ public class Bomb : MonoBehaviour
         Destroy(gameObject);
     }
 
-    public static List<Vector2Int> FindImpactedCells(Map map, Vector2Int position, int power)
+    public static List<Vector2Int> FindImpactedCells(Map map, Vector2Int position, int power, bool includeDestructibleWalls = false)
     {
         List<Vector2Int> impactedCells = new List<Vector2Int>();
 
@@ -134,7 +137,12 @@ public class Bomb : MonoBehaviour
             {
                 Vector2Int topPosition = position + new Vector2Int(0, i);
 
-                if (map.IsAccessible(topPosition) || map.GetEntityType(topPosition) == EEntityType.Bomb)
+                if (includeDestructibleWalls && map.GetEntityType(topPosition) == EEntityType.DestructibleWall)
+                {
+                    impactedCells.Add(topPosition);
+                    stopTop = true;
+                }
+                else if (map.IsAccessible(topPosition) || map.GetEntityType(topPosition) == EEntityType.Bomb)
                 {
                     impactedCells.Add(topPosition);
                 }
@@ -148,7 +156,12 @@ public class Bomb : MonoBehaviour
             {
                 Vector2Int bottomPosition = position + new Vector2Int(0, -i);
 
-                if (map.IsAccessible(bottomPosition) || map.GetEntityType(bottomPosition) == EEntityType.Bomb)
+                if (includeDestructibleWalls && map.GetEntityType(bottomPosition) == EEntityType.DestructibleWall)
+                {
+                    impactedCells.Add(bottomPosition);
+                    stopBottom = true;
+                }
+                else if (map.IsAccessible(bottomPosition) || map.GetEntityType(bottomPosition) == EEntityType.Bomb)
                 {
                     impactedCells.Add(bottomPosition);
                 }
@@ -162,7 +175,12 @@ public class Bomb : MonoBehaviour
             {
                 Vector2Int leftPosition = position + new Vector2Int(-i, 0);
 
-                if (map.IsAccessible(leftPosition) || map.GetEntityType(leftPosition) == EEntityType.Bomb)
+                if (includeDestructibleWalls && map.GetEntityType(leftPosition) == EEntityType.DestructibleWall)
+                {
+                    impactedCells.Add(leftPosition);
+                    stopLeft = true;
+                }
+                else if (map.IsAccessible(leftPosition) || map.GetEntityType(leftPosition) == EEntityType.Bomb)
                 {
                     impactedCells.Add(leftPosition);
                 }
@@ -176,7 +194,12 @@ public class Bomb : MonoBehaviour
             {
                 Vector2Int rightPosition = position + new Vector2Int(i, 0);
 
-                if (map.IsAccessible(rightPosition) || map.GetEntityType(rightPosition) == EEntityType.Bomb)
+                if (includeDestructibleWalls && map.GetEntityType(rightPosition) == EEntityType.DestructibleWall)
+                {
+                    impactedCells.Add(rightPosition);
+                    stopRight = true;
+                }
+                else if (map.IsAccessible(rightPosition) || map.GetEntityType(rightPosition) == EEntityType.Bomb)
                 {
                     impactedCells.Add(rightPosition);
                 }
@@ -188,5 +211,32 @@ public class Bomb : MonoBehaviour
         }
 
         return impactedCells;
+    }
+
+    public List<EEntityType> GetImpactedEntities()
+    {
+        List<EEntityType> impactedEntities = new List<EEntityType>();
+        var cellPosition = _map.CellPosition(transform.position);
+        List<Vector2Int> impactedCells = FindImpactedCells(_map, cellPosition, _power, true);
+
+        foreach (var cell in impactedCells)
+        {
+            if (cell == cellPosition)
+            {
+                continue;
+            }
+
+            var currentEntity = _map.GetEntityType(cell);
+
+            if (currentEntity == EEntityType.Bomb ||
+                currentEntity == EEntityType.Bonus ||
+                currentEntity == EEntityType.DestructibleWall ||
+                currentEntity == EEntityType.Player)
+            {
+                impactedEntities.Add(currentEntity);
+            }
+        }
+
+        return impactedEntities;
     }
 }

@@ -76,14 +76,34 @@ public class MLAIPlayer : Agent
             }
         );
 
-        _player.OnWallDestroy.AddListener(
-            (player) =>
+        //_player.OnWallDestroy.AddListener(
+        //    (player) =>
+        //    {
+        //        CustomAddReward(0.25f);
+        //    }
+        //);
+
+        _player.OnPlantBomb.AddListener((player) => CustomAddReward(0.01f));
+
+        _player.OnBombExploded.AddListener(
+            (impactedEntities) =>
             {
-                CustomAddReward(0.1f);
+                if (impactedEntities.Count == 0)
+                {
+                    CustomAddReward(-0.1f);
+                }
+                else
+                {
+                    foreach (var entity in impactedEntities)
+                    {
+                        if (entity == EEntityType.DestructibleWall)
+                        {
+                            CustomAddReward(0.25f);
+                        }
+                    }
+                }
             }
         );
-
-        _player.OnPlantBomb.AddListener((player) => CustomAddReward(0.1f));
 
         _player.OnBonusDestroy.AddListener(
             (player, bonusType) =>
@@ -264,7 +284,7 @@ public class MLAIPlayer : Agent
         //}
 
         // I don't like lazy agents
-        CustomAddReward(-0.0001f);
+        //CustomAddReward(-0.01f);
 
         if (_previousAction != action)
         {

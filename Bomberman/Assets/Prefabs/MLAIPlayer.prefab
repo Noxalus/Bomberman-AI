@@ -296,7 +296,7 @@ MonoBehaviour:
     VectorActionSize: 06000000
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
-  m_Model: {fileID: 0}
+  m_Model: {fileID: 5022602860645237092, guid: 24a4094bd3029734588d0bf82d5c7e3f, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: MLAIPlayer
@@ -372,6 +372,9 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   OnBonusDestroy:
+    m_PersistentCalls:
+      m_Calls: []
+  OnBombExploded:
     m_PersistentCalls:
       m_Calls: []
   _spriteRenderer: {fileID: 4876474262529466195}

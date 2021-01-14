@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -7,6 +8,10 @@ using UnityEngine.Events;
 public class PlayerEvent : UnityEvent<Player> {}
 [System.Serializable]
 public class PlayerBonusEvent : UnityEvent<Player, EBonusType> { }
+
+// TODO: Give the real entities list instead (this implies to create an Entity class, etc...)
+[System.Serializable]
+public class PlayerBombEvent : UnityEvent<List<EEntityType>> { }
 
 public class Player : MonoBehaviour
 {
@@ -42,6 +47,8 @@ public class Player : MonoBehaviour
 
     public PlayerBonusEvent OnPickUpBonus;
     public PlayerBonusEvent OnBonusDestroy;
+
+    public PlayerBombEvent OnBombExploded;
 
     #endregion
 
@@ -226,9 +233,9 @@ public class Player : MonoBehaviour
         OnScoreChange?.Invoke(this);
     }
 
-    public void OnBombExplosion()
+    public void OnBombExplosion(Bomb bomb)
     {
-        UpdateCurrentBombCount(1);
+        OnBombExploded?.Invoke(bomb.GetImpactedEntities());
     }
 
     public void OnKilledPlayer(Player player)

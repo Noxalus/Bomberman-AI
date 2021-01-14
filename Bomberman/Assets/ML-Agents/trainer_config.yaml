@@ -30,7 +30,7 @@ MLAIPlayer:
     hidden_units: 256
     beta: 5.0e-3
     buffer_size: 256
-    max_steps: 5000000
+    max_steps: 500000
     summary_freq: 20000
     time_horizon: 5
     reward_signals:

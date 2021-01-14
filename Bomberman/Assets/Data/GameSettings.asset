@@ -33,7 +33,7 @@ MonoBehaviour:
   AIPlayersCount: 0
   MLAIPlayersCount: 1
   WallDensity: 1
-  BonusProbability: 0.5
+  BonusProbability: 0
   AvailableBonus:
     m_keys: 0100000002000000030000000400000005000000
     m_values: 0101000000
